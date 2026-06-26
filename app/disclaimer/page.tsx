@@ -1,11 +1,45 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { supabase } from '../../lib/supabase'
 
 export default function DisclaimerPage() {
   const [accepted, setAccepted] = useState(false)
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
+  const [loading, setLoading] = useState(false)
 
+  const searchParams = useSearchParams()
+  const inviteCode = searchParams.get('code')
+  
+  async function submitApplication() {
+  if (!inviteCode) {
+    alert('Kein Einladungscode gefunden')
+    return
+  }
+
+  setLoading(true)
+
+  const { error } = await supabase
+    .from('applications')
+    .insert([
+      {
+        invite_code: inviteCode,
+        disclaimer_accepted: true,
+        disclaimer_version: 'v1',
+        status: 'pending'
+      }
+    ])
+
+  setLoading(false)
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  window.location.href = '/success'
+}  
   return (
     <main className="max-w-4xl mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">
@@ -82,12 +116,13 @@ export default function DisclaimerPage() {
         </p>
       )}
 
-      <button
-        disabled={!accepted}
-        className="mt-6 bg-black text-white px-6 py-3 rounded disabled:opacity-50"
-      >
-        Weiter
-      </button>
+     <button
+  onClick={submitApplication}
+  disabled={!accepted || loading}
+  className="mt-6 bg-black text-white px-6 py-3 rounded disabled:opacity-50"
+>
+  {loading ? 'Speichern...' : 'Anfrage absenden'}
+</button>
     </main>
   )
 }

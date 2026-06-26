@@ -30,7 +30,8 @@ if (!data) {
   return
 }
 
-    setMessage('Einladungscode gültig')
+    window.location.href =
+  '/disclaimer?code=' + encodeURIComponent(inviteCode.trim())
   }
 
   return (
