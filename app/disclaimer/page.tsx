@@ -1,128 +1,203 @@
 'use client'
 
 import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { supabase } from '../../lib/supabase'
+import { useRouter } from 'next/navigation'
+
+import {
+  APP_NAME,
+  DISCLAIMER_VERSION,
+} from '@/constants/app'
+
+import PublicLayout from '@/components/layout/PublicLayout'
+
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import PageHeader from '@/components/ui/PageHeader'
 
 export default function DisclaimerPage() {
-  const [accepted, setAccepted] = useState(false)
+  const router = useRouter()
+
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
+  const [accepted, setAccepted] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const searchParams = useSearchParams()
-  const inviteCode = searchParams.get('code')
-  
+  function handleScroll(event: React.UIEvent<HTMLDivElement>) {
+    const target = event.currentTarget
+
+    if (
+      target.scrollHeight - target.scrollTop <=
+      target.clientHeight + 5
+    ) {
+      setHasScrolledToBottom(true)
+    }
+  }
+
   async function submitApplication() {
-  if (!inviteCode) {
-    alert('Kein Einladungscode gefunden')
-    return
-  }
+    const inviteCode = sessionStorage.getItem('invite_code')
+    const firstName = sessionStorage.getItem('first_name')
+    const lastName = sessionStorage.getItem('last_name')
 
-  setLoading(true)
+    const telegramUserId = sessionStorage.getItem('telegram_user_id')
+    const telegramUsername = sessionStorage.getItem('telegram_username')
 
-  const { error } = await supabase
-    .from('applications')
-    .insert([
-      {
-        invite_code: inviteCode,
-        disclaimer_accepted: true,
-        disclaimer_version: 'v1',
-        status: 'pending'
+    if (
+      !inviteCode ||
+      !firstName ||
+      !lastName ||
+      !telegramUserId
+    ) {
+      alert('Die Sitzung ist abgelaufen.')
+
+      router.push('/')
+
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const response = await fetch('/api/submit-application', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inviteCode,
+          firstName,
+          lastName,
+          telegramUserId,
+          telegramUsername,
+          disclaimerVersion: DISCLAIMER_VERSION,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        alert(result.error)
+        setLoading(false)
+        return
       }
-    ])
 
-  setLoading(false)
+      sessionStorage.removeItem('invite_code')
+      sessionStorage.removeItem('first_name')
+      sessionStorage.removeItem('last_name')
+      sessionStorage.removeItem('telegram_user_id')
+      sessionStorage.removeItem('telegram_username')
 
-  if (error) {
-    alert(error.message)
-    return
+      router.push('/success')
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert('Serverfehler.')
+
+      setLoading(false)
+    }
   }
 
-  window.location.href = '/success'
-}  
   return (
-    <main className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">
-        Haftungsausschluss
-      </h1>
+    <PublicLayout currentStep={4}>
 
-      <div
-        className="border p-4 h-96 overflow-y-scroll mb-6"
-        onScroll={(e) => {
-          const target = e.currentTarget
+      <PageHeader
+        title={APP_NAME}
+        subtitle="Bitte lies den Haftungsausschluss vollständig."
+      />
 
-          const isBottom =
-            target.scrollHeight - target.scrollTop <=
-            target.clientHeight + 5
+      <Card>
 
-          if (isBottom) {
-            setHasScrolledToBottom(true)
-          }
-        }}
-      >
-        <p>
-          HIER KOMMT SPÄTER DEIN DISCLAIMER HINEIN.
-        </p>
+        <div
+          onScroll={handleScroll}
+          className="h-[520px] overflow-y-auto rounded-xl border border-gray-300 bg-white p-8 leading-7 text-black"
+        >
 
-        <br />
+          <h2 className="mb-6 text-2xl font-bold">
+            Haftungsausschluss
+          </h2>
 
-        <p>
-          Diese Inhalte dienen ausschließlich der Dokumentation meiner persönlichen
-          Marktbeobachtungen und Handelsaktivitäten.
-        </p>
+          <p>
+            HIER KOMMT SPÄTER DEIN KOMPLETTER DISCLAIMER HINEIN.
+          </p>
 
-        <br />
+          <br />
 
-        <p>
-          Es handelt sich ausdrücklich nicht um Anlageberatung,
-          Finanzberatung oder eine Aufforderung zum Kauf oder Verkauf
-          von Finanzinstrumenten.
-        </p>
+          <p>
+            Diese Inhalte dienen ausschließlich der Dokumentation meiner
+            persönlichen Marktbeobachtungen und Handelsaktivitäten.
+          </p>
 
-        <br />
+          <br />
 
-        <p>
-          Jeder Teilnehmer handelt ausschließlich auf eigene Verantwortung.
-        </p>
+          <p>
+            Es handelt sich ausdrücklich nicht um eine Anlageberatung,
+            Finanzberatung oder eine Aufforderung zum Kauf oder Verkauf
+            von Finanzinstrumenten.
+          </p>
 
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
+          <br />
 
-        <p>
-          Ende des Dokuments.
-        </p>
-      </div>
+          <p>
+            Jeder Teilnehmer handelt ausschließlich auf eigenes Risiko.
+          </p>
 
-      {hasScrolledToBottom ? (
-        <label className="flex gap-2 items-center">
-          <input
-            type="checkbox"
-            checked={accepted}
-            onChange={(e) => setAccepted(e.target.checked)}
-          />
-          Ich habe den Haftungsausschluss gelesen und akzeptiert.
-        </label>
-      ) : (
-        <p className="text-sm text-gray-600">
-          Bitte bis zum Ende scrollen, um fortzufahren.
-        </p>
-      )}
+          {Array.from({ length: 20 }).map((_, index) => (
+            <br key={index} />
+          ))}
 
-     <button
-  onClick={submitApplication}
-  disabled={!accepted || loading}
-  className="mt-6 bg-black text-white px-6 py-3 rounded disabled:opacity-50"
->
-  {loading ? 'Speichern...' : 'Anfrage absenden'}
-</button>
-    </main>
+          <p className="font-bold">
+            Ende des Dokuments
+          </p>
+
+        </div>
+
+        {!hasScrolledToBottom && (
+
+          <div className="mt-6 rounded-lg bg-yellow-50 p-4">
+
+            <p className="font-medium text-black">
+              Bitte lies den Disclaimer vollständig bis zum Ende.
+            </p>
+
+          </div>
+
+        )}
+
+        {hasScrolledToBottom && (
+
+          <div className="mt-8 space-y-6">
+
+            <label className="flex items-start gap-4">
+
+              <input
+                type="checkbox"
+                checked={accepted}
+                onChange={(e) => setAccepted(e.target.checked)}
+                className="mt-1 h-5 w-5"
+              />
+
+              <span className="text-black">
+                Ich habe den Haftungsausschluss vollständig gelesen und akzeptiere ihn.
+              </span>
+
+            </label>
+
+            <Button
+              color="blue"
+              onClick={submitApplication}
+              disabled={!accepted || loading}
+            >
+              {loading
+                ? 'Bewerbung wird übermittelt...'
+                : 'Bewerbung abschließen'}
+            </Button>
+
+          </div>
+
+        )}
+
+      </Card>
+
+    </PublicLayout>
   )
 }

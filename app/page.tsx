@@ -1,71 +1,107 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { useRouter } from 'next/navigation'
+
+import { APP_NAME } from '@/constants/app'
+import { supabase } from '@/lib/supabase'
+
+import PublicLayout from '@/components/layout/PublicLayout'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
+import PageHeader from '@/components/ui/PageHeader'
 
 export default function Home() {
+  const router = useRouter()
+
   const [inviteCode, setInviteCode] = useState('')
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
   async function checkInvite() {
+    const code = inviteCode.trim().toUpperCase()
+
+    if (!code) {
+      setMessage('Bitte gib deinen Einladungscode ein.')
+      return
+    }
+
+    setLoading(true)
+    setMessage('')
+
     const { data, error } = await supabase
       .from('invites')
-      .select('*')
-      .eq('invite_code', inviteCode.trim())
+      .select('invite_code')
+      .eq('invite_code', code)
       .eq('active', true)
       .eq('used', false)
       .maybeSingle()
 
-console.log("DATA:", data)
-console.log("ERROR:", error)
+    setLoading(false)
 
     if (error) {
-  console.log('SUPABASE ERROR:', error)
-  setMessage('Fehler: ' + error.message)
-  return
-}
+      setMessage('Beim Prüfen des Einladungscodes ist ein Fehler aufgetreten.')
+      return
+    }
 
-if (!data) {
-  setMessage('Kein Datensatz gefunden')
-  return
-}
+    if (!data) {
+      setMessage('Der Einladungscode ist ungültig oder wurde bereits verwendet.')
+      return
+    }
 
-    window.location.href =
-  '/disclaimer?code=' + encodeURIComponent(inviteCode.trim())
+    sessionStorage.setItem('invite_code', code)
+
+    router.push('/application')
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md p-8">
-        <h1 className="text-3xl font-bold mb-8 text-center">
-          Krypto-Tagebuch
-        </h1>
+    <PublicLayout currentStep={1}>
 
-        <label className="block mb-2">
-          Einladungscode
-        </label>
+      <PageHeader
+        title={APP_NAME}
+        subtitle="Bitte gib deinen persönlichen Einladungscode ein."
+      />
 
-        <input
-          type="text"
-          value={inviteCode}
-          onChange={(e) => setInviteCode(e.target.value)}
-          className="w-full border rounded p-3 mb-4"
-          placeholder="Code eingeben"
-        />
+      <Card>
 
-        <button
-          onClick={checkInvite}
-          className="w-full bg-black text-white p-3 rounded"
-        >
-          Weiter
-        </button>
+        <div className="space-y-6">
 
-        {message && (
-          <p className="mt-4 text-center">
-            {message}
-          </p>
-        )}
-      </div>
-    </main>
+          <div>
+
+            <label className="mb-2 block font-semibold text-black">
+              Einladungscode
+            </label>
+
+            <input
+              type="text"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              placeholder="XXXX-XXXX"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg text-black focus:border-blue-600 focus:outline-none"
+            />
+
+          </div>
+
+          {message && (
+            <p className="font-medium text-red-600">
+              {message}
+            </p>
+          )}
+
+          <Button
+            color="blue"
+            onClick={checkInvite}
+            disabled={loading}
+          >
+            {loading
+              ? 'Einladungscode wird geprüft...'
+              : 'Weiter'}
+          </Button>
+
+        </div>
+
+      </Card>
+
+    </PublicLayout>
   )
 }
