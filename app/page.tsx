@@ -29,15 +29,28 @@ export default function Home() {
     setLoading(true)
     setMessage('')
 
-    const { data, error } = await supabase
-      .from('invites')
-      .select('invite_code')
-      .eq('invite_code', code)
-      .eq('active', true)
-      .eq('used', false)
-      .maybeSingle()
+    const response = await fetch('/api/invites/reserve', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    inviteCode: code,
+  }),
+})
 
-    setLoading(false)
+const result = await response.json()
+
+setLoading(false)
+
+if (!response.ok) {
+  setMessage(result.error)
+  return
+}
+
+sessionStorage.setItem('invite_code', code)
+
+router.push('/application')
 
     if (error) {
       setMessage('Beim Prüfen des Einladungscodes ist ein Fehler aufgetreten.')

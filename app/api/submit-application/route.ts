@@ -14,74 +14,28 @@ export async function POST(request: Request) {
 
     if (!inviteCode) {
       return NextResponse.json(
-        {
-          error: 'Kein Einladungscode übergeben.',
-        },
-        {
-          status: 400,
-        }
+        { error: 'Kein Einladungscode übergeben.' },
+        { status: 400 }
       )
     }
 
     if (!firstName || !lastName) {
       return NextResponse.json(
-        {
-          error: 'Vorname und Nachname sind erforderlich.',
-        },
-        {
-          status: 400,
-        }
+        { error: 'Vorname und Nachname sind erforderlich.' },
+        { status: 400 }
       )
     }
 
     if (!telegramUserId) {
       return NextResponse.json(
-        {
-          error: 'Telegram wurde noch nicht verbunden.',
-        },
-        {
-          status: 400,
-        }
-      )
-    }
-
-    /*
-     * Einladungscode atomar verbrauchen
-     */
-    const {
-      data: consumed,
-      error: consumeError,
-    } = await supabaseAdmin.rpc('consume_invite', {
-      p_code: inviteCode,
-    })
-
-    if (consumeError) {
-      console.error(consumeError)
-
-      return NextResponse.json(
-        {
-          error: 'Einladungscode konnte nicht geprüft werden.',
-        },
-        {
-          status: 500,
-        }
-      )
-    }
-
-    if (!consumed) {
-      return NextResponse.json(
-        {
-          error:
-            'Der Einladungscode wurde bereits verwendet oder ist ungültig.',
-        },
-        {
-          status: 400,
-        }
+        { error: 'Telegram wurde noch nicht verbunden.' },
+        { status: 400 }
       )
     }
 
     /*
      * Bewerbung speichern
+     * (Invite ist bereits reserviert → KEIN consume_invite mehr)
      */
     const { error: applicationError } = await supabaseAdmin
       .from('applications')
@@ -104,12 +58,14 @@ export async function POST(request: Request) {
       console.error(applicationError)
 
       /*
-       * Einladungscode wieder freigeben
+       * Reservierung wieder freigeben (Rollback)
        */
       await supabaseAdmin
         .from('invites')
         .update({
-          used: false,
+          reserved: false,
+          reserved_until: null,
+          reserved_at: null,
         })
         .eq('invite_code', inviteCode)
 
@@ -123,10 +79,24 @@ export async function POST(request: Request) {
       )
     }
 
+    /*
+     * Invite final als genutzt markieren
+     */
+    await supabaseAdmin
+      .from('invites')
+      .update({
+        used: true,
+        used_at: new Date().toISOString(),
+
+        reserved: false,
+        reserved_until: null,
+        reserved_at: null,
+      })
+      .eq('invite_code', inviteCode)
+
     return NextResponse.json({
       success: true,
     })
-
   } catch (error) {
     console.error(error)
 
