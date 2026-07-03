@@ -36,7 +36,7 @@ export default function TelegramPage() {
   }
 
   return (
-    <PublicLayout currentStep={2}>
+    <PublicLayout currentStep={3}>
 
       <PageHeader
         title="Telegram verbinden"

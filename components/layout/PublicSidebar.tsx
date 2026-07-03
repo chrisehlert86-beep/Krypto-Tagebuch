@@ -12,6 +12,7 @@ export default function PublicSidebar({
   const steps = [
     'Einladungscode',
     'Persönliche Daten',
+	'Telegram',
     'Disclaimer',
     'Freigabe',
   ]
