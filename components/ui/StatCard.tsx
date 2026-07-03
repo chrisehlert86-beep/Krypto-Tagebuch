@@ -1,7 +1,7 @@
 type StatCardProps = {
   title: string
   value: number
-  color?: 'blue' | 'green' | 'yellow'
+  color?: 'green' | 'blue' | 'yellow' | 'purple'
 }
 
 export default function StatCard({
@@ -13,6 +13,7 @@ export default function StatCard({
     blue: 'text-blue-700',
     green: 'text-green-700',
     yellow: 'text-yellow-600',
+	purple: 'bg-purple-100 text-purple-700',
   }
 
   return (
