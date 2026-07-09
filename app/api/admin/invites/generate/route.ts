@@ -1,6 +1,24 @@
 import { NextResponse } from 'next/server'
+
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import { generateInviteCode } from '@/lib/invite-code'
+import { requireAdmin } from '@/lib/require-admin'
+
+export async function GET() {
+  /*
+   * Admin-Berechtigung prüfen
+   */
+  const authorized = await requireAdmin()
+
+  if (!authorized) {
+    return NextResponse.json(
+      {
+        error: 'Nicht autorisiert.',
+      },
+      {
+        status: 401,
+      }
+    )
+  }
 
 export async function POST(request: Request) {
   try {

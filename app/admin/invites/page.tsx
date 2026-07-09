@@ -27,16 +27,27 @@ export default function InvitesPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        toast.error(data.error ?? 'Einladungscodes konnten nicht geladen werden.')
+        toast.error(
+          data.error ??
+            'Einladungscodes konnten nicht geladen werden.'
+        )
         return
       }
 
       setInvites(data)
+
     } catch (error) {
+
       console.error(error)
-      toast.error('Serverfehler beim Laden der Einladungscodes.')
+
+      toast.error(
+        'Serverfehler beim Laden der Einladungscodes.'
+      )
+
     } finally {
+
       setLoading(false)
+
     }
   }
 
@@ -44,43 +55,149 @@ export default function InvitesPage() {
     setGenerating(true)
 
     try {
-      const response = await fetch('/api/admin/invites/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount }),
-      })
+
+      const response = await fetch(
+        '/api/admin/invites/generate',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            amount,
+          }),
+        }
+      )
 
       const result = await response.json()
 
       if (!response.ok) {
-        toast.error(result.error ?? 'Einladungscodes konnten nicht erstellt werden.')
+        toast.error(
+          result.error ??
+            'Einladungscodes konnten nicht erstellt werden.'
+        )
         return
       }
 
-      toast.success(`${amount} Einladungscode${amount > 1 ? 's' : ''} erstellt.`)
+      toast.success(
+        `${amount} Einladungscode${amount > 1 ? 's' : ''} erstellt.`
+      )
 
       await loadInvites()
 
     } catch (error) {
+
       console.error(error)
-      toast.error('Serverfehler beim Erstellen der Einladungscodes.')
+
+      toast.error(
+        'Serverfehler beim Erstellen der Einladungscodes.'
+      )
+
     } finally {
+
       setGenerating(false)
+
+    }
+  }
+
+  async function toggle(id: string) {
+    try {
+
+      const response = await fetch(
+        '/api/admin/invites/toggle',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id,
+          }),
+        }
+      )
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        toast.error(result.error)
+        return
+      }
+
+      toast.success('Einladung aktualisiert.')
+
+      await loadInvites()
+
+    } catch (error) {
+
+      console.error(error)
+
+      toast.error('Serverfehler.')
+
+    }
+  }
+
+  async function remove(id: string) {
+
+    if (
+      !confirm(
+        'Einladungscode wirklich löschen?'
+      )
+    ) {
+      return
+    }
+
+    try {
+
+      const response = await fetch(
+        '/api/admin/invites/delete',
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id,
+          }),
+        }
+      )
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        toast.error(result.error)
+        return
+      }
+
+      toast.success(
+        'Einladung gelöscht.'
+      )
+
+      await loadInvites()
+
+    } catch (error) {
+
+      console.error(error)
+
+      toast.error('Serverfehler.')
+
     }
   }
 
   async function copy(code: string) {
     try {
+
       await navigator.clipboard.writeText(code)
 
-      toast.success('Einladungscode wurde kopiert.')
+      toast.success(
+        'Einladungscode kopiert.'
+      )
 
-    } catch (error) {
-      console.error(error)
+    } catch {
 
-      toast.error('Einladungscode konnte nicht kopiert werden.')
+      toast.error(
+        'Kopieren fehlgeschlagen.'
+      )
+
     }
   }
 
@@ -99,19 +216,31 @@ export default function InvitesPage() {
 
         <div className="mb-8 flex flex-wrap gap-3">
 
-          <Button color="blue" onClick={() => generate(1)}>
+          <Button
+            color="blue"
+            onClick={() => generate(1)}
+          >
             +1 Code
           </Button>
 
-          <Button color="blue" onClick={() => generate(5)}>
+          <Button
+            color="blue"
+            onClick={() => generate(5)}
+          >
             +5 Codes
           </Button>
 
-          <Button color="blue" onClick={() => generate(10)}>
+          <Button
+            color="blue"
+            onClick={() => generate(10)}
+          >
             +10 Codes
           </Button>
 
-          <Button color="blue" onClick={() => generate(50)}>
+          <Button
+            color="blue"
+            onClick={() => generate(50)}
+          >
             +50 Codes
           </Button>
 
@@ -119,7 +248,7 @@ export default function InvitesPage() {
 
         {loading || generating ? (
 
-          <p className="py-10 text-center text-xl font-semibold text-black">
+          <p className="py-10 text-center text-xl font-semibold">
             Einladungscodes werden geladen...
           </p>
 
@@ -133,20 +262,20 @@ export default function InvitesPage() {
 
                 <tr>
 
-                  <th className="border-b border-gray-300 px-6 py-4 text-left font-bold text-black">
+                  <th className="px-6 py-4 text-left">
                     Einladungscode
                   </th>
 
-                  <th className="border-b border-gray-300 px-6 py-4 text-left font-bold text-black">
-                    Aktiv
+                  <th className="px-6 py-4 text-left">
+                    Status
                   </th>
 
-                  <th className="border-b border-gray-300 px-6 py-4 text-left font-bold text-black">
-                    Verwendet
-                  </th>
-
-                  <th className="border-b border-gray-300 px-6 py-4 text-left font-bold text-black">
+                  <th className="px-6 py-4 text-left">
                     Erstellt
+                  </th>
+
+                  <th className="px-6 py-4 text-center">
+                    Aktionen
                   </th>
 
                 </tr>
@@ -159,24 +288,76 @@ export default function InvitesPage() {
 
                   <tr
                     key={invite.id}
-                    onClick={() => copy(invite.invite_code)}
-                    className="cursor-pointer border-b border-gray-300 transition hover:bg-blue-50"
+                    className="border-b hover:bg-blue-50"
                   >
 
-                    <td className="px-6 py-4 font-mono font-bold text-black">
+                    <td
+                      className="cursor-pointer px-6 py-4 font-mono font-bold"
+                      onClick={() =>
+                        copy(invite.invite_code)
+                      }
+                    >
                       {invite.invite_code}
                     </td>
 
-                    <td className="px-6 py-4 font-medium text-black">
-                      {invite.active ? '🟢 Ja' : '🔴 Nein'}
+                    <td className="px-6 py-4">
+
+                      {invite.used ? (
+                        <span className="font-semibold text-gray-600">
+                          🔒 Verwendet
+                        </span>
+                      ) : invite.active ? (
+                        <span className="font-semibold text-green-700">
+                          🟢 Aktiv
+                        </span>
+                      ) : (
+                        <span className="font-semibold text-red-700">
+                          ⚫ Deaktiviert
+                        </span>
+                      )}
+
                     </td>
 
-                    <td className="px-6 py-4 font-medium text-black">
-                      {invite.used ? '✅ Ja' : '❌ Nein'}
+                    <td className="px-6 py-4">
+                      {new Date(
+                        invite.created_at
+                      ).toLocaleString('de-DE')}
                     </td>
 
-                    <td className="px-6 py-4 text-black">
-                      {new Date(invite.created_at).toLocaleString('de-DE')}
+                    <td className="px-6 py-4">
+
+                      {!invite.used && (
+
+                        <div className="flex justify-center gap-2">
+
+                          <Button
+                            color={
+                              invite.active
+                                ? 'yellow'
+                                : 'green'
+                            }
+                            onClick={() =>
+                              toggle(invite.id)
+                            }
+                          >
+                            {invite.active
+                              ? 'Deaktivieren'
+                              : 'Aktivieren'}
+                          </Button>
+
+                          <Button
+                            color="red"
+                            onClick={() =>
+                              remove(invite.id)
+                            }
+                          >
+                            Löschen
+                          </Button>
+
+                        </div>
+
+                      )}
+
                     </td>
 
                   </tr>

@@ -1,6 +1,11 @@
-import { APP_NAME } from '@/constants/app'
+import {
+  APP_NAME,
+  TELEGRAM_GROUP_URL,
+} from '@/constants/app'
 
 import PublicLayout from '@/components/layout/PublicLayout'
+
+import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import PageHeader from '@/components/ui/PageHeader'
 
@@ -10,7 +15,7 @@ export default function SuccessPage() {
 
       <PageHeader
         title="Bewerbung erfolgreich eingereicht"
-        subtitle="Vielen Dank für deine Bewerbung."
+        subtitle="Der erste Schritt ist geschafft."
       />
 
       <Card>
@@ -24,24 +29,76 @@ export default function SuccessPage() {
             </h2>
 
             <p className="text-black">
-              Deine Bewerbung für <strong>{APP_NAME}</strong> wurde erfolgreich gespeichert.
+              Vielen Dank für deine Bewerbung bei <strong>{APP_NAME}</strong>.
             </p>
 
           </div>
 
           <div className="rounded-xl border border-blue-200 bg-blue-50 p-6">
 
-            <h3 className="mb-3 text-xl font-bold text-black">
-              Nächster Schritt
+            <h3 className="mb-6 text-xl font-bold text-black">
+              So geht es jetzt weiter
             </h3>
 
-            <p className="text-black">
-              ○ Freigabe durch Admin
-            </p>
+            <div className="space-y-5">
 
-            <p className="mt-4 text-gray-700">
-              Deine Bewerbung wird nun geprüft. Nach erfolgreicher
-              Freigabe erhältst du automatisch Zugriff auf die Telegram-Community.
+              <div className="flex items-center gap-3">
+                <span className="text-xl">✅</span>
+                <span className="text-black">
+                  Bewerbung eingegangen
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-xl">1️⃣</span>
+                <span className="text-black">
+                  Klicke jetzt auf <strong>„Telegram-Gruppe beitreten“</strong>
+                  und sende deine Beitrittsanfrage.
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-xl">2️⃣</span>
+                <span className="text-black">
+                  Ein Administrator prüft deine Bewerbung.
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-xl">3️⃣</span>
+                <span className="text-black">
+                  Nach der Freigabe bestätigt unser Bot deine
+                  Telegram-Anfrage automatisch.
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-xl">🎉</span>
+                <span className="text-black">
+                  Du bist sofort Mitglied der Community.
+                </span>
+              </div>
+
+            </div>
+
+            <div className="mt-10 flex justify-center">
+
+              <a
+                href={TELEGRAM_GROUP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button color="blue">
+                  Telegram-Gruppe beitreten
+                </Button>
+              </a>
+
+            </div>
+
+            <p className="mt-6 text-center text-sm text-gray-600">
+              Deine Beitrittsanfrage wird zunächst von Telegram gespeichert.
+              Nach der Freigabe durch einen Administrator,
+              wirst du automatisch in die Gruppe aufgenommen.
             </p>
 
           </div>

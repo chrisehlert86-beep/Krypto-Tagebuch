@@ -29,7 +29,8 @@ export default function ApplicationsPage() {
 
       if (!response.ok) {
         toast.error(
-          data.error ?? 'Bewerbungen konnten nicht geladen werden.'
+          data.error ??
+            'Bewerbungen konnten nicht geladen werden.'
         )
         return
       }
@@ -37,18 +38,23 @@ export default function ApplicationsPage() {
       setApplications(data)
 
     } catch (error) {
+
       console.error(error)
 
       toast.error(
         'Serverfehler beim Laden der Bewerbungen.'
       )
+
     } finally {
+
       setLoading(false)
+
     }
   }
 
   async function approveApplication(id: string) {
     try {
+
       const response = await fetch(
         '/api/admin/applications/approve',
         {
@@ -56,7 +62,9 @@ export default function ApplicationsPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ id }),
+          body: JSON.stringify({
+            id,
+          }),
         }
       )
 
@@ -70,16 +78,20 @@ export default function ApplicationsPage() {
         return
       }
 
-      toast.success('Bewerbung wurde freigegeben.')
+      toast.success(
+        'Bewerbung wurde freigegeben.'
+      )
 
       await loadApplications()
 
     } catch (error) {
+
       console.error(error)
 
       toast.error(
-        'Serverfehler beim Freigeben der Bewerbung.'
+        'Serverfehler beim Freigeben.'
       )
+
     }
   }
 
@@ -184,26 +196,48 @@ export default function ApplicationsPage() {
                     </td>
 
                     <td className="px-6 py-4 text-black">
-                      {new Date(application.created_at).toLocaleString('de-DE')}
+                      {new Date(
+                        application.created_at
+                      ).toLocaleString('de-DE')}
                     </td>
 
                     <td className="px-6 py-4 text-center">
 
-                      {application.status === 'pending' ? (
+                      {application.status === 'pending' && (
 
                         <Button
                           color="green"
                           onClick={() =>
-                            approveApplication(application.id)
+                            approveApplication(
+                              application.id
+                            )
                           }
                         >
                           Freigeben
                         </Button>
 
-                      ) : (
+                      )}
+
+                      {application.status === 'approved' && (
+
+                        <span className="font-semibold text-blue-700">
+                          Wartet auf Telegram-Beitritt
+                        </span>
+
+                      )}
+
+                      {application.status === 'active' && (
 
                         <span className="font-semibold text-green-700">
-                          Freigegeben
+                          Mitglied
+                        </span>
+
+                      )}
+
+                      {application.status === 'rejected' && (
+
+                        <span className="font-semibold text-red-700">
+                          Abgelehnt
                         </span>
 
                       )}

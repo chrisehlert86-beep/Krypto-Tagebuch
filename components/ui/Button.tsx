@@ -1,7 +1,7 @@
 type ButtonProps = {
   children: React.ReactNode
   onClick?: () => void
-  color?: 'green' | 'red' | 'blue'
+  color?: 'green' | 'red' | 'blue' | 'yellow'
   disabled?: boolean
 }
 
@@ -15,6 +15,7 @@ export default function Button({
     blue: 'bg-blue-700 hover:bg-blue-800',
     green: 'bg-green-700 hover:bg-green-800',
     red: 'bg-red-700 hover:bg-red-800',
+    yellow: 'bg-yellow-500 hover:bg-yellow-600 text-black',
   }
 
   return (
@@ -26,11 +27,10 @@ export default function Button({
         px-5
         py-2.5
         font-semibold
-        text-white
         shadow-sm
         transition
-        disabled:opacity-50
         disabled:cursor-not-allowed
+        disabled:opacity-50
         ${colors[color]}
       `}
     >

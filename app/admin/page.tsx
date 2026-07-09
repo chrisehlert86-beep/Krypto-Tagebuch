@@ -1,23 +1,30 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import PageHeader from '@/components/ui/PageHeader'
 import StatCard from '@/components/ui/StatCard'
 
 type Stats = {
   pending: number
-  approved: number
   members: number
-  invites: number
+  invites: {
+    total: number
+    available: number
+  }
 }
 
 export default function AdminDashboard() {
+  const router = useRouter()
+
   const [stats, setStats] = useState<Stats>({
     pending: 0,
-    approved: 0,
     members: 0,
-    invites: 0,
+    invites: {
+      total: 0,
+      available: 0,
+    },
   })
 
   const [loading, setLoading] = useState(true)
@@ -43,6 +50,21 @@ export default function AdminDashboard() {
     loadStats()
   }, [])
 
+  if (loading) {
+    return (
+      <>
+        <PageHeader
+          title="Dashboard"
+          subtitle="Übersicht über den aktuellen Status."
+        />
+
+        <p className="text-lg font-semibold text-black">
+          Dashboard wird geladen...
+        </p>
+      </>
+    )
+  }
+
   return (
     <>
       <PageHeader
@@ -50,37 +72,45 @@ export default function AdminDashboard() {
         subtitle="Übersicht über den aktuellen Status."
       />
 
-      {loading ? (
-        <p className="text-lg font-semibold text-black">
-          Dashboard wird geladen...
-        </p>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+
+        <div
+          onClick={() => router.push('/admin/applications')}
+          className="cursor-pointer transition duration-200 hover:scale-[1.02]"
+        >
           <StatCard
             title="Offene Bewerbungen"
             value={stats.pending}
             color="yellow"
           />
+        </div>
 
-          <StatCard
-            title="Freigegeben"
-            value={stats.approved}
-            color="green"
-          />
-
+        <div
+          onClick={() => router.push('/admin/members')}
+          className="cursor-pointer transition duration-200 hover:scale-[1.02]"
+        >
           <StatCard
             title="Mitglieder"
             value={stats.members}
-            color="blue"
+            color="green"
           />
+        </div>
 
+        <div
+          onClick={() => router.push('/admin/invites')}
+          className="cursor-pointer transition duration-200 hover:scale-[1.02]"
+        >
           <StatCard
             title="Einladungscodes"
-            value={stats.invites}
+            primaryValue={stats.invites.total}
+            secondaryValue={stats.invites.available}
+            primaryLabel="Gesamt"
+            secondaryLabel="Verfügbar"
             color="purple"
           />
         </div>
-      )}
+
+      </div>
     </>
   )
 }

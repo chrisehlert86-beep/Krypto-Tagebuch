@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
 
-export async function GET() {
+export async function DELETE(request: NextRequest) {
   /*
-   * Admin-Berechtigung prüfen
+   * Admin prüfen
    */
   const authorized = await requireAdmin()
 
@@ -19,14 +19,15 @@ export async function GET() {
       }
     )
   }
-export async function POST(request: Request) {
+
   try {
+
     const { id } = await request.json()
 
     if (!id) {
       return NextResponse.json(
         {
-          error: 'Keine Bewerbungs-ID übergeben.',
+          error: 'Keine Invite-ID übergeben.',
         },
         {
           status: 400,
@@ -35,19 +36,19 @@ export async function POST(request: Request) {
     }
 
     /*
-     * Bewerbung laden
+     * Einladung laden
      */
-    const { data: application, error: loadError } =
+    const { data: invite, error: loadError } =
       await supabaseAdmin
-        .from('applications')
-        .select('*')
+        .from('invites')
+        .select('id, used')
         .eq('id', id)
         .single()
 
-    if (loadError || !application) {
+    if (loadError || !invite) {
       return NextResponse.json(
         {
-          error: 'Bewerbung wurde nicht gefunden.',
+          error: 'Einladung nicht gefunden.',
         },
         {
           status: 404,
@@ -56,36 +57,33 @@ export async function POST(request: Request) {
     }
 
     /*
-     * Bereits freigegeben?
+     * Bereits verwendete Codes dürfen
+     * niemals gelöscht werden.
      */
-    if (
-      application.status === 'approved' ||
-      application.status === 'active'
-    ) {
-      return NextResponse.json({
-        success: true,
-      })
+    if (invite.used) {
+      return NextResponse.json(
+        {
+          error: 'Verwendete Einladung kann nicht gelöscht werden.',
+        },
+        {
+          status: 400,
+        }
+      )
     }
 
     /*
-     * Status auf approved setzen.
-     *
-     * Den Rest übernimmt später der Telegram-Bot.
+     * Einladung löschen
      */
-    const { error: updateError } =
+    const { error: deleteError } =
       await supabaseAdmin
-        .from('applications')
-        .update({
-          status: 'approved',
-        })
-        .eq('id', id)
+        .from('invites')
+        .delete()
+        .eq('id', invite.id)
 
-    if (updateError) {
-      console.error(updateError)
-
+    if (deleteError) {
       return NextResponse.json(
         {
-          error: updateError.message,
+          error: deleteError.message,
         },
         {
           status: 500,
@@ -97,9 +95,9 @@ export async function POST(request: Request) {
       success: true,
     })
 
-  } catch (error) {
+  } catch (err) {
 
-    console.error(error)
+    console.error(err)
 
     return NextResponse.json(
       {
