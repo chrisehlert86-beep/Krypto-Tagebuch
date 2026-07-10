@@ -1,8 +1,9 @@
 import { bot } from './telegram'
 import { supabase } from './supabase'
 import { log } from './logger'
+import { Context } from 'telegraf'
 
-bot.action(/^approve_login_(.+)/, async (ctx) => {
+bot.action(/^approve_login_(.+)/, async (ctx: Context & { match: RegExpExecArray }) => {
   try {
 
     const id = ctx.match[1]
@@ -18,9 +19,7 @@ bot.action(/^approve_login_(.+)/, async (ctx) => {
     if (error) {
       log(error.message)
 
-      await ctx.answerCbQuery(
-        'Freigabe fehlgeschlagen.'
-      )
+      await ctx.answerCbQuery('Freigabe fehlgeschlagen.')
 
       return
     }
@@ -38,7 +37,7 @@ bot.action(/^approve_login_(.+)/, async (ctx) => {
   }
 })
 
-bot.action(/^deny_login_(.+)/, async (ctx) => {
+bot.action(/^deny_login_(.+)/, async (ctx: Context & { match: RegExpExecArray }) => {
   try {
 
     const id = ctx.match[1]
@@ -54,9 +53,7 @@ bot.action(/^deny_login_(.+)/, async (ctx) => {
     if (error) {
       log(error.message)
 
-      await ctx.answerCbQuery(
-        'Ablehnung fehlgeschlagen.'
-      )
+      await ctx.answerCbQuery('Ablehnung fehlgeschlagen.')
 
       return
     }
