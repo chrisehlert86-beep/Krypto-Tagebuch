@@ -3,9 +3,12 @@ import { supabase } from './supabase'
 import { log } from './logger'
 
 bot.on('callback_query', async (ctx) => {
-  const data = ctx.callbackQuery.data
 
-  if (!data) return
+  if (!('data' in ctx.callbackQuery)) {
+    return
+  }
+
+  const data = ctx.callbackQuery.data
 
   /*
    * Login freigeben
@@ -23,6 +26,7 @@ bot.on('callback_query', async (ctx) => {
       .eq('id', id)
 
     if (error) {
+
       log(error.message)
 
       await ctx.answerCbQuery(

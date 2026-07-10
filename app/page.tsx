@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { APP_NAME } from '@/constants/app'
-import { supabase } from '@/lib/supabase'
 
 import PublicLayout from '@/components/layout/PublicLayout'
 import Card from '@/components/ui/Card'
@@ -29,42 +28,41 @@ export default function Home() {
     setLoading(true)
     setMessage('')
 
-    const response = await fetch('/api/invites/reserve', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    inviteCode: code,
-  }),
-})
+    try {
+      const response = await fetch('/api/invites/reserve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inviteCode: code,
+        }),
+      })
 
-const result = await response.json()
+      const result = await response.json()
 
-setLoading(false)
+      if (!response.ok) {
+        setMessage(result.error ?? 'Ungültiger Einladungscode.')
+        return
+      }
 
-if (!response.ok) {
-  setMessage(result.error)
-  return
-}
+      sessionStorage.setItem('invite_code', code)
 
-sessionStorage.setItem('invite_code', code)
+      router.push('/application')
 
-router.push('/application')
+    } catch (err) {
 
-    if (error) {
-      setMessage('Beim Prüfen des Einladungscodes ist ein Fehler aufgetreten.')
-      return
+      console.error(err)
+
+      setMessage(
+        'Beim Prüfen des Einladungscodes ist ein Fehler aufgetreten.'
+      )
+
+    } finally {
+
+      setLoading(false)
+
     }
-
-    if (!data) {
-      setMessage('Der Einladungscode ist ungültig oder wurde bereits verwendet.')
-      return
-    }
-
-    sessionStorage.setItem('invite_code', code)
-
-    router.push('/application')
   }
 
   return (
@@ -88,7 +86,9 @@ router.push('/application')
             <input
               type="text"
               value={inviteCode}
-              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              onChange={(e) =>
+                setInviteCode(e.target.value.toUpperCase())
+              }
               placeholder="XXXX-XXXX"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg text-black focus:border-blue-600 focus:outline-none"
             />

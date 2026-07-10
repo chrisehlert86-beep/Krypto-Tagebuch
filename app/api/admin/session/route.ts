@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     /*
      * Cookie setzen
      */
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
 
     cookieStore.set({
       name: 'admin-session',
