@@ -20,27 +20,43 @@ export async function GET() {
     )
   }
 
-export async function GET() {
   try {
+    /*
+     * Einladungscodes laden
+     */
     const { data, error } = await supabaseAdmin
       .from('invites')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('created_at', {
+        ascending: false,
+      })
 
     if (error) {
+      console.error(error)
+
       return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
+        {
+          error: error.message,
+        },
+        {
+          status: 500,
+        }
       )
     }
 
     return NextResponse.json(data)
+
   } catch (error) {
+
     console.error(error)
 
     return NextResponse.json(
-      { error: 'Interner Serverfehler.' },
-      { status: 500 }
+      {
+        error: 'Interner Serverfehler.',
+      },
+      {
+        status: 500,
+      }
     )
   }
 }

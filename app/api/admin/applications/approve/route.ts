@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
 
-export async function GET() {
+export async function POST(request: Request) {
   /*
    * Admin-Berechtigung prüfen
    */
@@ -19,7 +19,7 @@ export async function GET() {
       }
     )
   }
-export async function POST(request: Request) {
+
   try {
     const { id } = await request.json()
 
@@ -68,9 +68,8 @@ export async function POST(request: Request) {
     }
 
     /*
-     * Status auf approved setzen.
-     *
-     * Den Rest übernimmt später der Telegram-Bot.
+     * Bewerbung freigeben.
+     * Den Rest übernimmt der Telegram-Bot.
      */
     const { error: updateError } =
       await supabaseAdmin

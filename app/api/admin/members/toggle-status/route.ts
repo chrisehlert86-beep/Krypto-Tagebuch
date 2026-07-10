@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
 
-export async function GET() {
+export async function POST(request: Request) {
   /*
    * Admin-Berechtigung prüfen
    */
@@ -20,7 +20,6 @@ export async function GET() {
     )
   }
 
-export async function POST(request: Request) {
   try {
     const { id } = await request.json()
 
@@ -35,11 +34,15 @@ export async function POST(request: Request) {
       )
     }
 
-    const { data: member, error: loadError } = await supabaseAdmin
-      .from('members')
-      .select('status')
-      .eq('id', id)
-      .single()
+    /*
+     * Aktuellen Status laden
+     */
+    const { data: member, error: loadError } =
+      await supabaseAdmin
+        .from('members')
+        .select('status')
+        .eq('id', id)
+        .single()
 
     if (loadError || !member) {
       return NextResponse.json(
@@ -52,24 +55,28 @@ export async function POST(request: Request) {
       )
     }
 
+    /*
+     * Status umschalten
+     */
     const newStatus =
       member.status === 'active'
         ? 'inactive'
         : 'active'
 
-    const { error } = await supabaseAdmin
-      .from('members')
-      .update({
-        status: newStatus,
-      })
-      .eq('id', id)
+    const { error: updateError } =
+      await supabaseAdmin
+        .from('members')
+        .update({
+          status: newStatus,
+        })
+        .eq('id', id)
 
-    if (error) {
-      console.error(error)
+    if (updateError) {
+      console.error(updateError)
 
       return NextResponse.json(
         {
-          error: error.message,
+          error: updateError.message,
         },
         {
           status: 500,
@@ -79,8 +86,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
+      status: newStatus,
     })
+
   } catch (error) {
+
     console.error(error)
 
     return NextResponse.json(

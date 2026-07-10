@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
+import { generateInviteCode } from '@/lib/generate-invite-code'
 
-export async function GET() {
+export async function POST(request: Request) {
   /*
    * Admin-Berechtigung prüfen
    */
@@ -20,7 +21,6 @@ export async function GET() {
     )
   }
 
-export async function POST(request: Request) {
   try {
     const { amount } = await request.json()
 
@@ -28,8 +28,12 @@ export async function POST(request: Request) {
 
     if (![1, 5, 10, 50].includes(count)) {
       return NextResponse.json(
-        { error: 'Ungültige Anzahl.' },
-        { status: 400 }
+        {
+          error: 'Ungültige Anzahl.',
+        },
+        {
+          status: 400,
+        }
       )
     }
 
@@ -38,7 +42,9 @@ export async function POST(request: Request) {
     while (invites.length < count) {
       const code = generateInviteCode()
 
-      // Prüfen, ob Code bereits existiert
+      /*
+       * Existiert der Code bereits?
+       */
       const { data } = await supabaseAdmin
         .from('invites')
         .select('id')
@@ -56,14 +62,21 @@ export async function POST(request: Request) {
       })
     }
 
+    /*
+     * Codes speichern
+     */
     const { error } = await supabaseAdmin
       .from('invites')
       .insert(invites)
 
     if (error) {
       return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
+        {
+          error: error.message,
+        },
+        {
+          status: 500,
+        }
       )
     }
 
@@ -73,11 +86,16 @@ export async function POST(request: Request) {
     })
 
   } catch (error) {
+
     console.error(error)
 
     return NextResponse.json(
-      { error: 'Interner Serverfehler.' },
-      { status: 500 }
+      {
+        error: 'Interner Serverfehler.',
+      },
+      {
+        status: 500,
+      }
     )
   }
 }

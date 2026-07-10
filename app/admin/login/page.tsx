@@ -167,7 +167,7 @@ export default function AdminLoginPage() {
 
       <div className="flex min-h-screen items-center justify-center bg-slate-100">
 
-        <div className="w-full max-w-md rounded-xl bg-white p-10 shadow-lg">
+        <div className="w-full max-w-md rounded-xl bg-white p-10 text-black">
 
           <div className="space-y-6 text-center">
 
@@ -179,7 +179,7 @@ export default function AdminLoginPage() {
               Anmeldung bestätigen
             </h2>
 
-            <p className="text-gray-600">
+            <p className="py-10 text-center text-lg text-black">
               Bitte bestätige die Anmeldung
               über Telegram.
             </p>

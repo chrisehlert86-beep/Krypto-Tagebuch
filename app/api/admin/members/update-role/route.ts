@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
 
-export async function GET() {
+export async function POST(request: Request) {
   /*
    * Admin-Berechtigung prüfen
    */
@@ -20,7 +20,6 @@ export async function GET() {
     )
   }
 
-export async function POST(request: Request) {
   try {
     const { id, role } = await request.json()
 
@@ -35,6 +34,9 @@ export async function POST(request: Request) {
       )
     }
 
+    /*
+     * Zulässige Rollen prüfen
+     */
     if (!['member', 'admin'].includes(role)) {
       return NextResponse.json(
         {
@@ -46,6 +48,9 @@ export async function POST(request: Request) {
       )
     }
 
+    /*
+     * Rolle aktualisieren
+     */
     const { error } = await supabaseAdmin
       .from('members')
       .update({
@@ -68,8 +73,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
+      role,
     })
+
   } catch (error) {
+
     console.error(error)
 
     return NextResponse.json(

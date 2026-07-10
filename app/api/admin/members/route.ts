@@ -20,8 +20,10 @@ export async function GET() {
     )
   }
 
-export async function GET() {
   try {
+    /*
+     * Mitglieder laden
+     */
     const { data, error } = await supabaseAdmin
       .from('members')
       .select('*')
@@ -45,6 +47,7 @@ export async function GET() {
     return NextResponse.json(data)
 
   } catch (error) {
+
     console.error(error)
 
     return NextResponse.json(
