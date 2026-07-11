@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     const invites = []
 
     while (invites.length < count) {
-      const code = generateInviteCode()
+      const code = InviteCode()
 
       /*
        * Existiert der Code bereits?
