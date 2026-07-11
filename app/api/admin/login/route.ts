@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyPassword } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import { sendAdminLogin } from '@/lib/send-admin-login'
+
 
 export async function POST(request: NextRequest) {
   try {
