@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
-import { InviteCode } from '@/lib/invite-code'
+import { generateInviteCode } from '@/lib/invite-code'
 
 export async function POST(request: Request) {
   /*
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     const invites = []
 
     while (invites.length < count) {
-      const code = InviteCode()
+      const code = generateInviteCode()
 
       /*
        * Existiert der Code bereits?
