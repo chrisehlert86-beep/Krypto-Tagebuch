@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
-import { generateInviteCode } from '@/lib/generate-invite-code'
+
 
 export async function POST(request: Request) {
   /*
