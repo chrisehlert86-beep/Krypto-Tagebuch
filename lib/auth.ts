@@ -6,10 +6,14 @@ const secret = new TextEncoder().encode(
 )
 
 export async function verifyPassword(password: string) {
-  return bcrypt.compare(
+  const result = await bcrypt.compare(
     password,
     process.env.ADMIN_PASSWORD_HASH!
   )
+
+  console.log('bcrypt.compare =', result)
+
+  return result
 }
 
 export async function createSession() {

@@ -24,32 +24,35 @@ export async function POST(request: NextRequest) {
     /*
      * Benutzername prüfen
      */
-    if (username !== process.env.ADMIN_USERNAME) {
-      return NextResponse.json(
-        {
-          error: 'Ungültige Anmeldedaten.',
-        },
-        {
-          status: 401,
-        }
-      )
-    }
+    console.log('-----------------------------')
+console.log('Eingegebener Benutzer:', username)
+console.log('ENV Benutzer:', process.env.ADMIN_USERNAME)
 
-    /*
-     * Passwort prüfen
-     */
-    const valid = await verifyPassword(password)
+const valid = await verifyPassword(password)
 
-    if (!valid) {
-      return NextResponse.json(
-        {
-          error: 'Ungültige Anmeldedaten.',
-        },
-        {
-          status: 401,
-        }
-      )
+console.log('Passwort gültig:', valid)
+
+if (username !== process.env.ADMIN_USERNAME) {
+  return NextResponse.json(
+    {
+      error: 'Ungültige Anmeldedaten.',
+    },
+    {
+      status: 401,
     }
+  )
+}
+
+if (!valid) {
+  return NextResponse.json(
+    {
+      error: 'Ungültige Anmeldedaten.',
+    },
+    {
+      status: 401,
+    }
+  )
+}
 
     /*
      * Clientinformationen ermitteln
