@@ -65,15 +65,16 @@ export default function AdminLoginPage() {
   }
 
   useEffect(() => {
-
     if (!waiting || !loginRequestId) {
       return
     }
 
-    const interval = setInterval(async () => {
+    let cancelled = false
+    let timeout: ReturnType<typeof setTimeout> | undefined
+    const controller = new AbortController()
 
+    async function pollLoginState() {
       try {
-
         const response = await fetch(
           '/api/admin/login-state',
           {
@@ -84,44 +85,38 @@ export default function AdminLoginPage() {
             body: JSON.stringify({
               loginRequestId,
             }),
+            signal: controller.signal,
           }
         )
 
         const result = await response.json()
 
+        if (!response.ok) {
+          throw new Error(result.error ?? 'Login-Status konnte nicht geprüft werden.')
+        }
+
         if (result.expired) {
-
-          clearInterval(interval)
-
           setWaiting(false)
-
           setError(
             'Die Anmeldung ist abgelaufen.'
           )
-
           return
-
         }
 
         if (result.rejected) {
-
-          clearInterval(interval)
-
           setWaiting(false)
-
           setError(
             'Die Anmeldung wurde abgelehnt.'
           )
-
           return
-
         }
 
         if (!result.approved) {
+          if (!cancelled) {
+            timeout = setTimeout(pollLoginState, 2000)
+          }
           return
         }
-
-        clearInterval(interval)
 
         const session = await fetch(
           '/api/admin/session',
@@ -133,32 +128,38 @@ export default function AdminLoginPage() {
             body: JSON.stringify({
               loginRequestId,
             }),
+            signal: controller.signal,
           }
         )
 
         if (!session.ok) {
-
+          const sessionResult = await session.json().catch(() => null)
           setWaiting(false)
-
           setError(
-            'Session konnte nicht erstellt werden.'
+            sessionResult?.error ?? 'Session konnte nicht erstellt werden.'
           )
-
           return
-
         }
 
         router.replace('/admin')
-
       } catch (err) {
-
-        console.error(err)
-
+        if (!cancelled) {
+          console.error(err)
+          setWaiting(false)
+          setError(
+            err instanceof Error ? err.message : 'Serverfehler.'
+          )
+        }
       }
+    }
 
-    }, 2000)
+    timeout = setTimeout(pollLoginState, 2000)
 
-    return () => clearInterval(interval)
+    return () => {
+      cancelled = true
+      controller.abort()
+      if (timeout) clearTimeout(timeout)
+    }
 
   }, [waiting, loginRequestId, router])
 
