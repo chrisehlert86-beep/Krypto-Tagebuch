@@ -52,4 +52,7 @@ test('manipulierte und abgelaufene Telegram-Daten werden abgelehnt', () => {
   const unsigned = { id: 123, auth_date: Math.floor(now / 1000) - 301 }
   assert.equal(isValidTelegramAuth({ ...unsigned, hash: signTelegram(unsigned, token) }, token, now), false)
   assert.equal(isValidTelegramAuth({ id: 123, auth_date: Math.floor(now / 1000), hash: '00' }, token, now), false)
+
+  const invalidId = { id: '1 OR 1=1', auth_date: Math.floor(now / 1000) }
+  assert.equal(isValidTelegramAuth({ ...invalidId, hash: signTelegram(invalidId, token) }, token, now), false)
 })

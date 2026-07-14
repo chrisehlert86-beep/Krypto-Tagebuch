@@ -10,6 +10,7 @@ export type TelegramAuth = {
 
 export function isValidTelegramAuth(user: TelegramAuth, botToken: string, now = Date.now()) {
   if (!user.hash || !user.id || !user.auth_date) return false
+  if (!/^[1-9][0-9]{0,18}$/.test(String(user.id))) return false
   const age = Math.floor(now / 1000) - user.auth_date
   if (age < 0 || age > 5 * 60) return false
 
