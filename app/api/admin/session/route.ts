@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-import { createSession, verifyFlowToken } from '@/lib/auth'
+import { createSessionIdentity, createSessionToken, verifyFlowToken } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { writeAdminAudit } from '@/lib/admin-audit'
 import { consumeRateLimit, rateLimitResponse } from '@/lib/request-security'
@@ -37,17 +37,12 @@ export async function POST(request: Request) {
     /*
      * Login-Anfrage laden
      */
-    const now = new Date().toISOString()
-    const { data, error } = await supabaseAdmin
-      .from('admin_login_requests')
-      .delete()
-      .eq('id', loginRequestId)
-      .eq('approved', true)
-      .eq('rejected', false)
-      .not('approved_at', 'is', null)
-      .gt('expires_at', now)
-      .select('id')
-      .maybeSingle()
+    const { sessionId, expiresAt } = createSessionIdentity()
+    const { data, error } = await supabaseAdmin.rpc('consume_admin_login', {
+      p_login_request_id: loginRequestId,
+      p_session_id: sessionId,
+      p_session_expires_at: expiresAt.toISOString(),
+    })
 
     if (error || !data) {
       return NextResponse.json(
@@ -63,7 +58,7 @@ export async function POST(request: Request) {
     /*
      * Session erzeugen
      */
-    const { token, sessionId } = await createSession()
+    const token = await createSessionToken(sessionId)
 
     /*
      * Cookie setzen

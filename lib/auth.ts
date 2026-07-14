@@ -25,21 +25,7 @@ export async function verifyPassword(password: string) {
   return result
 }
 
-export async function createSession() {
-  const sessionId = randomUUID()
-  const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000)
-
-  await supabaseAdmin
-    .from('admin_sessions')
-    .delete()
-    .lt('expires_at', new Date().toISOString())
-
-  const { error } = await supabaseAdmin.from('admin_sessions').insert({
-    id: sessionId,
-    expires_at: expiresAt.toISOString(),
-  })
-  if (error) throw error
-
+export async function createSessionToken(sessionId: string) {
   const token = await new SignJWT({
     admin: true,
     sid: sessionId,
@@ -50,7 +36,14 @@ export async function createSession() {
     .setExpirationTime('12h')
     .sign(getSecret())
 
-  return { token, sessionId }
+  return token
+}
+
+export function createSessionIdentity() {
+  return {
+    sessionId: randomUUID(),
+    expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
+  }
 }
 
 export async function verifySession(token: string) {

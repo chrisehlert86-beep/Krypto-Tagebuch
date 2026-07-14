@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase-admin'
-import { verifyFlowToken } from '@/lib/auth'
-import { createFlowToken } from '@/lib/auth'
+
 import { DISCLAIMER_VERSION } from '@/constants/app'
+import { createFlowToken, verifyFlowToken } from '@/lib/auth'
 import { consumeRateLimit, rateLimitResponse } from '@/lib/request-security'
+import { acceptedAllDisclaimers, isValidInviteCode, isValidName } from '@/lib/onboarding-validation'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,41 +21,16 @@ export async function POST(request: NextRequest) {
       return rateLimitResponse()
     }
 
-    if (typeof inviteCode !== 'string' || !/^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(inviteCode)) {
-      return NextResponse.json(
-        { error: 'Kein Einladungscode übergeben.' },
-        { status: 400 }
-      )
+    if (!isValidInviteCode(inviteCode)) {
+      return NextResponse.json({ error: 'Kein Einladungscode übergeben.' }, { status: 400 })
     }
-
     if (
-      typeof firstName !== 'string' ||
-      typeof lastName !== 'string' ||
-      !firstName.trim() ||
-      !lastName.trim()
+      !isValidName(firstName) || !isValidName(lastName)
     ) {
-      return NextResponse.json(
-        { error: 'Vorname und Nachname sind erforderlich.' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Ungültige persönliche Angaben.' }, { status: 400 })
     }
-
-    if (firstName.trim().length > 100 || lastName.trim().length > 100) {
-      return NextResponse.json(
-        { error: 'Ungültige persönliche Angaben.' },
-        { status: 400 }
-      )
-    }
-
-    if (
-      disclaimerRead !== true ||
-      risksUnderstood !== true ||
-      noAdviceAcknowledged !== true
-    ) {
-      return NextResponse.json(
-        { error: 'Alle Hinweise müssen bestätigt werden.' },
-        { status: 400 },
-      )
+    if (!acceptedAllDisclaimers([disclaimerRead, risksUnderstood, noAdviceAcknowledged])) {
+      return NextResponse.json({ error: 'Alle Hinweise müssen bestätigt werden.' }, { status: 400 })
     }
 
     const inviteToken = request.cookies.get('invite-reservation')?.value
@@ -66,81 +42,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Die Anmeldung ist abgelaufen oder ungültig.' }, { status: 401 })
     }
 
-    const now = new Date().toISOString()
-    const { data: claimedInvite, error: claimError } = await supabaseAdmin
-      .from('invites')
-      .update({ used: true, used_at: now, reserved: false, reserved_until: null, reserved_at: null })
-      .eq('invite_code', inviteCode)
-      .eq('active', true)
-      .eq('used', false)
-      .eq('reserved', true)
-      .gt('reserved_until', now)
-      .select('id')
-      .maybeSingle()
+    const { data: applicationId, error } = await supabaseAdmin.rpc('submit_application', {
+      p_invite_code: inviteCode,
+      p_first_name: firstName,
+      p_last_name: lastName,
+      p_telegram_user_id: telegram.telegramUserId,
+      p_telegram_username: typeof telegram.telegramUsername === 'string'
+        ? telegram.telegramUsername
+        : '',
+      p_disclaimer_version: DISCLAIMER_VERSION,
+    })
 
-    if (claimError || !claimedInvite) {
-      return NextResponse.json({ error: 'Die Einladung ist nicht mehr verfügbar.' }, { status: 409 })
-    }
-
-    /*
-     * Bewerbung speichern
-     * (Invite ist bereits reserviert → KEIN consume_invite mehr)
-     */
-    const { data: application, error: applicationError } = await supabaseAdmin
-      .from('applications')
-      .insert({
-        invite_code: inviteCode,
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
-
-        telegram_user_id: telegram.telegramUserId,
-        telegram_username: typeof telegram.telegramUsername === 'string' ? telegram.telegramUsername : null,
-        telegram_verified: true,
-
-        disclaimer_accepted: true,
-        disclaimer_read: true,
-        risks_understood: true,
-        no_advice_acknowledged: true,
-        disclaimer_version: DISCLAIMER_VERSION,
-        disclaimer_accepted_at: now,
-
-        status: 'pending',
-      })
-      .select('id')
-      .single()
-
-    if (applicationError) {
-      console.error(applicationError)
-
-      /*
-       * Reservierung wieder freigeben (Rollback)
-       */
-      await supabaseAdmin
-        .from('invites')
-        .update({
-          used: false,
-          used_at: null,
-        })
-        .eq('invite_code', inviteCode)
-
+    if (error || typeof applicationId !== 'string') {
+      console.error(error)
+      const unavailable = error?.message.includes('invite_unavailable') ?? false
       return NextResponse.json(
-        {
-          error: 'Die Bewerbung konnte nicht gespeichert werden.',
-        },
-        {
-          status: 500,
-        }
+        { error: unavailable ? 'Die Einladung ist nicht mehr verfügbar.' : 'Die Bewerbung konnte nicht gespeichert werden.' },
+        { status: unavailable ? 409 : 500 },
       )
     }
 
-    const response = NextResponse.json({
-      success: true,
-    })
+    const response = NextResponse.json({ success: true })
     response.cookies.delete('invite-reservation')
     response.cookies.delete('telegram-auth')
     response.cookies.set('application-status', await createFlowToken({
       kind: 'application',
-      applicationId: application.id,
+      applicationId,
     }, '30d'), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -151,14 +78,6 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error(error)
-
-    return NextResponse.json(
-      {
-        error: 'Interner Serverfehler.',
-      },
-      {
-        status: 500,
-      }
-    )
+    return NextResponse.json({ error: 'Interner Serverfehler.' }, { status: 500 })
   }
 }

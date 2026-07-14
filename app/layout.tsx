@@ -1,12 +1,7 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
 import { Toaster } from 'sonner'
 
 import './globals.css'
-
-const geist = Geist({
-  subsets: ['latin'],
-})
 
 export const metadata: Metadata = {
   title: 'Krypto-Tagebuch',
@@ -19,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="de" className={geist.className}>
+    <html lang="de">
       <body className="min-h-screen bg-gray-100">
 
         {children}
