@@ -1,3 +1,5 @@
+import LogoutButton from './LogoutButton'
+
 export default function AdminHeader() {
 
   const today = new Date().toLocaleDateString('de-DE', {
@@ -22,9 +24,7 @@ export default function AdminHeader() {
 
       </div>
 
-      <button className="rounded-lg bg-red-700 px-5 py-2 font-semibold text-white hover:bg-red-800">
-        Abmelden
-      </button>
+      <LogoutButton />
 
     </header>
   )
