@@ -26,7 +26,7 @@ export async function GET() {
      */
     const { data, error } = await supabaseAdmin
       .from('invites')
-      .select('*')
+      .select('id,invite_code,active,used,created_at')
       .order('created_at', {
         ascending: false,
       })
@@ -36,7 +36,7 @@ export async function GET() {
 
       return NextResponse.json(
         {
-          error: error.message,
+          error: 'Einladungscodes konnten nicht geladen werden.',
         },
         {
           status: 500,

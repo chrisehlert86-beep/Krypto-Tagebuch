@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
+import { writeAdminAudit } from '@/lib/admin-audit'
 
 export async function POST(request: Request) {
   /*
@@ -51,25 +52,33 @@ export async function POST(request: Request) {
     /*
      * Rolle aktualisieren
      */
-    const { error } = await supabaseAdmin
+    const { data: updated, error } = await supabaseAdmin
       .from('members')
       .update({
         role,
       })
       .eq('id', id)
+      .select('id')
+      .maybeSingle()
 
     if (error) {
       console.error(error)
 
       return NextResponse.json(
         {
-          error: error.message,
+          error: 'Rolle konnte nicht geändert werden.',
         },
         {
           status: 500,
         }
       )
     }
+
+    if (!updated) {
+      return NextResponse.json({ error: 'Mitglied wurde nicht gefunden.' }, { status: 404 })
+    }
+
+    await writeAdminAudit('member.role_update', 'member', id, { role })
 
     return NextResponse.json({
       success: true,

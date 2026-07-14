@@ -1,12 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { verifyFlowToken } from '@/lib/auth'
+import { consumeRateLimit, rateLimitResponse } from '@/lib/request-security'
 
 export async function POST(request: NextRequest) {
   try {
     const { loginRequestId } = await request.json()
 
-    if (!loginRequestId) {
+    if (!(await consumeRateLimit(request, 'admin-login-state', 60, 5 * 60))) {
+      return rateLimitResponse()
+    }
+
+    const flowToken = request.cookies.get('admin-login-flow')?.value
+    const flow = flowToken ? await verifyFlowToken(flowToken, 'adminLogin') : null
+
+    if (
+      typeof loginRequestId !== 'string' ||
+      typeof flow?.loginRequestId !== 'string' ||
+      flow.loginRequestId !== loginRequestId
+    ) {
       return NextResponse.json(
         {
           error: 'Login-Request-ID fehlt.',
@@ -19,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await supabaseAdmin
       .from('admin_login_requests')
-      .select('*')
+      .select('approved,rejected,expires_at')
       .eq('id', loginRequestId)
       .single()
 

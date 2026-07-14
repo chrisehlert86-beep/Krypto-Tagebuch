@@ -26,7 +26,7 @@ export async function GET() {
      */
     const { data, error } = await supabaseAdmin
       .from('members')
-      .select('*')
+      .select('id,first_name,last_name,invite_code,role,status,created_at,telegram_sync_status,telegram_sync_error,telegram_synced_at')
       .order('created_at', {
         ascending: false,
       })
@@ -36,7 +36,7 @@ export async function GET() {
 
       return NextResponse.json(
         {
-          error: error.message,
+          error: 'Mitglieder konnten nicht geladen werden.',
         },
         {
           status: 500,

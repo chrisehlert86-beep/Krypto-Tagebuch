@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { requireAdmin } from '@/lib/require-admin'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { writeAdminAudit } from '@/lib/admin-audit'
 
 export async function DELETE(request: Request) {
   if (!(await requireAdmin())) {
@@ -34,6 +35,8 @@ export async function DELETE(request: Request) {
         { status: 409 },
       )
     }
+
+    await writeAdminAudit('application.delete', 'application', id)
 
     return NextResponse.json({ success: true })
   } catch (error) {

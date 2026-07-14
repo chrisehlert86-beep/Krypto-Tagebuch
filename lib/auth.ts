@@ -1,7 +1,10 @@
 import 'server-only'
 
 import bcrypt from 'bcryptjs'
+import { randomUUID } from 'node:crypto'
 import { SignJWT, jwtVerify } from 'jose'
+
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 function getSecret() {
   const value = process.env.ADMIN_SESSION_SECRET
@@ -23,14 +26,31 @@ export async function verifyPassword(password: string) {
 }
 
 export async function createSession() {
-  return await new SignJWT({
+  const sessionId = randomUUID()
+  const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000)
+
+  await supabaseAdmin
+    .from('admin_sessions')
+    .delete()
+    .lt('expires_at', new Date().toISOString())
+
+  const { error } = await supabaseAdmin.from('admin_sessions').insert({
+    id: sessionId,
+    expires_at: expiresAt.toISOString(),
+  })
+  if (error) throw error
+
+  const token = await new SignJWT({
     admin: true,
+    sid: sessionId,
   })
     .setProtectedHeader({
       alg: 'HS256',
     })
     .setExpirationTime('12h')
     .sign(getSecret())
+
+  return { token, sessionId }
 }
 
 export async function verifySession(token: string) {
@@ -38,12 +58,36 @@ export async function verifySession(token: string) {
     const { payload } =
       await jwtVerify(token, getSecret())
 
-    return payload.admin === true
+    if (payload.admin !== true || typeof payload.sid !== 'string') return false
+
+    const { data, error } = await supabaseAdmin
+      .from('admin_sessions')
+      .select('id')
+      .eq('id', payload.sid)
+      .is('revoked_at', null)
+      .gt('expires_at', new Date().toISOString())
+      .maybeSingle()
+
+    return !error && Boolean(data)
 
   } catch {
 
     return false
 
+  }
+}
+
+export async function revokeSession(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, getSecret())
+    if (typeof payload.sid !== 'string') return
+
+    await supabaseAdmin
+      .from('admin_sessions')
+      .update({ revoked_at: new Date().toISOString() })
+      .eq('id', payload.sid)
+  } catch {
+    // Ein ungültiges Cookie wird unabhängig davon im Browser gelöscht.
   }
 }
 
@@ -57,6 +101,9 @@ type FlowToken = {
 } | {
   kind: 'application'
   applicationId: string
+} | {
+  kind: 'adminLogin'
+  loginRequestId: string
 }
 
 export async function createFlowToken(payload: FlowToken, expiresIn: string) {

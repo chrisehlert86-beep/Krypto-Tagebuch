@@ -74,6 +74,17 @@ export async function GET() {
 
     ])
 
+    const queryError = [members, pendingApplications, totalInvites, availableInvites]
+      .find((result) => result.error)?.error
+
+    if (queryError) {
+      console.error(queryError)
+      return NextResponse.json(
+        { error: 'Statistiken konnten nicht geladen werden.' },
+        { status: 500 },
+      )
+    }
+
     return NextResponse.json({
       pending: pendingApplications.count ?? 0,
 

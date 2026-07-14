@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
+import { writeAdminAudit } from '@/lib/admin-audit'
 
 export async function POST(request: Request) {
   /*
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
     const { data: application, error: loadError } =
       await supabaseAdmin
         .from('applications')
-        .select('*')
+        .select('id,status')
         .eq('id', id)
         .single()
 
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
      * Bewerbung freigeben.
      * Den Rest übernimmt der Telegram-Bot.
      */
-    const { error: updateError } =
+    const { data: updated, error: updateError } =
       await supabaseAdmin
         .from('applications')
         .update({
@@ -81,6 +82,8 @@ export async function POST(request: Request) {
         })
         .eq('id', id)
         .eq('status', 'pending')
+        .select('id')
+        .maybeSingle()
 
     if (updateError) {
       console.error(updateError)
@@ -94,6 +97,15 @@ export async function POST(request: Request) {
         }
       )
     }
+
+    if (!updated) {
+      return NextResponse.json(
+        { error: 'Die Bewerbung wurde zwischenzeitlich geändert.' },
+        { status: 409 },
+      )
+    }
+
+    await writeAdminAudit('application.approve', 'application', id)
 
     return NextResponse.json({
       success: true,
