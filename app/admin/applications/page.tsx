@@ -95,6 +95,54 @@ export default function ApplicationsPage() {
     }
   }
 
+  async function rejectApplication(id: string) {
+    if (!confirm('Bewerbung wirklich ablehnen?')) return
+
+    try {
+      const response = await fetch('/api/admin/applications/reject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      const result = await response.json()
+
+      if (!response.ok) {
+        toast.error(result.error ?? 'Bewerbung konnte nicht abgelehnt werden.')
+        return
+      }
+
+      toast.success('Bewerbung wurde abgelehnt.')
+      await loadApplications()
+    } catch (error) {
+      console.error(error)
+      toast.error('Serverfehler beim Ablehnen.')
+    }
+  }
+
+  async function deleteApplication(id: string) {
+    if (!confirm('Bewerbung wirklich endgültig löschen?')) return
+
+    try {
+      const response = await fetch('/api/admin/applications/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      const result = await response.json()
+
+      if (!response.ok) {
+        toast.error(result.error ?? 'Bewerbung konnte nicht gelöscht werden.')
+        return
+      }
+
+      toast.success('Bewerbung wurde gelöscht.')
+      await loadApplications()
+    } catch (error) {
+      console.error(error)
+      toast.error('Serverfehler beim Löschen.')
+    }
+  }
+
   useEffect(() => {
     const timeout = window.setTimeout(() => void loadApplications(), 0)
     return () => window.clearTimeout(timeout)
@@ -205,18 +253,26 @@ export default function ApplicationsPage() {
                     <td className="px-6 py-4 text-center">
 
                       {application.status === 'pending' && (
-
-                        <Button
-                          color="green"
-                          onClick={() =>
-                            approveApplication(
-                              application.id
-                            )
-                          }
-                        >
-                          Freigeben
-                        </Button>
-
+                        <div className="flex flex-wrap justify-center gap-2">
+                          <Button
+                            color="green"
+                            onClick={() => approveApplication(application.id)}
+                          >
+                            Freigeben
+                          </Button>
+                          <Button
+                            color="yellow"
+                            onClick={() => rejectApplication(application.id)}
+                          >
+                            Ablehnen
+                          </Button>
+                          <Button
+                            color="red"
+                            onClick={() => deleteApplication(application.id)}
+                          >
+                            Löschen
+                          </Button>
+                        </div>
                       )}
 
                       {application.status === 'approved' && (
@@ -236,11 +292,17 @@ export default function ApplicationsPage() {
                       )}
 
                       {application.status === 'rejected' && (
-
-                        <span className="font-semibold text-red-700">
-                          Abgelehnt
-                        </span>
-
+                        <div className="flex flex-wrap items-center justify-center gap-3">
+                          <span className="font-semibold text-red-700">
+                            Abgelehnt
+                          </span>
+                          <Button
+                            color="red"
+                            onClick={() => deleteApplication(application.id)}
+                          >
+                            Löschen
+                          </Button>
+                        </div>
                       )}
 
                     </td>

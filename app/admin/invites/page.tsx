@@ -249,7 +249,7 @@ export default function InvitesPage() {
 
         {loading || generating ? (
 
-          <p className="py-10 text-center text-xl font-semibold">
+          <p className="py-10 text-center text-xl font-semibold text-black">
             Einladungscodes werden geladen...
           </p>
 
@@ -257,7 +257,7 @@ export default function InvitesPage() {
 
           <div className="overflow-x-auto">
 
-            <table className="min-w-full border border-gray-300">
+            <table className="min-w-full border border-gray-300 text-black">
 
               <thead className="bg-gray-200">
 
