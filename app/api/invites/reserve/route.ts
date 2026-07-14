@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { createFlowToken } from '@/lib/auth'
 
 export async function POST(request: Request) {
   try {
@@ -46,9 +47,22 @@ export async function POST(request: Request) {
       )
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
     })
+
+    response.cookies.set('invite-reservation', await createFlowToken({
+      kind: 'invite',
+      inviteCode,
+    }, '15m'), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 15 * 60,
+    })
+
+    return response
 
   } catch (error) {
 

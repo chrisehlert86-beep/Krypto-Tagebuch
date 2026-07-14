@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyPassword } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase-admin'
-
-
 export async function POST(request: NextRequest) {
   try {
     const { username, password } = await request.json()
@@ -24,35 +22,15 @@ export async function POST(request: NextRequest) {
     /*
      * Benutzername prüfen
      */
-    console.log('-----------------------------')
-console.log('Eingegebener Benutzer:', username)
-console.log('ENV Benutzer:', process.env.ADMIN_USERNAME)
+    const validPassword = await verifyPassword(password)
+    const validUsername = username === process.env.ADMIN_USERNAME
 
-const valid = await verifyPassword(password)
-
-console.log('Passwort gültig:', valid)
-
-if (username !== process.env.ADMIN_USERNAME) {
-  return NextResponse.json(
-    {
-      error: 'Ungültige Anmeldedaten.',
-    },
-    {
-      status: 401,
+    if (!validUsername || !validPassword) {
+      return NextResponse.json(
+        { error: 'Ungültige Anmeldedaten.' },
+        { status: 401 }
+      )
     }
-  )
-}
-
-if (!valid) {
-  return NextResponse.json(
-    {
-      error: 'Ungültige Anmeldedaten.',
-    },
-    {
-      status: 401,
-    }
-  )
-}
 
     /*
      * Clientinformationen ermitteln

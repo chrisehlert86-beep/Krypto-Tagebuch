@@ -1,14 +1,13 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { verifyFlowToken } from '@/lib/auth'
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const {
       inviteCode,
       firstName,
       lastName,
-      telegramUserId,
-      telegramUsername,
       disclaimerVersion,
     } = await request.json()
 
@@ -26,11 +25,37 @@ export async function POST(request: Request) {
       )
     }
 
-    if (!telegramUserId) {
+    if (typeof firstName !== 'string' || typeof lastName !== 'string' ||
+        firstName.trim().length > 100 || lastName.trim().length > 100) {
       return NextResponse.json(
-        { error: 'Telegram wurde noch nicht verbunden.' },
+        { error: 'Ungültige persönliche Angaben.' },
         { status: 400 }
       )
+    }
+
+    const inviteToken = request.cookies.get('invite-reservation')?.value
+    const telegramToken = request.cookies.get('telegram-auth')?.value
+    const invite = inviteToken ? await verifyFlowToken(inviteToken, 'invite') : null
+    const telegram = telegramToken ? await verifyFlowToken(telegramToken, 'telegram') : null
+
+    if (invite?.inviteCode !== inviteCode || typeof telegram?.telegramUserId !== 'string') {
+      return NextResponse.json({ error: 'Die Anmeldung ist abgelaufen oder ungültig.' }, { status: 401 })
+    }
+
+    const now = new Date().toISOString()
+    const { data: claimedInvite, error: claimError } = await supabaseAdmin
+      .from('invites')
+      .update({ used: true, used_at: now, reserved: false, reserved_until: null, reserved_at: null })
+      .eq('invite_code', inviteCode)
+      .eq('active', true)
+      .eq('used', false)
+      .eq('reserved', true)
+      .gt('reserved_until', now)
+      .select('id')
+      .maybeSingle()
+
+    if (claimError || !claimedInvite) {
+      return NextResponse.json({ error: 'Die Einladung ist nicht mehr verfügbar.' }, { status: 409 })
     }
 
     /*
@@ -44,8 +69,8 @@ export async function POST(request: Request) {
         first_name: firstName.trim(),
         last_name: lastName.trim(),
 
-        telegram_user_id: Number(telegramUserId),
-        telegram_username: telegramUsername || null,
+        telegram_user_id: telegram.telegramUserId,
+        telegram_username: typeof telegram.telegramUsername === 'string' ? telegram.telegramUsername : null,
         telegram_verified: true,
 
         disclaimer_accepted: true,
@@ -63,9 +88,8 @@ export async function POST(request: Request) {
       await supabaseAdmin
         .from('invites')
         .update({
-          reserved: false,
-          reserved_until: null,
-          reserved_at: null,
+          used: false,
+          used_at: null,
         })
         .eq('invite_code', inviteCode)
 
@@ -79,24 +103,12 @@ export async function POST(request: Request) {
       )
     }
 
-    /*
-     * Invite final als genutzt markieren
-     */
-    await supabaseAdmin
-      .from('invites')
-      .update({
-        used: true,
-        used_at: new Date().toISOString(),
-
-        reserved: false,
-        reserved_until: null,
-        reserved_at: null,
-      })
-      .eq('invite_code', inviteCode)
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
     })
+    response.cookies.delete('invite-reservation')
+    response.cookies.delete('telegram-auth')
+    return response
   } catch (error) {
     console.error(error)
 

@@ -14,7 +14,6 @@ export default function ApplicationPage() {
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [telegram, setTelegram] = useState('')
 
   function nextStep() {
     const inviteCode = sessionStorage.getItem('invite_code')
@@ -34,7 +33,6 @@ export default function ApplicationPage() {
 
     sessionStorage.setItem('first_name', firstName.trim())
     sessionStorage.setItem('last_name', lastName.trim())
-    sessionStorage.setItem('telegram', telegram.trim())
 
     router.push('/telegram')
   }
@@ -78,22 +76,6 @@ export default function ApplicationPage() {
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder="Mustermann"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-black outline-none transition focus:border-blue-600"
-            />
-
-          </div>
-
-          <div>
-
-            <label className="mb-2 block font-semibold text-black">
-              Telegram (optional)
-            </label>
-
-            <input
-              type="text"
-              value={telegram}
-              onChange={(e) => setTelegram(e.target.value)}
-              placeholder="@username"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-black outline-none transition focus:border-blue-600"
             />
 

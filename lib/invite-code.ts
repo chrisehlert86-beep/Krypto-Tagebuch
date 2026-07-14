@@ -5,7 +5,7 @@ function randomPart(length: number) {
 
   for (let i = 0; i < length; i++) {
     result += CHARACTERS.charAt(
-      Math.floor(Math.random() * CHARACTERS.length)
+      randomInt(CHARACTERS.length)
     )
   }
 
@@ -15,3 +15,4 @@ function randomPart(length: number) {
 export function generateInviteCode() {
   return `${randomPart(4)}-${randomPart(4)}`
 }
+import { randomInt } from 'node:crypto'

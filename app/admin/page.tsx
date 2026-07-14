@@ -29,25 +29,18 @@ export default function AdminDashboard() {
 
   const [loading, setLoading] = useState(true)
 
-  async function loadStats() {
-    try {
-      const response = await fetch('/api/admin/stats')
-      const data = await response.json()
-
-      if (response.ok) {
-        setStats(data)
-      } else {
-        console.error(data)
-      }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
-    loadStats()
+    const controller = new AbortController()
+    void fetch('/api/admin/stats', { signal: controller.signal })
+      .then(async (response) => {
+        const data = await response.json()
+        if (response.ok) setStats(data)
+      })
+      .catch((error) => {
+        if (error instanceof Error && error.name !== 'AbortError') console.error(error)
+      })
+      .finally(() => setLoading(false))
+    return () => controller.abort()
   }, [])
 
   if (loading) {

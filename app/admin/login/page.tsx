@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
       try {
 
         const response = await fetch(
-          '/api/admin/login/status',
+          '/api/admin/login-state',
           {
             method: 'POST',
             headers: {
@@ -167,7 +167,7 @@ export default function AdminLoginPage() {
 
       <div className="flex min-h-screen items-center justify-center bg-slate-100">
 
-        <div className="w-full max-w-md rounded-xl bg-white p-10 text-black">
+        <div className="w-full max-w-md rounded-xl bg-white p-10 shadow-lg">
 
           <div className="space-y-6 text-center">
 
@@ -175,7 +175,7 @@ export default function AdminLoginPage() {
               📲
             </div>
 
-            <h2 className="text-2xl font-bold">
+            <h2 className="text-2xl font-bold text-black">
               Anmeldung bestätigen
             </h2>
 
@@ -190,7 +190,7 @@ export default function AdminLoginPage() {
 
             </div>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-600">
               Es wird automatisch weitergeleitet,
               sobald die Anmeldung genehmigt wurde.
             </p>
@@ -210,7 +210,7 @@ export default function AdminLoginPage() {
 
       <div className="w-full max-w-md rounded-xl bg-white p-10 shadow-lg">
 
-        <h1 className="mb-8 text-center text-3xl font-bold">
+        <h1 className="mb-8 text-center text-3xl font-bold text-black">
           Admin Login
         </h1>
 
@@ -221,13 +221,13 @@ export default function AdminLoginPage() {
 
           <div>
 
-            <label className="mb-2 block font-semibold">
+            <label className="mb-2 block font-semibold text-black">
               Benutzername
             </label>
 
             <input
               type="text"
-              className="w-full rounded-lg border p-3"
+              className="w-full rounded-lg border border-gray-300 p-3 text-black placeholder:text-gray-500 focus:border-blue-600 focus:outline-none"
               value={username}
               onChange={(e) =>
                 setUsername(e.target.value)
@@ -238,13 +238,13 @@ export default function AdminLoginPage() {
 
           <div>
 
-            <label className="mb-2 block font-semibold">
+            <label className="mb-2 block font-semibold text-black">
               Passwort
             </label>
 
             <input
               type="password"
-              className="w-full rounded-lg border p-3"
+              className="w-full rounded-lg border border-gray-300 p-3 text-black placeholder:text-gray-500 focus:border-blue-600 focus:outline-none"
               value={password}
               onChange={(e) =>
                 setPassword(e.target.value)
