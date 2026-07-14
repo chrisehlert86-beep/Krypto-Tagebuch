@@ -1,39 +1,14 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 
 import PublicLayout from '@/components/layout/PublicLayout'
-import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import PageHeader from '@/components/ui/PageHeader'
 import TelegramLogin from '@/components/telegram/TelegramLogin'
 
 export default function TelegramPage() {
   const router = useRouter()
-
-  const [loading, setLoading] = useState(false)
-
-  async function simulateTelegramLogin() {
-    setLoading(true)
-
-    /*
-     * Diese Demo wird im nächsten Schritt
-     * durch das offizielle Telegram Login Widget ersetzt.
-     */
-
-    sessionStorage.setItem(
-      'telegram_user_id',
-      '123456789'
-    )
-
-    sessionStorage.setItem(
-      'telegram_username',
-      'DemoUser'
-    )
-
-    router.push('/disclaimer')
-  }
 
   return (
     <PublicLayout currentStep={3}>

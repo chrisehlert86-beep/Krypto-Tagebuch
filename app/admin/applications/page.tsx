@@ -96,7 +96,8 @@ export default function ApplicationsPage() {
   }
 
   useEffect(() => {
-    loadApplications()
+    const timeout = window.setTimeout(() => void loadApplications(), 0)
+    return () => window.clearTimeout(timeout)
   }, [])
 
   if (loading) {

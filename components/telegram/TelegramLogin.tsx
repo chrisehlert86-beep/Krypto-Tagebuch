@@ -4,8 +4,18 @@ import { useEffect, useRef } from 'react'
 
 declare global {
   interface Window {
-    onTelegramAuth(user: any): void
+    onTelegramAuth(user: TelegramUser): void
   }
+}
+
+type TelegramUser = {
+  id: number
+  first_name: string
+  auth_date: number
+  hash: string
+  last_name?: string
+  username?: string
+  photo_url?: string
 }
 
 type Props = {
@@ -77,6 +87,11 @@ export default function TelegramLogin({ onSuccess }: Props) {
     )
 
     ref.current.appendChild(script)
+
+    return () => {
+      delete (window as Partial<Window>).onTelegramAuth
+      script.remove()
+    }
 
   }, [onSuccess])
 

@@ -22,12 +22,10 @@ export default function DisclaimerPage() {
   const [loading, setLoading] = useState(false)
 
   function handleScroll(event: React.UIEvent<HTMLDivElement>) {
-    const target = event.currentTarget
+    const element = event.currentTarget
+    const remaining = element.scrollHeight - element.scrollTop - element.clientHeight
 
-    if (
-      target.scrollHeight - target.scrollTop <=
-      target.clientHeight + 5
-    ) {
+    if (remaining <= 5) {
       setHasScrolledToBottom(true)
     }
   }
@@ -109,7 +107,7 @@ export default function DisclaimerPage() {
 
         <div
           onScroll={handleScroll}
-          className="h-[520px] overflow-y-auto rounded-xl border border-gray-300 bg-white p-8 leading-7 text-black"
+          className="h-48 overflow-y-auto rounded-xl border border-gray-300 bg-white p-8 leading-7 text-black"
         >
 
           <h2 className="mb-6 text-2xl font-bold">
@@ -141,30 +139,17 @@ export default function DisclaimerPage() {
             Jeder Teilnehmer handelt ausschließlich auf eigenes Risiko.
           </p>
 
-          {Array.from({ length: 20 }).map((_, index) => (
-            <br key={index} />
-          ))}
-
-          <p className="font-bold">
-            Ende des Dokuments
-          </p>
-
         </div>
 
         {!hasScrolledToBottom && (
-
           <div className="mt-6 rounded-lg bg-yellow-50 p-4">
-
             <p className="font-medium text-black">
               Bitte lies den Disclaimer vollständig bis zum Ende.
             </p>
-
           </div>
-
         )}
 
         {hasScrolledToBottom && (
-
           <div className="mt-8 space-y-6">
 
             <label className="flex items-start gap-4">
@@ -193,7 +178,6 @@ export default function DisclaimerPage() {
             </Button>
 
           </div>
-
         )}
 
       </Card>

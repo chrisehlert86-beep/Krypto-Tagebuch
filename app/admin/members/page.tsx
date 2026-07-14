@@ -108,7 +108,8 @@ export default function MembersPage() {
   }
 
   useEffect(() => {
-    loadMembers()
+    const timeout = window.setTimeout(() => void loadMembers(), 0)
+    return () => window.clearTimeout(timeout)
   }, [])
 
   if (loading) {

@@ -202,7 +202,8 @@ export default function InvitesPage() {
   }
 
   useEffect(() => {
-    loadInvites()
+    const timeout = window.setTimeout(() => void loadInvites(), 0)
+    return () => window.clearTimeout(timeout)
   }, [])
 
   return (

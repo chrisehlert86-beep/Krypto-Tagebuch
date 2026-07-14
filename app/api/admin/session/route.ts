@@ -23,66 +23,25 @@ export async function POST(request: Request) {
     /*
      * Login-Anfrage laden
      */
+    const now = new Date().toISOString()
     const { data, error } = await supabaseAdmin
       .from('admin_login_requests')
-      .select(
-        'approved,rejected,approved_at,expires_at'
-      )
+      .delete()
       .eq('id', loginRequestId)
-      .single()
+      .eq('approved', true)
+      .eq('rejected', false)
+      .not('approved_at', 'is', null)
+      .gt('expires_at', now)
+      .select('id')
+      .maybeSingle()
 
     if (error || !data) {
       return NextResponse.json(
         {
-          error: 'Login-Anfrage nicht gefunden.',
+          error: 'Login-Anfrage ist ungültig, nicht bestätigt oder abgelaufen.',
         },
         {
-          status: 404,
-        }
-      )
-    }
-
-    /*
-     * Abgelehnt?
-     */
-    if (data.rejected) {
-      return NextResponse.json(
-        {
-          error: 'Login wurde abgelehnt.',
-        },
-        {
-          status: 401,
-        }
-      )
-    }
-
-    /*
-     * Noch nicht bestätigt?
-     */
-    if (!data.approved || !data.approved_at) {
-      return NextResponse.json(
-        {
-          error: 'Login wurde noch nicht bestätigt.',
-        },
-        {
-          status: 401,
-        }
-      )
-    }
-
-    /*
-     * Abgelaufen?
-     */
-    if (
-      data.expires_at &&
-      new Date(data.expires_at) < new Date()
-    ) {
-      return NextResponse.json(
-        {
-          error: 'Login ist abgelaufen.',
-        },
-        {
-          status: 401,
+        status: 401,
         }
       )
     }
@@ -106,14 +65,6 @@ export async function POST(request: Request) {
       path: '/',
       maxAge: 60 * 60 * 12,
     })
-
-    /*
-     * Login-Anfrage entfernen
-     */
-    await supabaseAdmin
-      .from('admin_login_requests')
-      .delete()
-      .eq('id', loginRequestId)
 
     return NextResponse.json({
       success: true,
