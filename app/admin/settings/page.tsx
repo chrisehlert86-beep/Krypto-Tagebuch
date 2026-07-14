@@ -71,9 +71,12 @@ export default function SettingsPage() {
   }
 
   useEffect(() => {
-    void loadStatus()
+    const initialLoad = window.setTimeout(() => void loadStatus(), 0)
     const interval = window.setInterval(() => void loadStatus(), 15_000)
-    return () => window.clearInterval(interval)
+    return () => {
+      window.clearTimeout(initialLoad)
+      window.clearInterval(interval)
+    }
   }, [loadStatus])
 
   return (

@@ -87,7 +87,7 @@ export default function ApplicationPage() {
               color="blue"
               onClick={nextStep}
             >
-              Weiter zum Disclaimer
+              Weiter zu Telegram
             </Button>
 
           </div>
