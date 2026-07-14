@@ -12,8 +12,12 @@ import PageHeader from '@/components/ui/PageHeader'
 export default function DisclaimerPage() {
   const router = useRouter()
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
-  const [accepted, setAccepted] = useState(false)
+  const [disclaimerRead, setDisclaimerRead] = useState(false)
+  const [risksUnderstood, setRisksUnderstood] = useState(false)
+  const [noAdviceAcknowledged, setNoAdviceAcknowledged] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  const allConfirmed = disclaimerRead && risksUnderstood && noAdviceAcknowledged
 
   function handleScroll(event: React.UIEvent<HTMLDivElement>) {
     const element = event.currentTarget
@@ -215,23 +219,32 @@ export default function DisclaimerPage() {
 
         {hasScrolledToBottom && (
           <div className="mt-8 space-y-6">
-            <label className="flex items-start gap-4 rounded-lg border border-gray-200 p-4">
-              <input
-                type="checkbox"
-                checked={accepted}
-                onChange={(event) => setAccepted(event.target.checked)}
-                className="mt-1 h-5 w-5"
+            <fieldset className="space-y-3">
+              <legend className="mb-3 font-bold text-black">
+                Bitte bestätige alle drei Punkte:
+              </legend>
+
+              <ConfirmationCheckbox
+                checked={disclaimerRead}
+                onChange={setDisclaimerRead}
+                label={`Disclaimer gelesen (Version ${DISCLAIMER_VERSION})`}
               />
-              <span className="text-black">
-                Ich habe den Haftungsausschluss in der Version {DISCLAIMER_VERSION}
-                vollständig gelesen, verstanden und akzeptiere ihn.
-              </span>
-            </label>
+              <ConfirmationCheckbox
+                checked={risksUnderstood}
+                onChange={setRisksUnderstood}
+                label="Risiken verstanden"
+              />
+              <ConfirmationCheckbox
+                checked={noAdviceAcknowledged}
+                onChange={setNoAdviceAcknowledged}
+                label="Keine Anlageberatung"
+              />
+            </fieldset>
 
             <Button
               color="blue"
               onClick={submitApplication}
-              disabled={!accepted || loading}
+              disabled={!allConfirmed || loading}
             >
               {loading ? 'Bewerbung wird übermittelt …' : 'Bewerbung abschließen'}
             </Button>
@@ -239,6 +252,28 @@ export default function DisclaimerPage() {
         )}
       </Card>
     </PublicLayout>
+  )
+}
+
+function ConfirmationCheckbox({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean
+  onChange: (checked: boolean) => void
+  label: string
+}) {
+  return (
+    <label className="flex cursor-pointer items-center gap-4 rounded-lg border border-gray-200 p-4 text-black transition hover:bg-gray-50">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="h-5 w-5 shrink-0"
+      />
+      <span className="font-medium">{label}</span>
+    </label>
   )
 }
 
