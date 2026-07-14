@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { writeAdminAudit } from '@/lib/admin-audit'
 import { requireAdmin } from '@/lib/require-admin'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { isUuid } from '@/lib/onboarding-validation'
 
 type StatusChange = { status: string; command: string }
 
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
 
   try {
     const { id } = await request.json()
-    if (typeof id !== 'string' || !id) {
+    if (!isUuid(id)) {
       return NextResponse.json({ error: 'Mitglied wurde nicht gefunden.' }, { status: 400 })
     }
 

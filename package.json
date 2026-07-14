@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test --experimental-strip-types tests/*.test.ts"
+    "test": "node --test --experimental-strip-types tests/*.test.ts",
+    "security:smoke": "node --env-file=.env.local scripts/security-smoke.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",

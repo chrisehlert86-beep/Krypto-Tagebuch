@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/require-admin'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { writeAdminAudit } from '@/lib/admin-audit'
+import { isUuid } from '@/lib/onboarding-validation'
 
 export async function DELETE(request: Request) {
   if (!(await requireAdmin())) {
@@ -12,7 +13,7 @@ export async function DELETE(request: Request) {
   try {
     const { id } = await request.json()
 
-    if (typeof id !== 'string' || !id) {
+    if (!isUuid(id)) {
       return NextResponse.json({ error: 'Keine Bewerbungs-ID übergeben.' }, { status: 400 })
     }
 

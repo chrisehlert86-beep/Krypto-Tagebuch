@@ -6,6 +6,8 @@ import { SignJWT, jwtVerify } from 'jose'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
+const TOKEN_ISSUER = 'tagebuch-web'
+
 function getSecret() {
   const value = process.env.ADMIN_SESSION_SECRET
 
@@ -33,6 +35,9 @@ export async function createSessionToken(sessionId: string) {
     .setProtectedHeader({
       alg: 'HS256',
     })
+    .setIssuer(TOKEN_ISSUER)
+    .setAudience('admin-session')
+    .setIssuedAt()
     .setExpirationTime('12h')
     .sign(getSecret())
 
@@ -49,7 +54,9 @@ export function createSessionIdentity() {
 export async function verifySession(token: string) {
   try {
     const { payload } =
-      await jwtVerify(token, getSecret())
+      await jwtVerify(token, getSecret(), {
+        algorithms: ['HS256'], issuer: TOKEN_ISSUER, audience: 'admin-session',
+      })
 
     if (payload.admin !== true || typeof payload.sid !== 'string') return false
 
@@ -72,7 +79,9 @@ export async function verifySession(token: string) {
 
 export async function revokeSession(token: string) {
   try {
-    const { payload } = await jwtVerify(token, getSecret())
+    const { payload } = await jwtVerify(token, getSecret(), {
+      algorithms: ['HS256'], issuer: TOKEN_ISSUER, audience: 'admin-session',
+    })
     if (typeof payload.sid !== 'string') return
 
     await supabaseAdmin
@@ -102,6 +111,8 @@ type FlowToken = {
 export async function createFlowToken(payload: FlowToken, expiresIn: string) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
+    .setIssuer(TOKEN_ISSUER)
+    .setAudience(`flow:${payload.kind}`)
     .setIssuedAt()
     .setExpirationTime(expiresIn)
     .sign(getSecret())
@@ -109,8 +120,14 @@ export async function createFlowToken(payload: FlowToken, expiresIn: string) {
 
 export async function verifyFlowToken(token: string, kind: FlowToken['kind']) {
   try {
-    const { payload } = await jwtVerify(token, getSecret())
-    return payload.kind === kind ? payload : null
+    const { payload } = await jwtVerify(token, getSecret(), {
+      algorithms: ['HS256'], issuer: TOKEN_ISSUER, audience: `flow:${kind}`,
+    })
+    if (payload.kind !== kind) return null
+    if (kind === 'invite') return typeof payload.inviteCode === 'string' ? payload : null
+    if (kind === 'telegram') return typeof payload.telegramUserId === 'string' ? payload : null
+    if (kind === 'application') return typeof payload.applicationId === 'string' ? payload : null
+    return typeof payload.loginRequestId === 'string' ? payload : null
   } catch {
     return null
   }

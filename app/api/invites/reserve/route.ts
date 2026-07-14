@@ -8,10 +8,6 @@ export async function POST(request: Request) {
   try {
     const { inviteCode } = await request.json()
 
-    if (!(await consumeRateLimit(request, 'invite-reserve', 10, 15 * 60))) {
-      return rateLimitResponse()
-    }
-
     if (!isValidInviteCode(inviteCode)) {
       return NextResponse.json(
         {
@@ -21,6 +17,10 @@ export async function POST(request: Request) {
           status: 400,
         }
       )
+    }
+
+    if (!(await consumeRateLimit(request, 'invite-reserve', 10, 15 * 60))) {
+      return rateLimitResponse()
     }
 
     const { data, error } =

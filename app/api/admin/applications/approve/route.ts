@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
 import { writeAdminAudit } from '@/lib/admin-audit'
+import { isUuid } from '@/lib/onboarding-validation'
 
 export async function POST(request: Request) {
   /*
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
   try {
     const { id } = await request.json()
 
-    if (!id) {
+    if (!isUuid(id)) {
       return NextResponse.json(
         {
           error: 'Keine Bewerbungs-ID übergeben.',

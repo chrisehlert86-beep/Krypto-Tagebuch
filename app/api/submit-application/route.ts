@@ -17,10 +17,6 @@ export async function POST(request: NextRequest) {
       noAdviceAcknowledged,
     } = await request.json()
 
-    if (!(await consumeRateLimit(request, 'application-submit', 10, 15 * 60))) {
-      return rateLimitResponse()
-    }
-
     if (!isValidInviteCode(inviteCode)) {
       return NextResponse.json({ error: 'Kein Einladungscode übergeben.' }, { status: 400 })
     }
@@ -31,6 +27,10 @@ export async function POST(request: NextRequest) {
     }
     if (!acceptedAllDisclaimers([disclaimerRead, risksUnderstood, noAdviceAcknowledged])) {
       return NextResponse.json({ error: 'Alle Hinweise müssen bestätigt werden.' }, { status: 400 })
+    }
+
+    if (!(await consumeRateLimit(request, 'application-submit', 10, 15 * 60))) {
+      return rateLimitResponse()
     }
 
     const inviteToken = request.cookies.get('invite-reservation')?.value

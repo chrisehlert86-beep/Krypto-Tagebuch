@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { createHash, createHmac } from 'node:crypto'
 import test from 'node:test'
 
-import { acceptedAllDisclaimers, isValidInviteCode, isValidName } from '../lib/onboarding-validation.ts'
+import { acceptedAllDisclaimers, isUuid, isValidInviteCode, isValidName } from '../lib/onboarding-validation.ts'
 import { isValidTelegramAuth, type TelegramAuth } from '../lib/telegram-auth-validation.ts'
 
 function signTelegram(user: TelegramAuth, token: string) {
@@ -13,6 +13,13 @@ function signTelegram(user: TelegramAuth, token: string) {
   const secret = createHash('sha256').update(token).digest()
   return createHmac('sha256', secret).update(checkString).digest('hex')
 }
+
+test('UUID validation rejects injection and traversal payloads', () => {
+  assert.equal(isUuid('5d9d8f68-7cff-4a27-a84d-a96c68b5d496'), true)
+  assert.equal(isUuid("' or true --"), false)
+  assert.equal(isUuid('5d9d8f68-7cff-4a27-a84d-a96c68b5d496/../admin'), false)
+  assert.equal(isUuid(null), false)
+})
 
 test('Einladungscodes verwenden das sichere Format', () => {
   assert.equal(isValidInviteCode('ABCD-2345'), true)

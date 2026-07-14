@@ -21,6 +21,42 @@ function createCsp(nonce: string) {
   ].join('; ')
 }
 
+function apiError(message: string, status: number) {
+  return NextResponse.json({ error: message }, { status })
+}
+
+async function validateMutationRequest(request: NextRequest) {
+  if (!request.nextUrl.pathname.startsWith('/api/')) return null
+  if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) return null
+
+  const origin = request.headers.get('origin')
+  const fetchSite = request.headers.get('sec-fetch-site')
+  if (fetchSite === 'cross-site' || (origin && origin !== request.nextUrl.origin)) {
+    return apiError('Herkunft der Anfrage wurde abgelehnt.', 403)
+  }
+
+  const declaredLength = Number(request.headers.get('content-length') ?? 0)
+  if (Number.isFinite(declaredLength) && declaredLength > 32_768) {
+    return apiError('Anfrage ist zu groß.', 413)
+  }
+
+  const body = await request.clone().text()
+  if (!body) return null
+  if (new TextEncoder().encode(body).byteLength > 32_768) {
+    return apiError('Anfrage ist zu groß.', 413)
+  }
+  if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) {
+    return apiError('Nur JSON-Anfragen werden akzeptiert.', 415)
+  }
+  try {
+    const value: unknown = JSON.parse(body)
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error()
+  } catch {
+    return apiError('Ungültige JSON-Anfrage.', 400)
+  }
+  return null
+}
+
 export async function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
   const csp = createCsp(nonce)
@@ -29,6 +65,11 @@ export async function proxy(request: NextRequest) {
   requestHeaders.set('Content-Security-Policy', csp)
 
   let response: NextResponse
+  const invalidMutation = await validateMutationRequest(request)
+  if (invalidMutation) {
+    invalidMutation.headers.set('Content-Security-Policy', csp)
+    return invalidMutation
+  }
   const isProtectedAdminPage = request.nextUrl.pathname.startsWith('/admin') &&
     request.nextUrl.pathname !== '/admin/login'
 

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { verifyFlowToken } from '@/lib/auth'
 import { consumeRateLimit, rateLimitResponse } from '@/lib/request-security'
+import { isUuid } from '@/lib/onboarding-validation'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
     const flow = flowToken ? await verifyFlowToken(flowToken, 'adminLogin') : null
 
     if (
-      typeof loginRequestId !== 'string' ||
+      !isUuid(loginRequestId) ||
       typeof flow?.loginRequestId !== 'string' ||
       flow.loginRequestId !== loginRequestId
     ) {

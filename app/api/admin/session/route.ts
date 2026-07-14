@@ -5,6 +5,7 @@ import { createSessionIdentity, createSessionToken, verifyFlowToken } from '@/li
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { writeAdminAudit } from '@/lib/admin-audit'
 import { consumeRateLimit, rateLimitResponse } from '@/lib/request-security'
+import { isUuid } from '@/lib/onboarding-validation'
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
     const flow = flowToken ? await verifyFlowToken(flowToken, 'adminLogin') : null
 
     if (
-      typeof loginRequestId !== 'string' ||
+      !isUuid(loginRequestId) ||
       typeof flow?.loginRequestId !== 'string' ||
       flow.loginRequestId !== loginRequestId
     ) {
