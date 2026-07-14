@@ -6,7 +6,7 @@ export const APP_NAME = 'Krypto-Tagebuch'
 
 export const APP_VERSION = '0.1.0'
 
-export const DISCLAIMER_VERSION = 'v1'
+export const DISCLAIMER_VERSION = '2026-07-14-v2'
 
 export const APPLICATION_STATUS = 'pending'
 
