@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 import { verifyFlowToken } from '@/lib/auth'
 import { createFlowToken } from '@/lib/auth'
 import { DISCLAIMER_VERSION } from '@/constants/app'
+import { consumeRateLimit, rateLimitResponse } from '@/lib/request-security'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,27 +11,49 @@ export async function POST(request: NextRequest) {
       inviteCode,
       firstName,
       lastName,
+      disclaimerRead,
+      risksUnderstood,
+      noAdviceAcknowledged,
     } = await request.json()
 
-    if (!inviteCode) {
+    if (!(await consumeRateLimit(request, 'application-submit', 10, 15 * 60))) {
+      return rateLimitResponse()
+    }
+
+    if (typeof inviteCode !== 'string' || !/^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(inviteCode)) {
       return NextResponse.json(
         { error: 'Kein Einladungscode übergeben.' },
         { status: 400 }
       )
     }
 
-    if (!firstName || !lastName) {
+    if (
+      typeof firstName !== 'string' ||
+      typeof lastName !== 'string' ||
+      !firstName.trim() ||
+      !lastName.trim()
+    ) {
       return NextResponse.json(
         { error: 'Vorname und Nachname sind erforderlich.' },
         { status: 400 }
       )
     }
 
-    if (typeof firstName !== 'string' || typeof lastName !== 'string' ||
-        firstName.trim().length > 100 || lastName.trim().length > 100) {
+    if (firstName.trim().length > 100 || lastName.trim().length > 100) {
       return NextResponse.json(
         { error: 'Ungültige persönliche Angaben.' },
         { status: 400 }
+      )
+    }
+
+    if (
+      disclaimerRead !== true ||
+      risksUnderstood !== true ||
+      noAdviceAcknowledged !== true
+    ) {
+      return NextResponse.json(
+        { error: 'Alle Hinweise müssen bestätigt werden.' },
+        { status: 400 },
       )
     }
 
@@ -75,6 +98,9 @@ export async function POST(request: NextRequest) {
         telegram_verified: true,
 
         disclaimer_accepted: true,
+        disclaimer_read: true,
+        risks_understood: true,
+        no_advice_acknowledged: true,
         disclaimer_version: DISCLAIMER_VERSION,
         disclaimer_accepted_at: now,
 
@@ -99,7 +125,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         {
-          error: applicationError.message,
+          error: 'Die Bewerbung konnte nicht gespeichert werden.',
         },
         {
           status: 500,

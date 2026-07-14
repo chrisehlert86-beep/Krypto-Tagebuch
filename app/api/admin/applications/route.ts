@@ -26,7 +26,7 @@ export async function GET() {
      */
     const { data, error } = await supabaseAdmin
       .from('applications')
-      .select('*')
+      .select('id,first_name,last_name,invite_code,status,created_at')
       .order('created_at', {
         ascending: false,
       })

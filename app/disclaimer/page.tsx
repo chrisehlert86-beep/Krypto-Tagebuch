@@ -43,7 +43,14 @@ export default function DisclaimerPage() {
       const response = await fetch('/api/submit-application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ inviteCode, firstName, lastName }),
+        body: JSON.stringify({
+          inviteCode,
+          firstName,
+          lastName,
+          disclaimerRead,
+          risksUnderstood,
+          noAdviceAcknowledged,
+        }),
       })
       const result = await response.json()
 

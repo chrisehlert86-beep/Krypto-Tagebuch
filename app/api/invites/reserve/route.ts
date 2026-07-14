@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { createFlowToken } from '@/lib/auth'
+import { consumeRateLimit, rateLimitResponse } from '@/lib/request-security'
 
 export async function POST(request: Request) {
   try {
     const { inviteCode } = await request.json()
 
-    if (!inviteCode) {
+    if (!(await consumeRateLimit(request, 'invite-reserve', 10, 15 * 60))) {
+      return rateLimitResponse()
+    }
+
+    if (typeof inviteCode !== 'string' || !/^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(inviteCode)) {
       return NextResponse.json(
         {
           error: 'Kein Einladungscode angegeben.',

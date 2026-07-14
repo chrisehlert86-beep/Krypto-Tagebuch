@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { requireAdmin } from '@/lib/require-admin'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { writeAdminAudit } from '@/lib/admin-audit'
 
 export async function POST(request: Request) {
   if (!(await requireAdmin())) {
@@ -34,6 +35,8 @@ export async function POST(request: Request) {
     if (!data) {
       return NextResponse.json({ error: 'Nur offene Bewerbungen können abgelehnt werden.' }, { status: 409 })
     }
+
+    await writeAdminAudit('application.reject', 'application', id)
 
     return NextResponse.json({ success: true })
   } catch (error) {

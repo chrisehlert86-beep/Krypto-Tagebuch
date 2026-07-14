@@ -1,15 +1,29 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-import { createSession } from '@/lib/auth'
+import { createSession, verifyFlowToken } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { writeAdminAudit } from '@/lib/admin-audit'
+import { consumeRateLimit, rateLimitResponse } from '@/lib/request-security'
 
 export async function POST(request: Request) {
   try {
 
     const { loginRequestId } = await request.json()
 
-    if (!loginRequestId) {
+    if (!(await consumeRateLimit(request, 'admin-session', 10, 15 * 60))) {
+      return rateLimitResponse()
+    }
+
+    const cookieStore = await cookies()
+    const flowToken = cookieStore.get('admin-login-flow')?.value
+    const flow = flowToken ? await verifyFlowToken(flowToken, 'adminLogin') : null
+
+    if (
+      typeof loginRequestId !== 'string' ||
+      typeof flow?.loginRequestId !== 'string' ||
+      flow.loginRequestId !== loginRequestId
+    ) {
       return NextResponse.json(
         {
           error: 'Login-ID fehlt.',
@@ -49,13 +63,11 @@ export async function POST(request: Request) {
     /*
      * Session erzeugen
      */
-    const token = await createSession()
+    const { token, sessionId } = await createSession()
 
     /*
      * Cookie setzen
      */
-    const cookieStore = await cookies()
-
     cookieStore.set({
       name: 'admin-session',
       value: token,
@@ -65,6 +77,9 @@ export async function POST(request: Request) {
       path: '/',
       maxAge: 60 * 60 * 12,
     })
+    cookieStore.delete('admin-login-flow')
+
+    await writeAdminAudit('admin.login', 'admin_session', sessionId)
 
     return NextResponse.json({
       success: true,

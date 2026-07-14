@@ -1,14 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyPassword } from '@/lib/auth'
+import { createFlowToken, verifyPassword } from '@/lib/auth'
+import { consumeRateLimit, getClientIp, rateLimitResponse } from '@/lib/request-security'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 export async function POST(request: NextRequest) {
   try {
     const { username, password } = await request.json()
 
+    if (!(await consumeRateLimit(request, 'admin-login', 5, 15 * 60))) {
+      return rateLimitResponse()
+    }
+
     /*
      * Eingaben prüfen
      */
-    if (!username || !password) {
+    if (
+      typeof username !== 'string' ||
+      typeof password !== 'string' ||
+      !username.trim() ||
+      password.length < 1 ||
+      username.length > 100 ||
+      password.length > 200
+    ) {
       return NextResponse.json(
         {
           error: 'Benutzername und Passwort sind erforderlich.',
@@ -23,7 +35,7 @@ export async function POST(request: NextRequest) {
      * Benutzername prüfen
      */
     const validPassword = await verifyPassword(password)
-    const validUsername = username === process.env.ADMIN_USERNAME
+    const validUsername = username.trim() === process.env.ADMIN_USERNAME
 
     if (!validUsername || !validPassword) {
       return NextResponse.json(
@@ -35,11 +47,7 @@ export async function POST(request: NextRequest) {
     /*
      * Clientinformationen ermitteln
      */
-    const forwarded = request.headers.get('x-forwarded-for')
-
-    const ip =
-      forwarded?.split(',')[0].trim() ??
-      'unknown'
+    const ip = getClientIp(request)
 
     const userAgent =
       request.headers.get('user-agent') ??
@@ -83,10 +91,21 @@ export async function POST(request: NextRequest) {
     /*
      * Login-ID an Frontend zurückgeben
      */
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       loginRequestId: data.id,
     })
+    response.cookies.set('admin-login-flow', await createFlowToken({
+      kind: 'adminLogin',
+      loginRequestId: data.id,
+    }, '5m'), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 5 * 60,
+    })
+    return response
 
   } catch (err) {
 

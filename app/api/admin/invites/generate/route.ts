@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
 import { generateInviteCode } from '@/lib/invite-code'
+import { writeAdminAudit } from '@/lib/admin-audit'
 
 export async function POST(request: Request) {
   /*
@@ -72,13 +73,15 @@ export async function POST(request: Request) {
     if (error) {
       return NextResponse.json(
         {
-          error: error.message,
+          error: 'Einladungscodes konnten nicht erstellt werden.',
         },
         {
           status: 500,
         }
       )
     }
+
+    await writeAdminAudit('invite.generate', 'invite', undefined, { count: invites.length })
 
     return NextResponse.json({
       success: true,

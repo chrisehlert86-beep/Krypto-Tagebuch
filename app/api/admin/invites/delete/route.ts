@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
+import { writeAdminAudit } from '@/lib/admin-audit'
 
 export async function DELETE(request: NextRequest) {
   /*
@@ -74,22 +75,31 @@ export async function DELETE(request: NextRequest) {
     /*
      * Einladung löschen
      */
-    const { error: deleteError } =
+    const { data: deleted, error: deleteError } =
       await supabaseAdmin
         .from('invites')
         .delete()
         .eq('id', invite.id)
+        .eq('used', false)
+        .select('id')
+        .maybeSingle()
 
     if (deleteError) {
       return NextResponse.json(
         {
-          error: deleteError.message,
+          error: 'Einladung konnte nicht gelöscht werden.',
         },
         {
           status: 500,
         }
       )
     }
+
+    if (!deleted) {
+      return NextResponse.json({ error: 'Einladung wurde zwischenzeitlich geändert.' }, { status: 409 })
+    }
+
+    await writeAdminAudit('invite.delete', 'invite', invite.id)
 
     return NextResponse.json({
       success: true,

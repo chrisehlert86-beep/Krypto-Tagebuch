@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdmin } from '@/lib/require-admin'
+import { writeAdminAudit } from '@/lib/admin-audit'
 
 export async function POST(request: NextRequest) {
   /*
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
     const { data: invite, error: loadError } =
       await supabaseAdmin
         .from('invites')
-        .select('*')
+        .select('id,used,active')
         .eq('id', id)
         .single()
 
@@ -74,13 +75,17 @@ export async function POST(request: NextRequest) {
     /*
      * Status umschalten
      */
-    const { error: updateError } =
+    const { data: updated, error: updateError } =
       await supabaseAdmin
         .from('invites')
         .update({
           active: !invite.active,
         })
         .eq('id', invite.id)
+        .eq('active', invite.active)
+        .eq('used', false)
+        .select('id')
+        .maybeSingle()
 
     if (updateError) {
       return NextResponse.json(
@@ -92,6 +97,12 @@ export async function POST(request: NextRequest) {
         }
       )
     }
+
+    if (!updated) {
+      return NextResponse.json({ error: 'Einladung wurde zwischenzeitlich geändert.' }, { status: 409 })
+    }
+
+    await writeAdminAudit('invite.toggle', 'invite', invite.id, { active: !invite.active })
 
     return NextResponse.json({
       success: true,

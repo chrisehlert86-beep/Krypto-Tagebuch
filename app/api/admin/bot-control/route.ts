@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { requireAdmin } from '@/lib/require-admin'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { writeAdminAudit } from '@/lib/admin-audit'
 
 const allowedCommands = new Set(['restart', 'test_message'])
 
@@ -27,6 +28,8 @@ export async function POST(request: Request) {
       console.error(error)
       return NextResponse.json({ error: 'Bot-Befehl konnte nicht gespeichert werden.' }, { status: 500 })
     }
+
+    await writeAdminAudit('bot.command', 'bot_command', data.id, { command })
 
     return NextResponse.json({ success: true, commandId: data.id })
   } catch (error) {

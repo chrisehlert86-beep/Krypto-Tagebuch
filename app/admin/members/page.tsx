@@ -15,6 +15,8 @@ type Member = {
   invite_code: string
   role: 'member' | 'admin'
   status: 'active' | 'inactive'
+  telegram_sync_status: 'pending' | 'synced' | 'failed'
+  telegram_sync_error: string | null
   created_at: string
 }
 
@@ -157,7 +159,7 @@ export default function MembersPage() {
                 </th>
 
                 <th className="border-b px-6 py-4 text-left font-bold text-black">
-                  Rolle
+                  Community-Rolle
                 </th>
 
                 <th className="border-b px-6 py-4 text-left font-bold text-black">
@@ -228,10 +230,22 @@ export default function MembersPage() {
 
                       </select>
 
+                      <p className="mt-1 text-xs text-gray-600">
+                        Kein Webseiten-Adminzugang
+                      </p>
+
                     </td>
 
                     <td className="px-6 py-4">
                       <Badge status={member.status} />
+                      {member.telegram_sync_status === 'pending' && (
+                        <p className="mt-1 text-xs font-medium text-yellow-700">Telegram-Abgleich läuft …</p>
+                      )}
+                      {member.telegram_sync_status === 'failed' && (
+                        <p className="mt-1 text-xs font-medium text-red-700" title={member.telegram_sync_error ?? undefined}>
+                          Telegram-Abgleich fehlgeschlagen
+                        </p>
+                      )}
                     </td>
 
                     <td className="px-6 py-4 text-black">
