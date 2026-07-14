@@ -1,3 +1,5 @@
+import { randomInt } from 'node:crypto'
+
 const CHARACTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 
 function randomPart(length: number) {
@@ -15,4 +17,3 @@ function randomPart(length: number) {
 export function generateInviteCode() {
   return `${randomPart(4)}-${randomPart(4)}`
 }
-import { randomInt } from 'node:crypto'

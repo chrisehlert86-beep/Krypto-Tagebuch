@@ -76,8 +76,11 @@ export async function POST(request: Request) {
         .from('applications')
         .update({
           status: 'approved',
+          approved_at: new Date().toISOString(),
+          rejected_at: null,
         })
         .eq('id', id)
+        .eq('status', 'pending')
 
     if (updateError) {
       console.error(updateError)

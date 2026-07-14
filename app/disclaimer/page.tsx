@@ -3,10 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import {
-  APP_NAME,
-  DISCLAIMER_VERSION,
-} from '@/constants/app'
+import { APP_NAME } from '@/constants/app'
 
 import PublicLayout from '@/components/layout/PublicLayout'
 
@@ -35,14 +32,10 @@ export default function DisclaimerPage() {
     const firstName = sessionStorage.getItem('first_name')
     const lastName = sessionStorage.getItem('last_name')
 
-    const telegramUserId = sessionStorage.getItem('telegram_user_id')
-    const telegramUsername = sessionStorage.getItem('telegram_username')
-
     if (
       !inviteCode ||
       !firstName ||
-      !lastName ||
-      !telegramUserId
+      !lastName
     ) {
       alert('Die Sitzung ist abgelaufen.')
 
@@ -63,9 +56,6 @@ export default function DisclaimerPage() {
           inviteCode,
           firstName,
           lastName,
-          telegramUserId,
-          telegramUsername,
-          disclaimerVersion: DISCLAIMER_VERSION,
         }),
       })
 
@@ -113,12 +103,6 @@ export default function DisclaimerPage() {
           <h2 className="mb-6 text-2xl font-bold">
             Haftungsausschluss
           </h2>
-
-          <p>
-            HIER KOMMT SPÄTER DEIN KOMPLETTER DISCLAIMER HINEIN.
-          </p>
-
-          <br />
 
           <p>
             Diese Inhalte dienen ausschließlich der Dokumentation meiner

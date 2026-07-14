@@ -54,6 +54,9 @@ type FlowToken = {
   kind: 'telegram'
   telegramUserId: string
   telegramUsername?: string
+} | {
+  kind: 'application'
+  applicationId: string
 }
 
 export async function createFlowToken(payload: FlowToken, expiresIn: string) {

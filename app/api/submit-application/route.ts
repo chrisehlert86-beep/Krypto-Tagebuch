@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { verifyFlowToken } from '@/lib/auth'
+import { createFlowToken } from '@/lib/auth'
+import { DISCLAIMER_VERSION } from '@/constants/app'
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,7 +10,6 @@ export async function POST(request: NextRequest) {
       inviteCode,
       firstName,
       lastName,
-      disclaimerVersion,
     } = await request.json()
 
     if (!inviteCode) {
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
      * Bewerbung speichern
      * (Invite ist bereits reserviert → KEIN consume_invite mehr)
      */
-    const { error: applicationError } = await supabaseAdmin
+    const { data: application, error: applicationError } = await supabaseAdmin
       .from('applications')
       .insert({
         invite_code: inviteCode,
@@ -74,10 +75,13 @@ export async function POST(request: NextRequest) {
         telegram_verified: true,
 
         disclaimer_accepted: true,
-        disclaimer_version: disclaimerVersion || 'v1',
+        disclaimer_version: DISCLAIMER_VERSION,
+        disclaimer_accepted_at: now,
 
         status: 'pending',
       })
+      .select('id')
+      .single()
 
     if (applicationError) {
       console.error(applicationError)
@@ -108,6 +112,16 @@ export async function POST(request: NextRequest) {
     })
     response.cookies.delete('invite-reservation')
     response.cookies.delete('telegram-auth')
+    response.cookies.set('application-status', await createFlowToken({
+      kind: 'application',
+      applicationId: application.id,
+    }, '30d'), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 30 * 24 * 60 * 60,
+    })
     return response
   } catch (error) {
     console.error(error)
