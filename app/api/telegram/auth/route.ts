@@ -2,14 +2,18 @@ import { NextResponse } from 'next/server'
 
 import { createFlowToken } from '@/lib/auth'
 import { consumeRateLimit, rateLimitResponse } from '@/lib/request-security'
-import { isValidTelegramAuth, type TelegramAuth } from '@/lib/telegram-auth-validation'
+import {
+  isValidTelegramAuth,
+  normalizeTelegramBotToken,
+  type TelegramAuth,
+} from '@/lib/telegram-auth-validation'
 
 export async function POST(request: Request) {
   if (!(await consumeRateLimit(request, 'telegram-auth', 20, 15 * 60))) {
     return rateLimitResponse()
   }
 
-  const botToken = process.env.TELEGRAM_BOT_TOKEN?.trim()
+  const botToken = normalizeTelegramBotToken(process.env.TELEGRAM_BOT_TOKEN)
   if (!botToken) {
     return NextResponse.json({ error: 'Telegram ist nicht konfiguriert.' }, { status: 503 })
   }

@@ -3,7 +3,11 @@ import { createHash, createHmac } from 'node:crypto'
 import test from 'node:test'
 
 import { acceptedAllDisclaimers, isUuid, isValidInviteCode, isValidName } from '../lib/onboarding-validation.ts'
-import { isValidTelegramAuth, type TelegramAuth } from '../lib/telegram-auth-validation.ts'
+import {
+  isValidTelegramAuth,
+  normalizeTelegramBotToken,
+  type TelegramAuth,
+} from '../lib/telegram-auth-validation.ts'
 
 function signTelegram(user: TelegramAuth, token: string) {
   const checkString = Object.entries(user)
@@ -44,6 +48,14 @@ test('gültige Telegram-Signaturen werden akzeptiert', () => {
   const token = '123:secret'
   const unsigned = { id: 123, auth_date: Math.floor(now / 1000), username: 'chris' }
   assert.equal(isValidTelegramAuth({ ...unsigned, hash: signTelegram(unsigned, token) }, token, now), true)
+})
+
+test('Telegram-Tokenimporte werden sicher normalisiert', () => {
+  assert.equal(normalizeTelegramBotToken(' 123:secret '), '123:secret')
+  assert.equal(normalizeTelegramBotToken('"123:secret"'), '123:secret')
+  assert.equal(normalizeTelegramBotToken("'123:secret'"), '123:secret')
+  assert.equal(normalizeTelegramBotToken('TELEGRAM_BOT_TOKEN=123:secret'), '123:secret')
+  assert.equal(normalizeTelegramBotToken(undefined), '')
 })
 
 test('manipulierte und abgelaufene Telegram-Daten werden abgelehnt', () => {

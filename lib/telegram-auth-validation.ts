@@ -8,6 +8,23 @@ export type TelegramAuth = {
   [key: string]: unknown
 }
 
+export function normalizeTelegramBotToken(value: string | undefined) {
+  if (!value) return ''
+
+  let normalized = value.trim()
+  if (normalized.startsWith('TELEGRAM_BOT_TOKEN=')) {
+    normalized = normalized.slice('TELEGRAM_BOT_TOKEN='.length).trim()
+  }
+  if (
+    normalized.length >= 2 &&
+    ((normalized.startsWith('"') && normalized.endsWith('"')) ||
+      (normalized.startsWith("'") && normalized.endsWith("'")))
+  ) {
+    normalized = normalized.slice(1, -1).trim()
+  }
+  return normalized
+}
+
 export function isValidTelegramAuth(user: TelegramAuth, botToken: string, now = Date.now()) {
   if (!user.hash || !user.id || !user.auth_date) return false
   if (!/^[1-9][0-9]{0,18}$/.test(String(user.id))) return false
