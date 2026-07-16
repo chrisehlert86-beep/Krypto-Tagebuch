@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --test --experimental-strip-types tests/*.test.ts",
-    "security:smoke": "node --env-file=.env.local scripts/security-smoke.mjs"
+    "security:smoke": "node --env-file=.env.local scripts/security-smoke.mjs",
+    "env:vercel": "node scripts/create-vercel-env.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
