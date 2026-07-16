@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   description: 'Administration',
 }
 
+// Nonce-based CSP requires every HTML response to use the request-specific
+// nonce supplied by proxy.ts, so these pages must not be statically cached.
+export const dynamic = 'force-dynamic'
+
 export default function RootLayout({
   children,
 }: {
