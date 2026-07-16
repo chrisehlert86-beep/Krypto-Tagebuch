@@ -13,7 +13,6 @@ type Member = {
   first_name: string
   last_name: string
   invite_code: string
-  role: 'member' | 'admin'
   status: 'active' | 'inactive'
   telegram_sync_status: 'pending' | 'synced' | 'failed'
   telegram_sync_error: string | null
@@ -41,39 +40,6 @@ export default function MembersPage() {
       toast.error('Mitglieder konnten nicht geladen werden.')
     } finally {
       setLoading(false)
-    }
-  }
-
-  async function changeRole(id: string, role: string) {
-    try {
-      const response = await fetch(
-        '/api/admin/members/update-role',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id,
-            role,
-          }),
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        toast.error(data.error)
-        return
-      }
-
-      toast.success('Rolle geändert.')
-
-      await loadMembers()
-
-    } catch (error) {
-      console.error(error)
-      toast.error('Rolle konnte nicht geändert werden.')
     }
   }
 
@@ -212,26 +178,9 @@ export default function MembersPage() {
 
                     <td className="px-6 py-4">
 
-                      <select
-                        value={member.role}
-                        onChange={(e) =>
-                          changeRole(member.id, e.target.value)
-                        }
-                        className="rounded border border-gray-400 bg-white px-3 py-2 text-black"
-                      >
-
-                        <option value="member">
-                          Mitglied
-                        </option>
-
-                        <option value="admin">
-                          Administrator
-                        </option>
-
-                      </select>
-
+                      <span className="font-semibold text-black">Mitglied</span>
                       <p className="mt-1 text-xs text-gray-600">
-                        Kein Webseiten-Adminzugang
+                        Keine administrativen Rechte
                       </p>
 
                     </td>

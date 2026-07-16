@@ -5,7 +5,8 @@ export function isValidInviteCode(value: unknown): value is string {
 }
 
 export function isValidName(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0 && value.trim().length <= 100
+  return typeof value === 'string' &&
+    /^[\p{L}\p{M}][\p{L}\p{M} .'-]{0,99}$/u.test(value.trim())
 }
 
 export function acceptedAllDisclaimers(values: readonly unknown[]) {

@@ -39,6 +39,27 @@ export async function consumeRateLimit(
   return data === true
 }
 
+export async function consumeRateLimitValue(
+  bucket: string,
+  value: string,
+  limit: number,
+  windowSeconds: number,
+) {
+  const keyHash = createHmac('sha256', getRateLimitSecret())
+    .update(`${bucket}:${value}`)
+    .digest('hex')
+
+  const { data, error } = await supabaseAdmin.rpc('consume_api_rate_limit', {
+    p_bucket: bucket,
+    p_key_hash: keyHash,
+    p_window_seconds: windowSeconds,
+    p_limit: limit,
+  })
+
+  if (error) throw error
+  return data === true
+}
+
 export function rateLimitResponse() {
   return NextResponse.json(
     { error: 'Zu viele Anfragen. Bitte versuche es später erneut.' },

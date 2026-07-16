@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createFlowToken, verifyPassword } from '@/lib/auth'
-import { consumeRateLimit, getClientIp, rateLimitResponse } from '@/lib/request-security'
+import {
+  consumeRateLimit,
+  consumeRateLimitValue,
+  getClientIp,
+  rateLimitResponse,
+} from '@/lib/request-security'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 export async function POST(request: NextRequest) {
   try {
     const { username, password } = await request.json()
-
-    if (!(await consumeRateLimit(request, 'admin-login', 5, 15 * 60))) {
-      return rateLimitResponse()
-    }
 
     /*
      * Eingaben prüfen
@@ -31,11 +32,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const normalizedUsername = username.trim()
+    const ipAllowed = await consumeRateLimit(request, 'admin-login-ip', 20, 15 * 60)
+    const accountAllowed = await consumeRateLimitValue(
+      'admin-login-account', normalizedUsername.toLowerCase(), 5, 15 * 60,
+    )
+    if (!ipAllowed || !accountAllowed) return rateLimitResponse()
+
     /*
      * Benutzername prüfen
      */
     const validPassword = await verifyPassword(password)
-    const validUsername = username.trim() === process.env.ADMIN_USERNAME
+    const validUsername = normalizedUsername === process.env.ADMIN_USERNAME
 
     if (!validUsername || !validPassword) {
       return NextResponse.json(

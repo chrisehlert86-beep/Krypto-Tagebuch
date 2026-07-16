@@ -26,7 +26,7 @@ export async function GET() {
      */
     const { data, error } = await supabaseAdmin
       .from('members')
-      .select('id,first_name,last_name,invite_code,role,status,created_at,telegram_sync_status,telegram_sync_error,telegram_synced_at')
+      .select('id,first_name,last_name,invite_code,status,created_at,telegram_sync_status,telegram_sync_error,telegram_synced_at')
       .order('created_at', {
         ascending: false,
       })

@@ -37,10 +37,16 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  const inviteIsUsable = data.status === 'approved' && Boolean(
+    data.telegram_invite_link &&
+    data.telegram_invite_link_expires_at &&
+    new Date(data.telegram_invite_link_expires_at).getTime() > Date.now()
+  )
+
   return NextResponse.json({
     status: data.status,
-    telegramInviteLink: data.telegram_invite_link,
-    telegramInviteLinkExpiresAt: data.telegram_invite_link_expires_at,
+    telegramInviteLink: inviteIsUsable ? data.telegram_invite_link : null,
+    telegramInviteLinkExpiresAt: inviteIsUsable ? data.telegram_invite_link_expires_at : null,
     telegramInviteExpired: Boolean(
       data.telegram_invite_link_expires_at &&
       new Date(data.telegram_invite_link_expires_at).getTime() <= Date.now()

@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from 'node:crypto'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 function parseEnv(path) {
@@ -43,8 +43,21 @@ if (webToken && webToken !== botToken) {
 }
 
 let sessionSecret = web.get('ADMIN_SESSION_SECRET')?.trim() ?? ''
+if (!/^[A-Za-z0-9_-]{32,}$/.test(sessionSecret) && existsSync(outputPath)) {
+  sessionSecret = parseEnv(outputPath).get('ADMIN_SESSION_SECRET')?.trim() ?? ''
+}
 const generatedSessionSecret = !/^[A-Za-z0-9_-]{32,}$/.test(sessionSecret)
 if (generatedSessionSecret) sessionSecret = randomBytes(32).toString('hex')
+
+const localSecretIsValid = /^[A-Za-z0-9_-]{32,}$/.test(web.get('ADMIN_SESSION_SECRET')?.trim() ?? '')
+if (!localSecretIsValid) {
+  const source = readFileSync(webPath, 'utf8')
+  const line = `ADMIN_SESSION_SECRET=${sessionSecret}`
+  const updated = /^ADMIN_SESSION_SECRET=.*$/m.test(source)
+    ? source.replace(/^ADMIN_SESSION_SECRET=.*$/m, line)
+    : `${source.replace(/\s*$/, '')}\n${line}\n`
+  writeFileSync(webPath, updated, { encoding: 'utf8', mode: 0o600 })
+}
 
 const output = new Map([
   ['NEXT_PUBLIC_SUPABASE_URL', required(web, 'NEXT_PUBLIC_SUPABASE_URL')],
@@ -66,4 +79,5 @@ console.log(JSON.stringify({
   variables: [...output.keys()],
   telegramTokenFingerprint: createHash('sha256').update(botToken).digest('hex').slice(0, 12),
   generatedSessionSecret,
+  synchronizedLocalSessionSecret: !localSecretIsValid,
 }, null, 2))

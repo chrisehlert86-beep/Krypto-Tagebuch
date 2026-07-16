@@ -33,8 +33,11 @@ test('Einladungscodes verwenden das sichere Format', () => {
 
 test('Namen werden begrenzt und dürfen nicht leer sein', () => {
   assert.equal(isValidName(' Chris '), true)
+  assert.equal(isValidName("Anne-Marie O'Connor"), true)
   assert.equal(isValidName('   '), false)
   assert.equal(isValidName('x'.repeat(101)), false)
+  assert.equal(isValidName('<script>alert(1)</script>'), false)
+  assert.equal(isValidName('Chris\nAdmin'), false)
 })
 
 test('alle drei Disclaimer müssen ausdrücklich bestätigt sein', () => {
