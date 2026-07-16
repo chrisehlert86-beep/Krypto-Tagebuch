@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     return rateLimitResponse()
   }
 
-  const botToken = process.env.TELEGRAM_BOT_TOKEN
+  const botToken = process.env.TELEGRAM_BOT_TOKEN?.trim()
   if (!botToken) {
     return NextResponse.json({ error: 'Telegram ist nicht konfiguriert.' }, { status: 503 })
   }
