@@ -23,9 +23,15 @@ export default function Button({
       onClick={onClick}
       disabled={disabled}
       className={`
+        inline-flex
+        min-h-11
+        max-w-full
+        items-center
+        justify-center
         rounded-lg
         px-5
         py-2.5
+        text-center
         font-semibold
         shadow-sm
         transition

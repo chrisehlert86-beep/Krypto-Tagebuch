@@ -166,9 +166,9 @@ export default function AdminLoginPage() {
   if (waiting) {
     return (
 
-      <div className="flex min-h-screen items-center justify-center bg-slate-100">
+      <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
 
-        <div className="w-full max-w-md rounded-xl bg-white p-10 shadow-lg">
+        <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-lg sm:p-10">
 
           <div className="space-y-6 text-center">
 
@@ -207,9 +207,9 @@ export default function AdminLoginPage() {
 
   return (
 
-    <div className="flex min-h-screen items-center justify-center bg-slate-100">
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
 
-      <div className="w-full max-w-md rounded-xl bg-white p-10 shadow-lg">
+      <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-lg sm:p-10">
 
         <h1 className="mb-8 text-center text-3xl font-bold text-black">
           Admin Login

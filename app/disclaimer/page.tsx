@@ -83,12 +83,12 @@ export default function DisclaimerPage() {
       <Card>
         <div
           onScroll={handleScroll}
-          className="h-[32rem] space-y-7 overflow-y-auto rounded-xl border border-gray-300 bg-white p-6 leading-7 text-black sm:p-8"
+          className="h-[60dvh] min-h-80 max-h-[32rem] space-y-6 overflow-y-auto overscroll-contain rounded-xl border border-gray-300 bg-white p-4 leading-7 text-black sm:space-y-7 sm:p-8"
           aria-label="Haftungsausschluss"
           tabIndex={0}
         >
           <header className="border-b border-gray-200 pb-5">
-            <h2 className="text-2xl font-bold">Haftungsausschluss</h2>
+            <h2 className="text-xl font-bold sm:text-2xl">Haftungsausschluss</h2>
             <p className="mt-2 text-sm text-gray-600">
               {APP_NAME} · Version {DISCLAIMER_VERSION}
             </p>
@@ -272,12 +272,12 @@ function ConfirmationCheckbox({
   label: string
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-4 rounded-lg border border-gray-200 p-4 text-black transition hover:bg-gray-50">
+    <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 p-3 text-black transition hover:bg-gray-50 sm:items-center sm:gap-4 sm:p-4">
       <input
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="h-5 w-5 shrink-0"
+        className="mt-0.5 h-6 w-6 shrink-0 sm:mt-0"
       />
       <span className="font-medium">{label}</span>
     </label>

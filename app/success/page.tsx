@@ -87,8 +87,8 @@ export default function SuccessPage() {
           )}
 
           {application?.status === 'approved' && application.telegramInviteLink && !inviteExpired && (
-            <div className="rounded-xl border border-green-300 bg-green-50 p-6">
-              <h2 className="mb-3 text-2xl font-bold text-green-800">
+            <div className="rounded-xl border border-green-300 bg-green-50 p-4 sm:p-6">
+              <h2 className="mb-3 text-xl font-bold text-green-800 sm:text-2xl">
                 Du wurdest freigegeben
               </h2>
               <p className="mb-6 leading-7">
@@ -167,8 +167,8 @@ function StatusPanel({
   }
 
   return (
-    <div className={`rounded-xl border p-6 ${colors[tone]}`}>
-      <h2 className="mb-3 text-2xl font-bold">{title}</h2>
+    <div className={`rounded-xl border p-4 sm:p-6 ${colors[tone]}`}>
+      <h2 className="mb-3 text-xl font-bold sm:text-2xl">{title}</h2>
       <p className="leading-7">{text}</p>
     </div>
   )

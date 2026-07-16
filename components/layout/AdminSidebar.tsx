@@ -30,23 +30,23 @@ export default function AdminSidebar() {
   ]
 
   return (
-    <aside className="w-72 bg-slate-900 text-white">
+    <aside className="w-full shrink-0 bg-slate-900 text-white lg:min-h-screen lg:w-72">
 
-      <div className="border-b border-slate-700 p-8">
+      <div className="border-b border-slate-700 px-4 py-4 sm:px-6 lg:p-8">
 
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">
           Krypto-Tagebuch
         </h1>
 
-        <p className="mt-2 text-white">
+        <p className="mt-1 text-sm text-slate-300 lg:mt-2 lg:text-base lg:text-white">
           Administration
         </p>
 
       </div>
 
-      <nav className="p-4">
+      <nav className="overflow-x-auto p-3 lg:p-4">
 
-        <ul className="space-y-2">
+        <ul className="flex min-w-max gap-2 lg:block lg:min-w-0 lg:space-y-2">
 
           {links.map((link) => {
 
@@ -58,7 +58,7 @@ export default function AdminSidebar() {
 
                 <Link
                   href={link.href}
-                  className={`block rounded-lg px-4 py-3 transition ${
+                  className={`block whitespace-nowrap rounded-lg px-4 py-2.5 text-sm transition sm:text-base lg:py-3 ${
                     active
                       ? 'bg-blue-700 font-bold'
                       : 'hover:bg-slate-800'

@@ -32,7 +32,7 @@ export default function LogoutButton() {
       type="button"
       onClick={() => void logout()}
       disabled={loggingOut}
-      className="rounded-lg bg-red-700 px-5 py-2 font-semibold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+      className="min-h-11 shrink-0 rounded-lg bg-red-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 sm:text-base"
     >
       {loggingOut ? 'Abmeldung...' : 'Abmelden'}
     </button>

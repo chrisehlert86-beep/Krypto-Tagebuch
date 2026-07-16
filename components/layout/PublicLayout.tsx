@@ -12,13 +12,13 @@ export default function PublicLayout({
   currentStep,
 }: PublicLayoutProps) {
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen min-w-0 flex-col bg-gray-100 lg:flex-row">
 
       <PublicSidebar currentStep={currentStep} />
 
-      <main className="flex-1 overflow-y-auto p-10">
+      <main className="min-w-0 flex-1 overflow-y-auto px-4 py-6 sm:p-8 lg:p-10">
 
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto w-full max-w-6xl">
           {children}
         </div>
 

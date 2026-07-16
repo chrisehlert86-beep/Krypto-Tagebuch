@@ -28,7 +28,7 @@ export default function StatCard({
   }
 
   return (
-    <div className="flex h-52 flex-col rounded-xl border border-gray-300 bg-white p-8 shadow-md">
+    <div className="flex min-h-44 flex-col rounded-xl border border-gray-300 bg-white p-5 shadow-md sm:h-52 sm:p-8">
 
       <p className="text-sm font-semibold uppercase tracking-wide text-black">
         {title}
@@ -38,7 +38,7 @@ export default function StatCard({
 
         {value !== undefined ? (
 
-          <h2 className={`text-6xl font-bold ${colors[color]}`}>
+          <h2 className={`text-5xl font-bold sm:text-6xl ${colors[color]}`}>
             {value}
           </h2>
 
@@ -46,10 +46,10 @@ export default function StatCard({
 
           <div className="w-full">
 
-            <div className={`grid grid-cols-2 gap-8 text-center ${colors[color]}`}>
+            <div className={`grid grid-cols-2 gap-3 text-center sm:gap-8 ${colors[color]}`}>
 
               <div>
-                <div className="text-4xl font-bold">
+                <div className="text-2xl font-bold sm:text-4xl">
                   {primaryValue} Stk
                 </div>
 
@@ -59,7 +59,7 @@ export default function StatCard({
               </div>
 
               <div>
-                <div className="text-4xl font-bold">
+                <div className="text-2xl font-bold sm:text-4xl">
                   {secondaryValue} Stk
                 </div>
 

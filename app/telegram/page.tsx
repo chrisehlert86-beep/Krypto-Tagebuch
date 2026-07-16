@@ -22,7 +22,7 @@ export default function TelegramPage() {
 
         <div className="space-y-8">
 
-          <div className="rounded-xl border border-blue-200 bg-blue-50 p-6">
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 sm:p-6">
 
             <h2 className="mb-3 text-xl font-bold text-black">
               Warum Telegram?
@@ -36,7 +36,7 @@ export default function TelegramPage() {
 
           </div>
 
-          <div className="rounded-xl border border-gray-300 bg-gray-50 p-8">
+          <div className="overflow-hidden rounded-xl border border-gray-300 bg-gray-50 p-4 sm:p-8">
 
   <h2 className="mb-4 text-xl font-bold text-black">
     Telegram verbinden
