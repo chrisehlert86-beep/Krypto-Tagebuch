@@ -94,126 +94,131 @@ export default function DisclaimerPage() {
             </p>
           </header>
 
-          <DisclaimerSection title="1. Zweck der Community">
+          <DisclaimerSection title="1. Charakter und Zweck von „Tagebuch“">
             <p>
-              {APP_NAME} ist eine private Community zum Austausch über Kryptowährungen,
-              Finanzmärkte, Marktbeobachtungen und persönliche Handelsaktivitäten. Die
-              bereitgestellten Inhalte dienen ausschließlich allgemeinen Informations-,
-              Dokumentations- und Bildungszwecken.
+              „Tagebuch“ ist ein privates Trading-Tagebuch und ausdrücklich keine Signalgruppe. Die veröffentlichten Inhalte dienen der Dokumentation meiner persönlichen Marktbeobachtungen, Analysen, Einschätzungen und tatsächlich von mir vorgenommenen bzw. geplanten Handelsentscheidungen.
+            </p>
+            <p>
+              Meine eigenen Trades werden mit einem zeitlichen Versatz veröffentlicht und in „Tagebuch“ dokumentiert. Die Beiträge sind daher insbesondere nicht als Aufforderung gedacht, einen Trade zeitgleich oder zu denselben Konditionen nachzuhandeln.
             </p>
           </DisclaimerSection>
 
-          <DisclaimerSection title="2. Keine Anlage-, Finanz-, Rechts- oder Steuerberatung">
+          <DisclaimerSection title="2. Keine Anlage-, Finanz- oder Handelsberatung">
             <p>
-              Sämtliche Beiträge stellen persönliche Meinungen oder Erfahrungen der jeweils
-              veröffentlichenden Person dar. Sie sind weder eine individuelle Anlage- oder
-              Finanzberatung noch eine Rechts- oder Steuerberatung. Sie sind insbesondere
-              keine persönliche Empfehlung, kein Angebot und keine Aufforderung zum Kauf,
-              Halten oder Verkauf von Kryptowerten, Wertpapieren oder sonstigen
-              Finanzinstrumenten.
+              Sämtliche in „Tagebuch“ veröffentlichten Inhalte stellen ausschließlich meine persönlichen Einschätzungen und Entscheidungen dar. Sie sind keine individuelle Anlage-, Finanz-, Vermögens- oder Handelsberatung und keine Aufforderung oder Empfehlung zum Kauf, Verkauf oder Halten bestimmter Kryptowährungen, Finanzinstrumente oder sonstiger Vermögenswerte.
             </p>
             <p>
-              Die Bezeichnung eines Inhalts als Meinung oder Information ändert nichts an
-              seiner rechtlichen Einordnung. Deshalb dürfen in der Community keine
-              individuellen Beratungsleistungen oder verbindlichen Handelsanweisungen
-              angeboten werden.
+              Es erfolgt keine Prüfung, ob ein dargestellter Trade zu den persönlichen finanziellen Verhältnissen, Kenntnissen, Erfahrungen, Anlagezielen oder zur Risikobereitschaft eines Mitglieds passt.
+            </p>
+            <p>
+              Jeder Nutzer entscheidet eigenverantwortlich, ob, wann, wie und in welchem Umfang er handelt.
             </p>
           </DisclaimerSection>
 
-          <DisclaimerSection title="3. Erhebliche Risiken und möglicher Totalverlust">
+          <DisclaimerSection title="3. Analysemethode und Handelsansatz">
             <p>
-              Kryptowerte und andere spekulative Anlagen unterliegen erheblichen
-              Kursschwankungen. Es besteht das Risiko eines teilweisen oder vollständigen
-              Verlusts des eingesetzten Kapitals. Weitere Risiken können unter anderem aus
-              geringer Liquidität, technischen Fehlern, Cyberangriffen, dem Verlust von
-              Zugangsdaten, Betrug, regulatorischen Änderungen oder der Insolvenz eines
-              Anbieters entstehen.
+              Für meine Kursanalysen verwende ich insbesondere die Elliott-Wellen-Theorie. Dabei konzentriere ich mich auf die übergeordneten Wellen 1–5 sowie A–C. Kleinere Unterstrukturen werden von mir grundsätzlich nicht aktiv gehandelt, da mir diese für meinen persönlichen Handelsansatz zu kurzfristig und hektisch sind.
             </p>
+            <p>Mein grundsätzliches Handelsszenario orientiert sich dabei an folgendem Schema:</p>
+            <ul className="list-disc space-y-2 pl-6">
+              <li>Welle 1: Long</li>
+              <li>Welle 2: Short</li>
+              <li>Welle 3: Long</li>
+              <li>Welle 4: Short</li>
+              <li>Welle 5: Long – vollständiger Verkauf; anschließend gegebenenfalls Reinvestition im Bärenmarkt</li>
+              <li>Welle A: Short</li>
+              <li>Welle B: grundsätzlich kein Trade; geplanter Wiedereinstieg in eine Short-Position gegebenenfalls am angenommenen Top der B-Welle</li>
+              <li>Welle C: Short – vollständiger Verkauf; anschließend gegebenenfalls Reinvestition im folgenden Bullenmarkt</li>
+            </ul>
             <p>
-              Vergangene Wertentwicklungen, Simulationen, Prognosen und dargestellte Erfolge
-              sind kein verlässlicher Indikator für zukünftige Ergebnisse. Es gibt keine
-              Garantie für Gewinne oder den Erhalt des eingesetzten Kapitals.
-            </p>
-          </DisclaimerSection>
-
-          <DisclaimerSection title="4. Eigenverantwortliche Entscheidungen">
-            <p>
-              Jedes Mitglied trifft sämtliche Anlage- und Handelsentscheidungen selbstständig
-              und auf eigenes Risiko. Vor einer Entscheidung sind eigene Nachforschungen
-              erforderlich. Dabei sollten insbesondere die persönliche finanzielle Situation,
-              Risikotragfähigkeit, Anlageziele und Kenntnisse berücksichtigt werden. Bei
-              Unsicherheit ist unabhängiger, entsprechend qualifizierter fachlicher Rat
-              einzuholen.
-            </p>
-            <p>
-              Es sollte nur Kapital eingesetzt werden, dessen vollständiger Verlust ohne
-              Gefährdung des Lebensunterhalts getragen werden kann. Zugangsdaten, Private Keys,
-              Seed-Phrases oder Passwörter dürfen niemals mit anderen Mitgliedern geteilt
-              werden.
+              Dieses Schema beschreibt lediglich meinen persönlichen Ansatz. Die Elliott-Wellen-Zählung ist eine interpretative Analysemethode. Eine Wellenzählung kann sich nachträglich als falsch erweisen, muss angepasst werden oder kann von anderen Marktteilnehmern völlig anders bewertet werden. Aus der dargestellten Analyse lässt sich keine Gewissheit über zukünftige Kursentwicklungen ableiten.
             </p>
           </DisclaimerSection>
 
-          <DisclaimerSection title="5. Richtigkeit und Verfügbarkeit von Informationen">
+          <DisclaimerSection title="4. Eigene Charts und Analysen">
             <p>
-              Inhalte können unvollständig, veraltet oder fehlerhaft sein. Kurse, Kennzahlen,
-              Nachrichten und sonstige Daten können aus externen Quellen stammen und zeitlich
-              verzögert sein. Eine Gewähr für Richtigkeit, Vollständigkeit, Aktualität oder
-              dauerhafte Verfügbarkeit wird nicht übernommen. Inhalte können jederzeit ohne
-              vorherige Ankündigung geändert oder entfernt werden.
+              In „Tagebuch“ veröffentliche ich unter anderem eigene Charts, Wellenzählungen, mögliche Kursziele, Einstiegs- und Ausstiegsbereiche sowie weitere Marktbeobachtungen, auf deren Grundlage ich meine persönlichen Handelsentscheidungen treffe.
+            </p>
+            <p>
+              Auch konkrete Kursmarken, Positionierungen, Einstiege, Ausstiege, Stop-Loss-Bereiche oder andere Angaben zu meinen eigenen Trades stellen keine Aufforderung dar, diese zu übernehmen oder nachzuhandeln.
+            </p>
+            <p>
+              Die Veröffentlichung eines Trades bedeutet insbesondere nicht, dass ein anderer Nutzer denselben Preis, dieselbe Ausführung oder dasselbe Ergebnis erzielen kann.
             </p>
           </DisclaimerSection>
 
-          <DisclaimerSection title="6. Beiträge von Mitgliedern und Interessenkonflikte">
+          <DisclaimerSection title="5. Erhebliches Verlustrisiko">
             <p>
-              Mitglieder sind für ihre eigenen Beiträge verantwortlich. Aussagen anderer
-              Mitglieder werden nicht automatisch geprüft oder gebilligt. Verfasser können an
-              erwähnten Kryptowerten oder Projekten wirtschaftlich beteiligt sein. Werbung,
-              Affiliate-Links, Sponsoring und andere kommerzielle Interessen müssen klar und
-              verständlich als solche gekennzeichnet werden.
+              Der Handel mit Kryptowährungen und anderen spekulativen Vermögenswerten ist mit erheblichen Risiken verbunden. Dies gilt insbesondere bei Short-Positionen, Derivaten und beim Einsatz von Hebeln.
             </p>
             <p>
-              Marktmanipulation, irreführende Erfolgsversprechen, unerlaubte Beratung,
-              rechtswidrige Inhalte und die Aufforderung zur Preismanipulation sind untersagt.
-              Verdächtige Inhalte sollten unverzüglich einem Administrator gemeldet werden.
+              Kurse können sich innerhalb kurzer Zeit erheblich verändern. Handelspositionen können zu erheblichen Verlusten führen. Je nach eingesetztem Produkt besteht das Risiko des vollständigen Verlustes des eingesetzten Kapitals (Totalverlust). Bei bestimmten Produkten oder Vertragsgestaltungen können darüber hinausgehende Risiken bestehen.
+            </p>
+            <p>
+              Frühere Trades, Ergebnisse oder Kursentwicklungen sind kein verlässlicher Indikator für zukünftige Ergebnisse.
             </p>
           </DisclaimerSection>
 
-          <DisclaimerSection title="7. Externe Angebote und Links">
+          <DisclaimerSection title="6. Eigenverantwortliches Handeln">
             <p>
-              Verweise auf externe Webseiten, Börsen, Wallets, Bots oder andere Dienste dienen
-              nur der Information. Für deren Inhalte, Sicherheit, Verfügbarkeit und
-              Datenschutzpraktiken sind die jeweiligen Anbieter verantwortlich. Vor der
-              Nutzung eines externen Angebots sind dessen Bedingungen und Risiken selbst zu
-              prüfen.
+              Jeder Nutzer ist für seine Handelsentscheidungen selbst verantwortlich. Vor einer Transaktion sind die jeweiligen Chancen und Risiken eigenständig zu prüfen.
+            </p>
+            <p>Dies betrifft insbesondere:</p>
+            <ul className="list-disc space-y-2 pl-6">
+              <li>Auswahl des Brokers bzw. der Börse,</li>
+              <li>Auswahl und Funktionsweise des gehandelten Produkts,</li>
+              <li>Positionsgröße,</li>
+              <li>Einsatz von Hebeln,</li>
+              <li>Long- oder Short-Positionierung,</li>
+              <li>Orderart,</li>
+              <li>Stop-Loss- und Take-Profit-Einstellungen,</li>
+              <li>Gebühren und Finanzierungskosten,</li>
+              <li>Liquidationsrisiken sowie</li>
+              <li>steuerliche Auswirkungen.</li>
+            </ul>
+          </DisclaimerSection>
+
+          <DisclaimerSection title="7. Broker, Börsen und technische Ausführung">
+            <p>
+              Ich habe keinen Einfluss auf die technische Funktionsfähigkeit eines vom Nutzer eingesetzten Brokers, einer Kryptobörse, Wallet oder sonstigen Handelsplattform.
+            </p>
+            <p>
+              Soweit gesetzlich zulässig, übernehme ich keine Haftung für Schäden oder Verluste, die beispielsweise durch Fehlbedienung des eigenen Brokers, falsch eingegebene Orders, fehlerhafte Positionsgrößen, versehentlich eingesetzten Hebel, Liquidationen, technische Störungen, verzögerte oder nicht ausgeführte Orders, Ausfälle einer Handelsplattform oder vergleichbare Umstände entstehen.
+            </p>
+            <p>
+              Jeder Nutzer ist selbst dafür verantwortlich, die Funktionsweise der von ihm verwendeten Handelsplattform und der eingesetzten Ordertypen zu kennen.
             </p>
           </DisclaimerSection>
 
-          <DisclaimerSection title="8. Haftung">
+          <DisclaimerSection title="8. Richtigkeit und Aktualität">
             <p>
-              Die Nutzung der Community und ihrer Inhalte erfolgt auf eigene Verantwortung.
-              Soweit gesetzlich zulässig, wird keine Haftung für Entscheidungen, Geschäfte oder
-              Verluste übernommen, die allein im Vertrauen auf bereitgestellte Inhalte
-              getroffen beziehungsweise verursacht wurden.
+              Analysen und Einschätzungen geben den Informations- und Meinungsstand zum Zeitpunkt ihrer Erstellung wieder. Finanzmärkte können sich jederzeit verändern. Eine zuvor veröffentlichte Einschätzung kann deshalb bereits kurze Zeit später überholt sein.
             </p>
             <p>
-              Unberührt bleibt die Haftung bei Vorsatz und grober Fahrlässigkeit, bei Verletzung
-              von Leben, Körper oder Gesundheit sowie in allen weiteren Fällen, in denen eine
-              Haftung gesetzlich nicht ausgeschlossen oder beschränkt werden darf.
+              Trotz sorgfältiger Erstellung kann keine Gewähr für Vollständigkeit, Richtigkeit, Aktualität oder dauerhafte Gültigkeit der veröffentlichten Informationen übernommen werden.
             </p>
           </DisclaimerSection>
 
-          <DisclaimerSection title="9. Kenntnisnahme">
+          <DisclaimerSection title="9. Haftung">
             <p>
-              Mit deiner Zustimmung bestätigst du, dass du diese Hinweise vollständig gelesen
-              und verstanden hast, die beschriebenen Risiken kennst und deine Entscheidungen
-              eigenverantwortlich triffst.
+              Handelsentscheidungen erfolgen ausschließlich auf eigene Verantwortung und eigenes Risiko.
+            </p>
+            <p>
+              Soweit gesetzlich zulässig, wird keine Haftung für Handels- oder Anlageverluste übernommen, die aufgrund eigener Entscheidungen eines Nutzers oder aufgrund der Verwendung, Interpretation oder Übernahme der in „Tagebuch“ veröffentlichten Informationen entstehen.
+            </p>
+            <p>
+              Zwingende gesetzliche Haftungstatbestände bleiben hiervon unberührt. Insbesondere soll dieser Disclaimer keine Haftung ausschließen oder beschränken, soweit ein solcher Ausschluss gesetzlich nicht zulässig ist.
             </p>
           </DisclaimerSection>
 
-          <p className="rounded-lg bg-gray-100 p-4 text-sm text-gray-700">
-            Stand: 14. Juli 2026. Dieser Text ersetzt keine individuelle rechtliche Prüfung des
-            konkreten Community-Angebots.
-          </p>
+          <DisclaimerSection title="10. Bestätigung">
+            <p>
+              Mit der Nutzung von „Tagebuch“ bestätige ich, dass ich verstanden habe, dass es sich um die Dokumentation persönlicher Trades und Marktanalysen und nicht um eine Signalgruppe oder individuelle Anlageberatung handelt.
+            </p>
+            <p>
+              Ich treffe sämtliche Handelsentscheidungen eigenverantwortlich und bin mir bewusst, dass spekulativer Handel zu erheblichen Verlusten bis hin zum vollständigen Verlust des eingesetzten Kapitals führen kann.
+            </p>
+          </DisclaimerSection>
         </div>
 
         {!hasScrolledToBottom && (
@@ -234,17 +239,17 @@ export default function DisclaimerPage() {
               <ConfirmationCheckbox
                 checked={disclaimerRead}
                 onChange={setDisclaimerRead}
-                label={`Disclaimer gelesen (Version ${DISCLAIMER_VERSION})`}
+                label="Ich habe den Disclaimer vollständig gelesen und verstanden."
               />
               <ConfirmationCheckbox
                 checked={risksUnderstood}
                 onChange={setRisksUnderstood}
-                label="Risiken verstanden"
+                label="Ich habe die beschriebenen Risiken verstanden und akzeptiere den Haftungsausschluss."
               />
               <ConfirmationCheckbox
                 checked={noAdviceAcknowledged}
                 onChange={setNoAdviceAcknowledged}
-                label="Keine Anlageberatung"
+                label="Ich habe verstanden, dass die Inhalte keine Anlage-, Finanz-, Rechts- oder Steuerberatung darstellen."
               />
             </fieldset>
 
@@ -293,7 +298,7 @@ function DisclaimerSection({
 }) {
   return (
     <section className="space-y-3">
-      <h3 className="text-lg font-bold">{title}</h3>
+      <h3 className="text-lg font-extrabold">{title}</h3>
       {children}
     </section>
   )
