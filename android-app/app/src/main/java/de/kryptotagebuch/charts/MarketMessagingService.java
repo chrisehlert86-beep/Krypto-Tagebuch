@@ -28,7 +28,7 @@ public final class MarketMessagingService extends FirebaseMessagingService {
     @Override public void onMessageReceived(RemoteMessage message) {
         Map<String, String> data = message.getData();
         if (data.isEmpty()) return;
-        boolean quiet = NotificationPreferences.isQuietNow(this);
+        boolean quiet = NotificationPreferences.isQuietNow(this) || isStale(data);
         SignalStore.add(this, data, quiet);
         showNotification(data, quiet);
     }
@@ -86,6 +86,14 @@ public final class MarketMessagingService extends FirebaseMessagingService {
     }
 
     private static String clean(String value, String fallback) { return value == null || value.isBlank() ? fallback : value; }
+    private static boolean isStale(Map<String, String> data) {
+        try {
+            long sentAt = Long.parseLong(clean(data.get("sentAt"), "0"));
+            return sentAt > 0 && System.currentTimeMillis() - sentAt > 10 * 60 * 1000L;
+        } catch (NumberFormatException ignored) {
+            return false;
+        }
+    }
     private static String timeframeLabel(String value) {
         if ("m30".equalsIgnoreCase(value)) return "30M";
         if ("daily".equalsIgnoreCase(value)) return "1D";
