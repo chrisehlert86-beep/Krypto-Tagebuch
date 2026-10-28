@@ -12,6 +12,10 @@ export default function AdminSidebar() {
       label: 'Dashboard',
     },
     {
+      href: '/admin/markets',
+      label: 'Märkte',
+    },
+    {
       href: '/admin/applications',
       label: 'Bewerbungen',
     },

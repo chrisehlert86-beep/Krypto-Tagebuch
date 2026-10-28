@@ -41,6 +41,10 @@ Standardausgabe unter Windows: `D:\vercel-import.env`.
 - Supabase als Datenbank
 - separater Telegram-Bot auf dem Geekom
 - Vercel für das Web-Deployment
+- geschütztes Markt-Dashboard mit von Geekom synchronisierten Analyse-Daten
 
 Die Webseite kommuniziert mit Telegram ausschließlich über signierte
 Telegram-Login-Daten und Supabase. Der Bot läuft unabhängig als systemd-Dienst.
+
+Der vorbereitete Ablauf für Markt-App, Kurzmeldungen und Zielzonen-Alarme ist in
+[`docs/market-system-go-live.md`](docs/market-system-go-live.md) dokumentiert.

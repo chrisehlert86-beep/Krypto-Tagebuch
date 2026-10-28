@@ -72,8 +72,11 @@ export async function proxy(request: NextRequest) {
   }
   const isProtectedAdminPage = request.nextUrl.pathname.startsWith('/admin') &&
     request.nextUrl.pathname !== '/admin/login'
+  const localMarketPreview = process.env.NODE_ENV === 'development' &&
+    Boolean(process.env.MARKET_ANALYSIS_FIXTURE_PATH) &&
+    ['127.0.0.1', 'localhost'].includes(request.nextUrl.hostname)
 
-  if (isProtectedAdminPage) {
+  if (isProtectedAdminPage && !localMarketPreview) {
     const token = request.cookies.get('admin-session')?.value
     if (!token || !(await verifySession(token))) {
       response = NextResponse.redirect(new URL('/admin/login', request.url))
