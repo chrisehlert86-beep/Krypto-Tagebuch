@@ -30,7 +30,7 @@ function directionClass(direction: MarketAnalysis['direction']) {
   return 'bg-amber-400/15 text-amber-200 ring-amber-400/30'
 }
 
-export default function MarketsDashboard() {
+export default function MarketsDashboard({ mobile = false }: { mobile?: boolean }) {
   const [markets, setMarkets] = useState<MarketAnalysis[]>([])
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null)
   const [timeframe, setTimeframe] = useState<MarketTimeframe>('daily')
@@ -78,7 +78,7 @@ export default function MarketsDashboard() {
 
   return (
     <div className="space-y-5 text-slate-100">
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className={mobile ? 'flex snap-x gap-3 overflow-x-auto pb-2' : 'grid gap-3 md:grid-cols-3'}>
         {markets.map((market) => {
           const active = market.symbol === selected.symbol
           return (
@@ -86,7 +86,7 @@ export default function MarketsDashboard() {
               key={market.symbol}
               type="button"
               onClick={() => setSelectedSymbol(market.symbol)}
-              className={`rounded-2xl border p-4 text-left transition ${active ? 'border-sky-400 bg-slate-800 shadow-lg shadow-sky-950/40' : 'border-slate-700 bg-slate-900 hover:border-slate-500'}`}
+              className={`${mobile ? 'min-w-[78%] snap-start' : ''} rounded-2xl border p-4 text-left transition ${active ? 'border-sky-400 bg-slate-800 shadow-lg shadow-sky-950/40' : 'border-slate-700 bg-slate-900 hover:border-slate-500'}`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -104,16 +104,16 @@ export default function MarketsDashboard() {
       </div>
 
       <section className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl">
-        <div className="border-b border-slate-700 p-5 sm:p-7">
+        <div className={mobile ? 'border-b border-slate-700 p-4' : 'border-b border-slate-700 p-5 sm:p-7'}>
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div>
               <div className="flex flex-wrap items-center gap-3">
-                <h2 className="text-3xl font-black text-white">{selected.displaySymbol}</h2>
+                <h2 className={`${mobile ? 'text-2xl' : 'text-3xl'} font-black text-white`}>{selected.displaySymbol}</h2>
                 <span className={`rounded-full px-3 py-1 text-sm font-black ring-1 ${directionClass(selected.direction)}`}>
                   {directionLabel(selected.direction)}
                 </span>
               </div>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">{selected.summary}</p>
+              {!mobile && <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">{selected.summary}</p>}
             </div>
             <div className="flex rounded-xl border border-slate-700 bg-slate-950 p-1">
               {TIMEFRAMES.map((item) => (
@@ -129,7 +129,7 @@ export default function MarketsDashboard() {
             </div>
           </div>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className={`mt-6 grid gap-3 ${mobile ? 'grid-cols-2' : 'sm:grid-cols-2 xl:grid-cols-4'}`}>
             <Metric label="Laufende Welle" value={selected.activeCase.waveLabel} accent="text-fuchsia-300" />
             <Metric
               label={selected.target.kind === 'top' ? 'Nächstes Top' : 'Nächster Boden'}
@@ -151,11 +151,11 @@ export default function MarketsDashboard() {
           </div>
         </div>
 
-        <div className="p-3 sm:p-6">
+        <div className={mobile ? 'p-2' : 'p-3 sm:p-6'}>
           <MarketChart analysis={selected} timeframe={timeframe} />
         </div>
 
-        <div className="grid gap-4 border-t border-slate-700 p-5 sm:p-7 lg:grid-cols-2">
+        {!mobile && <div className="grid gap-4 border-t border-slate-700 p-5 sm:p-7 lg:grid-cols-2">
           <article className="rounded-2xl border border-slate-700 bg-slate-950/60 p-5">
             <h3 className="font-black text-white">Aktuelles Szenario</h3>
             <p className="mt-3 text-sm leading-6 text-slate-300">{selected.activeCase.interpretation}</p>
@@ -164,7 +164,7 @@ export default function MarketsDashboard() {
             <h3 className="font-black text-white">Wellen-Synthese</h3>
             <p className="mt-3 text-sm leading-6 text-slate-300">{selected.currentWaveSummary}</p>
           </article>
-        </div>
+        </div>}
       </section>
 
       <p className="text-center text-xs text-slate-500">Nur Information, keine Anlageberatung.</p>

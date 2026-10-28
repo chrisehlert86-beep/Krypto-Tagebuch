@@ -48,3 +48,13 @@ Telegram-Login-Daten und Supabase. Der Bot läuft unabhängig als systemd-Dienst
 
 Der vorbereitete Ablauf für Markt-App, Kurzmeldungen und Zielzonen-Alarme ist in
 [`docs/market-system-go-live.md`](docs/market-system-go-live.md) dokumentiert.
+
+## Android-App
+
+Die Android-App liegt unter [`android-app`](android-app) und öffnet die geschützte,
+für Smartphones optimierte Route `/mobile/markets`. Zugangsdaten werden nicht im
+App-Code gespeichert; die Anmeldung verwendet die serverseitig geprüfte
+Admin-Sitzung der Web-App.
+
+Ein installierbares APK wird bei Android-Tags (`android-v*`) über
+`.github/workflows/android-apk.yml` gebaut und als GitHub Release veröffentlicht.
