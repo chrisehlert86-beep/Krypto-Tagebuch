@@ -5,7 +5,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 export const INITIAL_MARKET_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'] as const
 
 export type MarketDirection = 'long' | 'short' | 'wait'
-export type MarketTimeframe = 'daily' | 'weekly' | 'monthly'
+export type MarketTimeframe = 'm30' | 'daily' | 'weekly' | 'monthly'
 
 export type MarketCandle = {
   time: number
@@ -36,6 +36,27 @@ export type MarketCase = {
   confidence: number
 }
 
+export type MarketSignalLevel = {
+  ratio: string
+  price: number
+  role: 'target' | 'long_entry' | 'short_entry'
+  crossing: 'up' | 'down'
+}
+
+export type MarketSignalPlan = {
+  timeframe: MarketTimeframe
+  timeframeLabel: string
+  waveLabel: string
+  direction: 'long' | 'short'
+  levels: MarketSignalLevel[]
+  invalidation: {
+    relation: 'below' | 'above'
+    price: number
+    confirmation?: string
+  }
+  note?: string
+}
+
 export type MarketAnalysis = {
   symbol: string
   displaySymbol: string
@@ -62,6 +83,7 @@ export type MarketAnalysis = {
     relation: 'below' | 'above'
     price: number
   }
+  signalPlans?: MarketSignalPlan[]
   candles: Record<MarketTimeframe, MarketCandle[]>
 }
 

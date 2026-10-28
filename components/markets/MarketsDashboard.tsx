@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
-import type { MarketAnalysis, MarketTimeframe } from '@/lib/market-analysis'
+import type { MarketAnalysis, MarketSignalPlan, MarketTimeframe } from '@/lib/market-analysis'
 import MarketChart from '@/components/markets/MarketChart'
 
 const TIMEFRAMES: Array<{ value: MarketTimeframe; label: string }> = [
+  { value: 'm30', label: '30M' },
   { value: 'daily', label: '1D' },
   { value: 'weekly', label: '1W' },
   { value: 'monthly', label: '1M' },
@@ -28,6 +29,16 @@ function directionClass(direction: MarketAnalysis['direction']) {
   if (direction === 'long') return 'bg-emerald-400/15 text-emerald-300 ring-emerald-400/30'
   if (direction === 'short') return 'bg-rose-400/15 text-rose-300 ring-rose-400/30'
   return 'bg-amber-400/15 text-amber-200 ring-amber-400/30'
+}
+
+function planFor(market: MarketAnalysis, timeframe: MarketTimeframe): MarketSignalPlan | null {
+  return market.signalPlans?.find((plan) => plan.timeframe === timeframe) ?? null
+}
+
+function levelRoleLabel(role: MarketSignalPlan['levels'][number]['role']) {
+  if (role === 'long_entry') return 'Long-Einstieg'
+  if (role === 'short_entry') return 'Short-Einstieg'
+  return 'Ziel'
 }
 
 export default function MarketsDashboard({ mobile = false }: { mobile?: boolean }) {
@@ -58,6 +69,8 @@ export default function MarketsDashboard({ mobile = false }: { mobile?: boolean 
     () => markets.find((market) => market.symbol === selectedSymbol) ?? null,
     [markets, selectedSymbol],
   )
+  const selectedPlan = selected ? planFor(selected, timeframe) : null
+  const shownDirection = selectedPlan?.direction ?? selected?.direction ?? 'wait'
 
   if (loading) {
     return <div className="rounded-2xl bg-slate-900 p-8 text-slate-200">Marktanalysen werden geladen…</div>
@@ -109,8 +122,8 @@ export default function MarketsDashboard({ mobile = false }: { mobile?: boolean 
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <h2 className={`${mobile ? 'text-2xl' : 'text-3xl'} font-black text-white`}>{selected.displaySymbol}</h2>
-                <span className={`rounded-full px-3 py-1 text-sm font-black ring-1 ${directionClass(selected.direction)}`}>
-                  {directionLabel(selected.direction)}
+                <span className={`rounded-full px-3 py-1 text-sm font-black ring-1 ${directionClass(shownDirection)}`}>
+                  {directionLabel(shownDirection)}
                 </span>
               </div>
               {!mobile && <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">{selected.summary}</p>}
@@ -130,16 +143,26 @@ export default function MarketsDashboard({ mobile = false }: { mobile?: boolean 
           </div>
 
           <div className={`mt-6 grid gap-3 ${mobile ? 'grid-cols-2' : 'sm:grid-cols-2 xl:grid-cols-4'}`}>
-            <Metric label="Laufende Welle" value={selected.activeCase.waveLabel} accent="text-fuchsia-300" />
-            <Metric
-              label={selected.target.kind === 'top' ? 'Nächstes Top' : 'Nächster Boden'}
-              value={`${price(selected.target.zone[0])}–${price(selected.target.zone[1])}`}
-              detail={selected.target.fibRatio ? `Fib ${selected.target.fibRatio} · ${price(selected.target.fibPrice)} USDT` : undefined}
-              accent="text-amber-300"
-            />
+            <Metric label="Laufende Welle" value={selectedPlan?.waveLabel ?? selected.activeCase.waveLabel} accent="text-fuchsia-300" />
+            {selectedPlan ? (
+              <Metric
+                label={selectedPlan.levels.some((level) => level.role.includes('entry')) ? 'Fibonacci-Einstiegslevel' : 'Fibonacci-Ziele'}
+                value={selectedPlan.levels.map((level) => `Fib ${level.ratio}: ${price(level.price)}`).join(' · ')}
+                detail={[...new Set(selectedPlan.levels.map((level) => levelRoleLabel(level.role)))].join(' / ')}
+                accent="text-amber-300"
+              />
+            ) : (
+              <Metric
+                label={selected.target.kind === 'top' ? 'Nächstes Top' : 'Nächster Boden'}
+                value={`${price(selected.target.zone[0])}–${price(selected.target.zone[1])}`}
+                detail={selected.target.fibRatio ? `Fib ${selected.target.fibRatio} · ${price(selected.target.fibPrice)} USDT` : undefined}
+                accent="text-amber-300"
+              />
+            )}
             <Metric
               label="Invalidierung"
-              value={`${selected.invalidation.relation === 'below' ? 'Unter' : 'Über'} ${price(selected.invalidation.price)}`}
+              value={`${(selectedPlan?.invalidation.relation ?? selected.invalidation.relation) === 'below' ? 'Unter' : 'Über'} ${price(selectedPlan?.invalidation.price ?? selected.invalidation.price)}`}
+              detail={selectedPlan?.invalidation.confirmation}
               accent="text-rose-300"
             />
             <Metric

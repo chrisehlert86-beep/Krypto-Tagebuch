@@ -22,22 +22,28 @@ function formatPrice(value: number) {
 }
 
 function visibleCandles(candles: MarketCandle[], timeframe: MarketTimeframe) {
-  const limit = timeframe === 'daily' ? 120 : timeframe === 'weekly' ? 104 : 72
+  const limit = timeframe === 'm30' ? 160 : timeframe === 'daily' ? 120 : timeframe === 'weekly' ? 104 : 72
   return candles.slice(-limit)
 }
 
 export default function MarketChart({ analysis, timeframe }: Props) {
-  const candles = visibleCandles(analysis.candles[timeframe], timeframe)
+  const candles = visibleCandles(analysis.candles[timeframe] ?? [], timeframe)
   if (candles.length < 2) {
     return <div className="grid h-80 place-items-center text-slate-400">Keine Chartdaten verfügbar.</div>
   }
 
+  const signalPlan = analysis.signalPlans?.find((plan) => plan.timeframe === timeframe)
+  const fibLevels = signalPlan?.levels ?? analysis.activeCase.fibonacciLevels
+  const invalidation = signalPlan?.invalidation.price ?? analysis.activeCase.invalidation
+  const targetZone: [number, number] = signalPlan && signalPlan.levels.length
+    ? [Math.min(...signalPlan.levels.map((level) => level.price)), Math.max(...signalPlan.levels.map((level) => level.price))]
+    : analysis.activeCase.targetZone
   const overlays = [
     ...analysis.activeCase.supportZones.flat(),
     ...analysis.activeCase.resistanceZones.flat(),
-    ...analysis.activeCase.targetZone,
-    analysis.activeCase.invalidation,
-    ...analysis.activeCase.fibonacciLevels.map((level) => level.price),
+    ...targetZone,
+    invalidation,
+    ...fibLevels.map((level) => level.price),
   ].filter(Number.isFinite)
   const rawMin = Math.min(...candles.map((item) => item.low), ...overlays)
   const rawMax = Math.max(...candles.map((item) => item.high), ...overlays)
@@ -64,8 +70,8 @@ export default function MarketChart({ analysis, timeframe }: Props) {
     })
     .join(' ')
 
-  const targetTop = y(analysis.activeCase.targetZone[1])
-  const targetBottom = y(analysis.activeCase.targetZone[0])
+  const targetTop = y(targetZone[1])
+  const targetBottom = y(targetZone[0])
   const gridPrices = Array.from({ length: 5 }, (_, index) => min + ((max - min) * index) / 4)
 
   return (
@@ -100,10 +106,10 @@ export default function MarketChart({ analysis, timeframe }: Props) {
           fill="url(#target-zone)"
         />
         <text x={PAD.left + 8} y={Math.min(targetTop, targetBottom) + 18} fill="#fbbf24" fontSize="13" fontWeight="700">
-          ZIELZONE
+          {signalPlan?.levels.some((level) => level.role.includes('entry')) ? 'EINSTIEGSBEREICH' : 'ZIELZONE'}
         </text>
 
-        {analysis.activeCase.fibonacciLevels.map((level) => (
+        {fibLevels.map((level) => (
           <g key={`${level.ratio}-${level.price}`}>
             <line
               x1={PAD.left}
@@ -123,13 +129,13 @@ export default function MarketChart({ analysis, timeframe }: Props) {
         <line
           x1={PAD.left}
           x2={WIDTH - PAD.right}
-          y1={y(analysis.activeCase.invalidation)}
-          y2={y(analysis.activeCase.invalidation)}
+          y1={y(invalidation)}
+          y2={y(invalidation)}
           stroke="#fb7185"
           strokeWidth="2"
           strokeDasharray="4 5"
         />
-        <text x={PAD.left + 8} y={y(analysis.activeCase.invalidation) - 7} fill="#fda4af" fontSize="12" fontWeight="700">
+        <text x={PAD.left + 8} y={y(invalidation) - 7} fill="#fda4af" fontSize="12" fontWeight="700">
           INVALIDIERUNG
         </text>
 
