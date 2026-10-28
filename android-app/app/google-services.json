@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "171112056449",
+    "project_id": "krypto-tagebuch",
+    "storage_bucket": "krypto-tagebuch.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171112056449:android:0058d4a61d1b7bee786f80",
+        "android_client_info": {
+          "package_name": "de.kryptotagebuch.charts"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApNDJpWgu2Mf1ylBv9p6iv0Q6uCG_lfug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

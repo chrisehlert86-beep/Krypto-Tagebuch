@@ -1,6 +1,10 @@
 package de.kryptotagebuch.charts;
 
 import android.app.Activity;
+import android.app.TimePickerDialog;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -18,6 +22,8 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,6 +33,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -55,14 +63,23 @@ public final class MainActivity extends Activity {
     private FrameLayout root;
     private JSONObject selectedMarket;
     private int timeframeIndex;
+    private String activeScreen = "markets";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         root = findViewById(R.id.app_root);
+        MarketMessagingService.createChannels(this);
+        FirebaseMessaging.getInstance().subscribeToTopic("market-alerts");
+        if (android.os.Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
+        }
         String cached = getSharedPreferences(CACHE_NAME, MODE_PRIVATE).getString(CACHE_KEY, "");
-        if (!cached.isEmpty() && parseMarkets(cached)) showHome();
+        String requestedScreen = getIntent().getStringExtra("screen");
+        if (!cached.isEmpty() && parseMarkets(cached)) {
+            if ("alarms".equals(requestedScreen)) showAlarms(); else showHome();
+        }
         else showLoading();
         refreshMarkets();
     }
@@ -88,13 +105,23 @@ public final class MainActivity extends Activity {
                 if (!parseMarkets(json)) throw new IllegalStateException("Leere Marktdaten");
                 getSharedPreferences(CACHE_NAME, MODE_PRIVATE).edit().putString(CACHE_KEY, json).apply();
                 mainHandler.post(() -> {
-                    if (selectedMarket == null) showHome();
+                    if (selectedMarket == null) {
+                        if ("signals".equals(activeScreen)) showSignals();
+                        else if ("alarms".equals(activeScreen)) showAlarms();
+                        else showHome();
+                    }
                     else showDetail(selectedMarket, timeframeIndex);
                 });
             } catch (Exception ignored) {
                 mainHandler.post(() -> { if (markets.isEmpty()) showError(); });
             }
         });
+    }
+
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if ("alarms".equals(intent.getStringExtra("screen"))) showAlarms();
     }
 
     private synchronized boolean parseMarkets(String json) {
@@ -139,6 +166,7 @@ public final class MainActivity extends Activity {
     }
 
     private void showHome() {
+        activeScreen = "markets";
         selectedMarket = null;
         root.removeAllViews();
         LinearLayout page = vertical();
@@ -167,7 +195,187 @@ public final class MainActivity extends Activity {
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
         scroll.addView(page);
-        root.addView(scroll, fullFrame());
+        root.addView(withNavigation(scroll, "markets"), fullFrame());
+    }
+
+    private void showSignals() {
+        activeScreen = "signals";
+        selectedMarket = null;
+        root.removeAllViews();
+        LinearLayout page = vertical();
+        page.setPadding(dp(20), dp(22), dp(20), dp(24));
+        page.addView(text("Kompakte Signale", 30, TEXT, true));
+        page.addView(text("Laufende Wellen und alle Fibonacci-Level", 14, MUTED, false));
+        boolean any = false;
+        for (JSONObject market : markets) {
+            JSONArray plans = market.optJSONArray("signalPlans");
+            if (plans == null) continue;
+            for (int i = 0; i < plans.length(); i++) {
+                JSONObject plan = plans.optJSONObject(i);
+                if (plan == null) continue;
+                any = true;
+                LinearLayout.LayoutParams params = matchWrap();
+                params.topMargin = dp(14);
+                page.addView(createSignalCard(market, plan), params);
+            }
+        }
+        if (!any) {
+            TextView empty = text("Noch keine laufenden Signale vorhanden.", 16, MUTED, false);
+            empty.setGravity(Gravity.CENTER);
+            empty.setPadding(0, dp(48), 0, 0);
+            page.addView(empty);
+        }
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.addView(page);
+        root.addView(withNavigation(scroll, "signals"), fullFrame());
+    }
+
+    private View createSignalCard(JSONObject market, JSONObject plan) {
+        LinearLayout card = vertical();
+        card.setPadding(dp(17), dp(15), dp(17), dp(16));
+        card.setBackground(rounded(PANEL, BORDER, 18));
+        String symbol = market.optString("symbol").replace("USDT", "");
+        String timeframe = timeframeLabel(plan.optString("timeframe"));
+        String direction = plan.optString("direction", "wait");
+        LinearLayout head = horizontal();
+        head.setGravity(Gravity.CENTER_VERTICAL);
+        head.addView(text(symbol + " · " + timeframe, 19, TEXT, true), new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        head.addView(pill(directionLabel(direction), directionColor(direction), PANEL_2));
+        card.addView(head);
+        TextView wave = text("Laufende Welle: " + plan.optString("waveLabel", "unklar"), 15, MUTED, false);
+        wave.setPadding(0, dp(8), 0, dp(4));
+        card.addView(wave);
+        JSONArray levels = plan.optJSONArray("levels");
+        if (levels != null) for (int i = 0; i < levels.length(); i++) {
+            JSONObject level = levels.optJSONObject(i);
+            if (level == null) continue;
+            String role = level.optString("role");
+            String action = "long_entry".equals(role) ? "LONG-EINSTIEG" : "short_entry".equals(role) ? "SHORT-EINSTIEG" : "ZIEL";
+            TextView row = text("Fib " + level.optString("ratio") + " · " + formatPrice(level.optDouble("price")) + " USDT · " + action, 14, AMBER, true);
+            row.setPadding(0, dp(5), 0, 0);
+            card.addView(row);
+        }
+        card.setOnClickListener(view -> {
+            selectedMarket = market;
+            showDetail(market, timeframeIndex(plan.optString("timeframe")));
+        });
+        return card;
+    }
+
+    private void showAlarms() {
+        activeScreen = "alarms";
+        selectedMarket = null;
+        SignalStore.markAllRead(this);
+        root.removeAllViews();
+        LinearLayout page = vertical();
+        page.setPadding(dp(20), dp(22), dp(20), dp(24));
+        page.addView(text("Alarme", 30, TEXT, true));
+        page.addView(text("Außerhalb der Ruhezeit hörbar – Nicht stören wird respektiert.", 14, MUTED, false));
+
+        LinearLayout settings = vertical();
+        settings.setPadding(dp(17), dp(15), dp(17), dp(16));
+        settings.setBackground(rounded(PANEL, BORDER, 18));
+        LinearLayout.LayoutParams settingsParams = matchWrap();
+        settingsParams.topMargin = dp(16);
+        page.addView(settings, settingsParams);
+        settings.addView(text("Ruhezeit", 17, TEXT, true));
+        settings.addView(text("In dieser Zeit bleibt der Alarm stumm und erscheint als ungelesene Meldung.", 13, MUTED, false));
+        LinearLayout times = horizontal();
+        times.setPadding(0, dp(12), 0, 0);
+        Button start = timeButton("Von " + NotificationPreferences.format(NotificationPreferences.quietStart(this)));
+        Button end = timeButton("Bis " + NotificationPreferences.format(NotificationPreferences.quietEnd(this)));
+        start.setOnClickListener(view -> chooseQuietTime(true));
+        end.setOnClickListener(view -> chooseQuietTime(false));
+        times.addView(start, new LinearLayout.LayoutParams(0, dp(50), 1));
+        LinearLayout.LayoutParams endParams = new LinearLayout.LayoutParams(0, dp(50), 1);
+        endParams.leftMargin = dp(9);
+        times.addView(end, endParams);
+        settings.addView(times);
+
+        LinearLayout historyHeader = horizontal();
+        historyHeader.setGravity(Gravity.CENTER_VERTICAL);
+        historyHeader.setPadding(0, dp(24), 0, dp(5));
+        historyHeader.addView(text("Letzte Meldungen", 19, TEXT, true), new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        TextView clear = text("Alle löschen", 13, RED, true);
+        clear.setPadding(dp(8), dp(8), 0, dp(8));
+        clear.setOnClickListener(view -> { SignalStore.clear(this); showAlarms(); });
+        historyHeader.addView(clear);
+        page.addView(historyHeader);
+        JSONArray history = SignalStore.items(this);
+        if (history.length() == 0) {
+            TextView empty = text("Noch kein Preislevel erreicht.", 15, MUTED, false);
+            empty.setGravity(Gravity.CENTER);
+            empty.setPadding(0, dp(30), 0, dp(30));
+            page.addView(empty);
+        } else for (int i = 0; i < history.length(); i++) {
+            JSONObject item = history.optJSONObject(i);
+            if (item == null) continue;
+            LinearLayout.LayoutParams params = matchWrap();
+            params.topMargin = dp(9);
+            page.addView(createHistoryCard(item), params);
+        }
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.addView(page);
+        root.addView(withNavigation(scroll, "alarms"), fullFrame());
+    }
+
+    private View createHistoryCard(JSONObject item) {
+        LinearLayout card = vertical();
+        card.setPadding(dp(15), dp(13), dp(15), dp(13));
+        card.setBackground(rounded(PANEL, BORDER, 16));
+        String symbol = item.optString("symbol", "Markt").replace("USDT", "");
+        String tf = item.optString("timeframe").toUpperCase(Locale.GERMANY);
+        String direction = item.optString("direction").toUpperCase(Locale.GERMANY);
+        card.addView(text(symbol + " · " + tf + " · " + direction, 17, TEXT, true));
+        String body = item.optString("waveLabel", "Laufende Welle") + " · Fib " + item.optString("ratio") + " bei " + item.optString("price") + " USDT";
+        TextView message = text(body, 14, AMBER, false);
+        message.setPadding(0, dp(5), 0, dp(4));
+        card.addView(message);
+        String suffix = item.optBoolean("quiet") ? " · in Ruhezeit stumm gemeldet" : "";
+        card.addView(text(new SimpleDateFormat("dd.MM.yyyy · HH:mm", Locale.GERMANY).format(new Date(item.optLong("receivedAt"))) + suffix, 12, MUTED, false));
+        return card;
+    }
+
+    private void chooseQuietTime(boolean start) {
+        int current = start ? NotificationPreferences.quietStart(this) : NotificationPreferences.quietEnd(this);
+        new TimePickerDialog(this, (picker, hour, minute) -> {
+            NotificationPreferences.store(this).edit().putInt(start ? NotificationPreferences.QUIET_START : NotificationPreferences.QUIET_END, hour * 60 + minute).apply();
+            showAlarms();
+        }, current / 60, current % 60, true).show();
+    }
+
+    private Button timeButton(String label) {
+        Button button = new Button(this);
+        button.setText(label);
+        button.setTextColor(TEXT);
+        button.setTextSize(15);
+        button.setAllCaps(false);
+        button.setBackground(rounded(PANEL_2, BORDER, 12));
+        return button;
+    }
+
+    private View withNavigation(View content, String active) {
+        LinearLayout shell = vertical();
+        shell.addView(content, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1));
+        LinearLayout nav = horizontal();
+        nav.setPadding(dp(8), dp(7), dp(8), dp(8));
+        nav.setBackgroundColor(PANEL);
+        nav.addView(navItem("Märkte", "markets", active), new LinearLayout.LayoutParams(0, dp(54), 1));
+        nav.addView(navItem("Signale", "signals", active), new LinearLayout.LayoutParams(0, dp(54), 1));
+        int unread = SignalStore.unreadCount(this);
+        nav.addView(navItem("Alarme" + (unread > 0 ? " (" + unread + ")" : ""), "alarms", active), new LinearLayout.LayoutParams(0, dp(54), 1));
+        shell.addView(nav);
+        return shell;
+    }
+
+    private TextView navItem(String label, String target, String active) {
+        TextView item = text(label, 13, target.equals(active) ? BLUE : MUTED, true);
+        item.setGravity(Gravity.CENTER);
+        item.setBackground(rounded(target.equals(active) ? PANEL_2 : PANEL, target.equals(active) ? BLUE : PANEL, 12));
+        item.setOnClickListener(view -> { if ("markets".equals(target)) showHome(); else if ("signals".equals(target)) showSignals(); else showAlarms(); });
+        return item;
     }
 
     private View createCoinCard(JSONObject market) {
@@ -336,6 +544,16 @@ public final class MainActivity extends Activity {
         return m30 != null && m30.length() > 1 ? 0 : 1;
     }
 
+    private int timeframeIndex(String timeframe) {
+        for (int i = 0; i < TIMEFRAMES.length; i++) if (TIMEFRAMES[i].equals(timeframe)) return i;
+        return 1;
+    }
+
+    private String timeframeLabel(String timeframe) {
+        int index = timeframeIndex(timeframe);
+        return TIMEFRAME_LABELS[index];
+    }
+
     private LinearLayout vertical() { LinearLayout view = new LinearLayout(this); view.setOrientation(LinearLayout.VERTICAL); return view; }
     private LinearLayout horizontal() { LinearLayout view = new LinearLayout(this); view.setOrientation(LinearLayout.HORIZONTAL); return view; }
     private TextView text(String value, float size, int color, boolean bold) {
@@ -369,6 +587,8 @@ public final class MainActivity extends Activity {
         return format.format(value);
     }
 
-    @Override public void onBackPressed() { if (selectedMarket != null) showHome(); else super.onBackPressed(); }
+    @Override public void onBackPressed() {
+        if (selectedMarket != null || !"markets".equals(activeScreen)) showHome(); else super.onBackPressed();
+    }
     @Override protected void onDestroy() { executor.shutdownNow(); super.onDestroy(); }
 }
