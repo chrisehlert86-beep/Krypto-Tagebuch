@@ -32,7 +32,7 @@ these replacement modules. The service drop-ins select its `src` directory.
 
 ## Verification and limits
 
-35 regression/compatibility tests passed on Windows and on the production Python
+36 regression/compatibility tests passed on Windows and on the production Python
 environment before activation. TypeScript, ESLint and the Next.js production build
 passed for the dashboard changes.
 

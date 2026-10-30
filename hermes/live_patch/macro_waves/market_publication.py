@@ -46,6 +46,18 @@ def _case_payload(case: dict, direction: str) -> dict:
     }
 
 
+def _verified_case_payload(case: dict, dataset: dict, direction: str) -> dict:
+    audit = audit_case(case, dataset, "bull" if direction == "long" else "bear")
+    if audit["status"] != "valid":
+        case = {"current_wave": {"label": "Wellenzählung offen", "status": "unclear",
+                 "interpretation": "; ".join(audit["violations"] + audit["warnings"])}, "confidence": 0}
+    payload = _case_payload(case, direction)
+    payload["validationStatus"] = audit["status"]
+    if audit["status"] == "valid":
+        payload["fibonacciLevels"] = audit["levels"]
+    return payload
+
+
 def _zone(value: Any) -> list[float]:
     if not isinstance(value, (list, tuple)) or len(value) != 2:
         return [0.0, 0.0]
@@ -178,8 +190,8 @@ def build_market_payload(report: dict, symbol: str, item: dict) -> dict:
         "summary": str(supervisor.get("summary") or ""),
         "currentWaveSummary": str(supervisor.get("current_wave_summary") or "") if direction != "wait" else daily_plan["note"],
         "activeCase": _case_payload(selected_case, case_direction),
-        "bullCase": _case_payload(bull, "long"),
-        "bearCase": _case_payload(bear, "short"),
+        "bullCase": _verified_case_payload(bull, dataset, "long"),
+        "bearCase": _verified_case_payload(bear, dataset, "short"),
         "target": {
             "kind": "top" if case_direction == "long" else "bottom",
             "zone": target_zone,

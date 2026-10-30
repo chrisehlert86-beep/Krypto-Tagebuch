@@ -144,6 +144,15 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(next(p for p in plans if p["timeframe"]=="daily")["direction"],"long")
         self.assertEqual(next(p for p in plans if p["timeframe"]=="m30")["direction"],"wait")
 
+    def test_legacy_alternatives_cannot_leak_unverified_fib_levels(self):
+        case, data = fixture()
+        del case["fib_method"]
+        payload = build_market_payload({}, "BTCUSDT", {"dataset": data, "supervisor": {
+            "selected_bias": "neutral", "bull_case": case, "bear_case": case}})
+        for key in ("activeCase", "bullCase", "bearCase"):
+            self.assertEqual(payload[key]["fibonacciLevels"], [])
+            self.assertEqual(payload[key]["wavePoints"], [])
+
     def test_rule_team_rejection_cannot_be_overruled_by_supervisor(self):
         case,data = fixture()
         item={"dataset":data,"supervisor":{"selected_bias":"bull","bull_case":case},"teams":{"rules":{"leader":{"bull_status":"invalid"}}}}

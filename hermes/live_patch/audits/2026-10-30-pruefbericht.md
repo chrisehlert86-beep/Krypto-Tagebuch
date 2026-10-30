@@ -80,7 +80,7 @@ Ergebnisse verwandelt. Die ursprünglichen Prüfdateien bleiben auf dem Server e
 
 ## Verifikation und Grenzen
 
-- 35 Regressionstests lokal und in der Live-Pythonumgebung bestanden.
+- 36 Regressionstests lokal und in der Live-Pythonumgebung bestanden.
 - TypeScript, ESLint und Next.js-Produktionsbuild bestanden.
 - Sieben vorhandene Web-Sicherheitstests bestanden.
 - Tatsächlich importierte Module und alle vier Analyse-/Ausgabedienste geprüft.

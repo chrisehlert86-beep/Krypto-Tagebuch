@@ -27,7 +27,7 @@
     "src/macro_waves/news_archive.py": "2c328b7b3c5b65af5cebfecf290f6b2cbff838bdf430410aab7d57cd7bdb2750",
     "src/macro_waves/openrouter.py": "b7dd90ba7e72772f324862b35290e273a0ed395ddb76366051541e3f6de2ea74",
     "src/macro_waves/telegram.py": "001f62ad4bf0810e149cf8c279e792b1490072ac53a6f2e120e9bb85c69050d6",
-    "src/macro_waves/market_publication.py": "88281fe51e2efedd377ec40a4426beff0fa9d76ec34a3b2624f75b339a24ebff",
+    "src/macro_waves/market_publication.py": "9d9765e71f7505fdc868de2c417d26e512e91685ba592d02ef024b1459a1318e",
     "src/macro_waves/market_alerts.py": "5a73d71eee41d72e0da824e92bfe06a485ffaab65a6b44e0ea395cab1c41d501",
     "src/macro_waves/telegram_inbox.py": "1ef5bad123a242157c5802cd5e23c982b4ca2d2155b4e655715afa5f786ab9ba",
     "src/macro_waves/visual_knowledge.py": "fe6246a67c9b72c4316d9f6307a70278fdb7cb46d13f505ae9acd4ca7c0665cb",
@@ -58,5 +58,6 @@
     "unavailable": 3
   },
   "qualificationFile": "/opt/hermes-analysis/data/runtime_v091/elliott-evidence-20261030/agent-audit-final.json",
-  "qualificationFinalizedAt": "2026-10-30T07:14:58.287326+00:00"
+  "qualificationFinalizedAt": "2026-10-30T07:14:58.287326+00:00",
+  "regressionTests": 36
 }
