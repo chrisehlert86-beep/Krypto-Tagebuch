@@ -32,7 +32,7 @@ these replacement modules. The service drop-ins select its `src` directory.
 
 ## Verification and limits
 
-36 regression/compatibility tests passed on Windows and on the production Python
+38 regression/compatibility tests passed on Windows and on the production Python
 environment before activation. TypeScript, ESLint and the Next.js production build
 passed for the dashboard changes.
 
@@ -49,6 +49,14 @@ See `audits/2026-10-30-agent-audit.json` for answers and grading and
 `audits/2026-10-30-activation.json` for source hashes and the backup location.
 The probe is a limited competency sample, not proof of future performance or a
 certification that a model understands every Elliott structure.
+
+The subsequent acceptance review found that impulse endpoint checks could still
+return `valid` without internal subdivision proof. This is now explicitly blocked:
+endpoint-only evidence returns `conditional` with `structureVerified=false`.
+A model cannot self-certify this flag. The present release has no complete
+recursive subdivision verifier, so this protection intentionally prevents new
+directional Elliott signals until that missing proof is implemented and accepted.
+See `docs/hermes-elliott-abnahmeplan.md` for the required further work.
 
 The snapshot previously published for BTC, ETH and SOL lacks the new provenance
 contract. All three app records were republished as WARTEN. The installer sent no

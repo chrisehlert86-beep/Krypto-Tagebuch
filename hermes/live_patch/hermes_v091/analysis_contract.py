@@ -273,8 +273,11 @@ def audit_case(case: dict, dataset: dict, direction: str, *, frame: str = "daily
                 extreme = float(row[2]) if sign == 1 else float(row[3])
                 if any((extreme - value) * sign >= 0 for value in target):
                     raise ValueError("Die Zielzone wurde im Szenarioverlauf bereits berührt")
-        valid = pattern == "impulse" and wave.get("status") in {"forming", "confirmed"}
-        return {"version": VERSION, "status": "valid" if valid else "conditional", "violations": [],
+        # Endpoint geometry alone never proves the required internal subdivisions.
+        # No recursive structure verifier exists in this release. In particular,
+        # never trust a model-supplied structureVerified/subdivision_verified flag.
+        return {"version": VERSION, "status": "conditional", "violations": [],
+                "verificationStage": "endpoints_verified", "structureVerified": False,
                 "warnings": warnings, "levels": levels, "triggerConfirmed": (float(rows[-1][4]) - trigger) * sign > 0,
                 "asOf": candle_close_time(int(rows[-1][0]), frame), "invalidation": invalidation}
     except (ValueError, KeyError, TypeError, OverflowError, IndexError) as exc:

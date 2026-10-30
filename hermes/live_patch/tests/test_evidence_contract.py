@@ -35,10 +35,12 @@ def fixture():
 
 
 class EvidenceTests(unittest.TestCase):
-    def test_valid_count_has_cpu_formulas_and_separate_trigger(self):
+    def test_valid_endpoints_do_not_prove_full_structure(self):
         case, data = fixture()
         audit = audit_case(case, data, "bull")
-        self.assertEqual(audit["status"], "valid", audit)
+        self.assertEqual(audit["status"], "conditional", audit)
+        self.assertEqual(audit["verificationStage"], "endpoints_verified")
+        self.assertFalse(audit["structureVerified"])
         self.assertTrue(audit["triggerConfirmed"])
         self.assertIn("125.0 +", audit["levels"][0]["formula"])
 
@@ -141,7 +143,8 @@ class EvidenceTests(unittest.TestCase):
         item = {"dataset":data,"supervisor":{"selected_bias":"bull","bull_case":case},
                 "teams":{"rules":{"leader":{"bull_status":"valid"}}}}
         plans = _signal_plans({},"BTCUSDT",item,now=data["current_price_time"])
-        self.assertEqual(next(p for p in plans if p["timeframe"]=="daily")["direction"],"long")
+        self.assertEqual(next(p for p in plans if p["timeframe"]=="daily")["direction"],"wait")
+        self.assertEqual(next(p for p in plans if p["timeframe"]=="daily")["status"],"conditional")
         self.assertEqual(next(p for p in plans if p["timeframe"]=="m30")["direction"],"wait")
 
     def test_legacy_alternatives_cannot_leak_unverified_fib_levels(self):
@@ -156,8 +159,35 @@ class EvidenceTests(unittest.TestCase):
     def test_rule_team_rejection_cannot_be_overruled_by_supervisor(self):
         case,data = fixture()
         item={"dataset":data,"supervisor":{"selected_bias":"bull","bull_case":case},"teams":{"rules":{"leader":{"bull_status":"invalid"}}}}
-        plan=next(p for p in _signal_plans({},"BTCUSDT",item,now=data["current_price_time"]) if p["timeframe"]=="daily")
+        audit = audit_case(case, data, "bull")
+        # Exercise the independent rule-team veto even if a future structure
+        # verifier can fully validate this count. This mock never reaches live code.
+        audit["status"] = "valid"
+        with patch("macro_waves.market_publication.audit_case", return_value=audit):
+            plan=next(p for p in _signal_plans({},"BTCUSDT",item,now=data["current_price_time"]) if p["timeframe"]=="daily")
         self.assertEqual(plan["direction"],"wait")
+        self.assertIn("Regelteam", plan["note"])
+
+    def test_model_cannot_self_certify_subdivisions(self):
+        case, data = fixture()
+        case["structureVerified"] = True
+        case["subdivision_verified"] = True
+        case["current_wave"]["status"] = "confirmed"
+        # A finished Wave 5 needs an endpoint, so use a forming count to isolate
+        # the forged proof flags rather than an unrelated missing-endpoint error.
+        case["current_wave"]["status"] = "forming"
+        result = audit_case(case, data, "bull")
+        self.assertEqual(result["status"], "conditional")
+        self.assertFalse(result["structureVerified"])
+
+    def test_unproved_structure_blocks_publication_despite_all_model_approvals(self):
+        case, data = fixture()
+        case["structureVerified"] = True
+        item = {"dataset":data, "supervisor":{"selected_bias":"bull", "bull_case":case},
+                "teams":{"rules":{"leader":{"bull_status":"valid"}}}}
+        daily = next(p for p in _signal_plans({}, "BTCUSDT", item, now=data["current_price_time"]) if p["timeframe"]=="daily")
+        self.assertEqual(daily["direction"], "wait")
+        self.assertEqual(daily["levels"], [])
 
     def test_shared_contract_reaches_structured_provider(self):
         response={"choices":[{"message":{"content":'{"ok":true}'},"finish_reason":"stop"}],"usage":{}}
