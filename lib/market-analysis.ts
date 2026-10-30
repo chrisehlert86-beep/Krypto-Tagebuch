@@ -47,7 +47,10 @@ export type MarketSignalPlan = {
   timeframe: MarketTimeframe
   timeframeLabel: string
   waveLabel: string
-  direction: 'long' | 'short'
+  direction: MarketDirection
+  status?: string
+  asOf?: number
+  expiresAt?: number
   levels: MarketSignalLevel[]
   invalidation: {
     relation: 'below' | 'above'
@@ -58,6 +61,7 @@ export type MarketSignalPlan = {
 }
 
 export type MarketAnalysis = {
+  validationVersion?: string
   symbol: string
   displaySymbol: string
   generatedAt: string

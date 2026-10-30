@@ -33,18 +33,19 @@ export default function MarketChart({ analysis, timeframe }: Props) {
   }
 
   const signalPlan = analysis.signalPlans?.find((plan) => plan.timeframe === timeframe)
-  const fibLevels = signalPlan?.levels ?? analysis.activeCase.fibonacciLevels
+  const showScenario = signalPlan ? signalPlan.direction !== 'wait' && signalPlan.status === 'active' : analysis.direction !== 'wait' && timeframe === 'daily'
+  const fibLevels = showScenario ? signalPlan?.levels ?? analysis.activeCase.fibonacciLevels : []
   const invalidation = signalPlan?.invalidation.price ?? analysis.activeCase.invalidation
   const targetZone: [number, number] = signalPlan && signalPlan.levels.length
     ? [Math.min(...signalPlan.levels.map((level) => level.price)), Math.max(...signalPlan.levels.map((level) => level.price))]
     : analysis.activeCase.targetZone
-  const overlays = [
+  const overlays = (showScenario ? [
     ...analysis.activeCase.supportZones.flat(),
     ...analysis.activeCase.resistanceZones.flat(),
     ...targetZone,
     invalidation,
     ...fibLevels.map((level) => level.price),
-  ].filter(Number.isFinite)
+  ] : []).filter((value) => Number.isFinite(value) && value > 0)
   const rawMin = Math.min(...candles.map((item) => item.low), ...overlays)
   const rawMax = Math.max(...candles.map((item) => item.high), ...overlays)
   const margin = Math.max((rawMax - rawMin) * 0.08, rawMax * 0.01)
@@ -59,7 +60,7 @@ export default function MarketChart({ analysis, timeframe }: Props) {
 
   const firstTime = candles[0].time
   const lastTime = candles.at(-1)?.time ?? firstTime
-  const wavePoints = analysis.activeCase.wavePoints.filter(
+  const wavePoints = (showScenario && timeframe === 'daily' ? analysis.activeCase.wavePoints : []).filter(
     (point) => point.time >= firstTime && point.time <= lastTime,
   )
   const wavePath = wavePoints
@@ -98,7 +99,7 @@ export default function MarketChart({ analysis, timeframe }: Props) {
           </g>
         ))}
 
-        <rect
+        {showScenario && <><rect
           x={PAD.left}
           y={Math.min(targetTop, targetBottom)}
           width={plotWidth}
@@ -108,6 +109,7 @@ export default function MarketChart({ analysis, timeframe }: Props) {
         <text x={PAD.left + 8} y={Math.min(targetTop, targetBottom) + 18} fill="#fbbf24" fontSize="13" fontWeight="700">
           {signalPlan?.levels.some((level) => level.role.includes('entry')) ? 'EINSTIEGSBEREICH' : 'ZIELZONE'}
         </text>
+        </>}
 
         {fibLevels.map((level) => (
           <g key={`${level.ratio}-${level.price}`}>
@@ -126,7 +128,7 @@ export default function MarketChart({ analysis, timeframe }: Props) {
           </g>
         ))}
 
-        <line
+        {showScenario && <><line
           x1={PAD.left}
           x2={WIDTH - PAD.right}
           y1={y(invalidation)}
@@ -138,6 +140,7 @@ export default function MarketChart({ analysis, timeframe }: Props) {
         <text x={PAD.left + 8} y={y(invalidation) - 7} fill="#fda4af" fontSize="12" fontWeight="700">
           INVALIDIERUNG
         </text>
+        </>}
 
         {candles.map((candle, index) => {
           const rising = candle.close >= candle.open

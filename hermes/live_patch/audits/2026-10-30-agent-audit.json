@@ -1,0 +1,1984 @@
+{
+  "version": "elliott-evidence-v2",
+  "startedAt": "2026-10-30T07:00:03.822895+00:00",
+  "results": [
+    {
+      "role": "bull_macro",
+      "model": "google/gemini-3-flash-preview",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Welle 2 (110) hält über 0 (100), Welle 3 (150) bricht Hoch 1 (120), Welle 4 (125) überlappt nicht mit 1 (120), Welle 3 ist nicht die kürzeste (20>10, 20<40, 20<35)."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Welle 4 endet bei 115 und überlappt damit in den Preisbereich von Welle 1 (120), was im klassischen Impuls verboten ist."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Welle 1=40, Welle 3=30, Welle 5=45. Welle 3 ist mit 30 Punkten die kürzeste der drei Antriebswellen, was regelwidrig ist."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Welle 2 (190) unter 0 (200), Welle 3 (150) bricht Tief 1 (180), Welle 4 (175) überlappt nicht mit 1 (180), Welle 3 (30) ist nicht die kürzeste (20, 30, 35)."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Startpunkt von Welle 1 (Punkt 0) kann die Länge von Welle 1 nicht bestimmt werden, wodurch die Regel der 'nicht kürzesten Welle 3' nicht prüfbar ist."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Überlappung ist eine notwendige, aber keine hinreichende Bedingung; Diagonale erfordert spezifische Keilgeometrie und Unterteilung (z.B. 3-3-3-3-3)."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Ein Expanded Flat erlaubt per Definition, dass Welle B über den Start von A hinausläuft und Welle C über das Ende von A hinausgeht."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Dies entspricht der Standard-Definition der internen Struktur für Zigzags (5-3-5) und Flats (3-3-5)."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und Leitlinien, keine harten Regeln; Wellen können auch ohne Erreichen dieser Level gültig sein."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Fraktale Natur: Ein untergeordneter Trend (30M) kann gegen den übergeordneten Trend (Daily) laufen, ohne dessen Struktur zu invalidieren."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Ein Szenario ist terminal invalidiert, sobald der Stop/Invalidierungspunkt erreicht wurde; ein späterer Wiederanstieg heilt den Bruch nicht."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Berechnung: 200 - (200-100) * 0.382 = 200 - 38.2 = 161.8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine Projektion (O+(E-S)*r) benötigt drei Anker: Start A (S), Ende A (E) und den Projektionsursprung Ende B (O)."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Das Kopieren von Werten ohne Herleitung, Anker und Formel erfüllt nicht die Anforderungen an eine nachrechenbare Evidenz gemäß Vertrag."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Im klassischen Impuls darf kein Teil der Welle 4 (auch kein Wick/Schatten) in den Bereich der Welle 1 eindringen."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1685,
+        "completion_tokens": 844,
+        "total_tokens": 2529,
+        "cost": 0.0033745,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0033745,
+          "upstream_inference_prompt_cost": 0.0008425,
+          "upstream_inference_completions_cost": 0.002532
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "bull_current_wave",
+      "model": "google/gemini-3-flash-preview",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Welle 2 (110) > 0 (100), Welle 3 (150) > 1 (120), Welle 4 (125) > 1 (120), Welle 5 (160) > 3 (150). Welle 3 ist nicht die kürzeste."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Welle 4 (115) unterschreitet das Ende von Welle 1 (120). Dies verletzt die Überlappungsregel eines klassischen Impulses."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Welle 1=40, Welle 3=30, Welle 5=45. Welle 3 ist die kürzeste der drei Antriebswellen, was verboten ist."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Welle 2 (190) < 0 (200), Welle 3 (150) < 1 (180), Welle 4 (175) < 1 (180), Welle 5 (140) < 3 (150). Welle 3 ist nicht die kürzeste."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne Startpunkt (Welle 0) kann die Länge von Welle 1 und die Einhaltung der Regel, dass Welle 2 den Start von 1 nicht verletzt, nicht geprüft werden."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Überlappung ist nur ein Merkmal; Diagonalen erfordern spezifische Geometrie (Keilform) und interne Unterteilungen (z.B. 3-3-3-3-3)."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Ein Expanded Flat zeichnet sich dadurch aus, dass Welle B das Extremum des vorherigen Impulses (Start von A) überschreitet."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Dies entspricht der Standard-Definition der internen Struktur nach Elliott-Wellen-Theorie."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und Wahrscheinlichkeiten, keine harten Regeln wie die Wellen-Interaktion."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Fraktale Natur erlaubt untergeordnete Gegenbewegungen, solange die übergeordnete Struktur nicht invalidiert ist."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Einmal invalidiert, bleibt ein Szenario terminal gebrochen; ein späterer Wiederanstieg heilt den Regelbruch nicht."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Berechnung: 200 - (200 - 100) * 0.382 = 200 - 38.2 = 161.8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine Projektion (A-B-C) benötigt drei Anker: Start A, Ende A und den Ursprung der Projektion (Ende B)."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Das Kopieren von Werten ohne Herleitung und Anker erfüllt nicht die Anforderungen an Evidenz und Nachrechenbarkeit."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Die Überlappungsregel gilt für die gesamte Preisbewegung inklusive der Wicks (Extrema), nicht nur für Schlusskurse oder Label-Enden."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1692,
+        "completion_tokens": 781,
+        "total_tokens": 2473,
+        "cost": 0.003189,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.003189,
+          "upstream_inference_prompt_cost": 0.000846,
+          "upstream_inference_completions_cost": 0.002343
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "bear_confirmation",
+      "model": "google/gemini-3-flash-preview",
+      "provider": "openrouter",
+      "status": "failed",
+      "score": 14,
+      "total": 15,
+      "failed": [
+        "shortest_three"
+      ],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Welle 2 (110) hält über 0 (100), Welle 3 (150) bricht Hoch 1 (120), Welle 4 (125) überlappt nicht mit 1 (120), Welle 3 ist nicht die kürzeste."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Welle 4 endet bei 115 und überlappt damit das Ende von Welle 1 bei 120, was im klassischen Impuls verboten ist."
+        },
+        {
+          "id": "shortest_three",
+          "correct": true,
+          "reason": "Welle 1=40, Welle 3=30, Welle 5=45. Welle 3 ist mit 30 die kürzeste der drei Antriebswellen, was die Impulsregel verletzt."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Welle 2 (190) unter 0 (200), Welle 3 (150) unter 1 (180), Welle 4 (175) überlappt nicht mit 1 (180), Welle 3 ist nicht die kürzeste."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne Startpunkt 0 kann die Länge von Welle 1 nicht bestimmt werden, womit die Regel 'Welle 3 nicht die kürzeste' nicht prüfbar ist."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Überlappung ist notwendig für Diagonalen, aber nicht hinreichend; Position, Geometrie und Unterteilung müssen laut Vertrag separat belegt werden."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Ein Expanded Flat erlaubt per Definition, dass Welle B über den Start von Welle A hinausläuft."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Die interne Struktur 5-3-5 für Zigzags und 3-3-5 für Flats entspricht den Elliott-Wellen-Standardregeln."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und keine harten, unverletzlichen Regeln im Elliott-System."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Fraktale Marktstrukturen erlauben untergeordnete Gegenbewegungen, ohne den übergeordneten Trend zu invalidieren."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Ein Schlusskurs unter der Invalidierungsschwelle beendet das Szenario terminal; ein späterer Wiederanstieg heilt den Bruch nicht."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Berechnung: 200 - (200 - 100) * 0,382 = 200 - 38,2 = 161,8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine Projektion (z.B. Welle C) benötigt die Länge der Referenzwelle (A-Start bis A-Ende) und den Ursprung der Projektion (B-Ende)."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Das Kopieren von Werten ohne Anker und Formel erfüllt nicht die Anforderung an eine nachrechenbare, evidenzbasierte Berechnung."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Der Vertrag schreibt vor, dass auch zwischenliegende Wicks geprüft werden müssen; eine Docht-Überlappung verletzt den klassischen Impuls."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1688,
+        "completion_tokens": 762,
+        "total_tokens": 2450,
+        "cost": 0.00313,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00313,
+          "upstream_inference_prompt_cost": 0.000844,
+          "upstream_inference_completions_cost": 0.002286
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "bull_confirmation",
+      "model": "anthropic/claude-haiku-4.5",
+      "provider": "openrouter",
+      "status": "failed",
+      "score": 11,
+      "total": 15,
+      "failed": [
+        "impulse_valid",
+        "shortest_three",
+        "fib_math",
+        "wick"
+      ],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": false,
+          "reason": "0..5 = 100,120,110,150,125,160: Welle 2 (110) unterschreitet nicht den Start (100), sondern liegt darüber. Welle 4 (125) überlappt Welle 1 (120). Klassische Impulse dürfen keine Welle-4/Welle-1-Überlappung haben. Regeln verletzt."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "0..5 = 100,120,110,150,115,160: Welle 4 endet bei 115, Welle 1 endet bei 120. Dies ist eine direkte Überlappung (115 < 120). Ein klassischer bullischer Impuls verbietet diese Überlappung explizit. Regelverstoß."
+        },
+        {
+          "id": "shortest_three",
+          "correct": true,
+          "reason": "0..5 = 100,140,130,160,150,195: Welle 1 = 40, Welle 3 = 30, Welle 5 = 45. Welle 3 (30) ist die kürzeste. Die Regel besagt, dass Welle 3 bei abgeschlossenem Impuls NICHT die kürzeste sein darf. Diese Aussage behauptet das Gegenteil und ist daher korrekt."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "0..5 = 200,180,190,150,175,140: Welle 2 (190) überschreitet Start (200) nicht. Welle 3 (150) geht unter Ende 1 (180). Welle 4 (175) überlappt nicht Welle 1 (180). Welle 3 (50) ist länger als Welle 1 (20) und Welle 5 (35). Alle Endpunktregeln erfüllt."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne Start (Welle 0) können die harten Regeln eines laufenden Welle-5-Counts nicht abschließend geprüft werden. Der Ursprung ist notwendig, um Welle-2-Grenzen, Welle-3-Anforderungen und Überlappungsverbote zu validieren. Unvollständige Evidenz."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Überlappung von Welle 4 mit Welle 1 ist ein notwendiges, aber nicht hinreichendes Merkmal einer Diagonale. Position im Elterncount, innere Geometrie (konvergierende oder divergierende Linien) und Unterteilung (typisch 3-3-3-3-3) erfordern separate Evidenz. Überlappung allein beweist keine Diagonale."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Ein Expanded Flat erlaubt eine B, die den Ausgangspunkt der A überschreitet. Dies ist ein definierendes Merkmal dieser Flat-Variante. Die Aussage ist korrekt: Eine überschießende B ist bei Expanded Flats möglich und nicht automatisch verboten."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Zigzag: 5-3-5 (Welle A fünfteilig, B dreiteilig, C fünfteilig). Flat: 3-3-5 (A dreiteilig, B dreiteilig, C fünfteilig). Die Aussage ist korrekt."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte, keine Pflichtziele. Es gibt keine Elliott-Regel, die vorschreibt, dass jede korrektive Welle 50% und dann 61,8% erreichen muss. Korrektionen können bei 23,6%, 38,2% oder anderen Levels enden. Die Aussage verwechselt Richtlinien mit Regeln."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein aktueller, separat belegter 30M-Aufwärtsbounce kann innerhalb eines laufenden Tagesabwärtstrends auftreten, solange die 30M-Struktur eigenständig dokumentiert ist. Kleinere Timeframes können gegen größere laufen. Dies widerlegt nicht den Tages-Downtrend."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Ein LONG-Count mit Invalidierungslevel 79050 ist nach einem 30M-Schluss unter 76000 terminal invalidiert. Ein gebrochenes Szenario bleibt invalidiert; der Stop wird nicht verschoben. Ein späterer Kursanstieg reaktiviert nicht automatisch einen invalidiertes Szenario."
+        },
+        {
+          "id": "fib_math",
+          "correct": false,
+          "reason": "Retracement-Formel: E - (E-S)*r = 200 - (200-100)*0,382 = 200 - 38,2 = 161,8. Die Rechnung ist korrekt, aber die Aussage behauptet, das Ergebnis sei 161,8, was stimmt. Jedoch: Das ist das 0,382-Retracement, nicht ein Standardziel. Die Aussage ist mathematisch wahr, aber die Formulierung ist unklar. Korrekt als Rechnung."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt drei Anker: Start A, Ende A und Ende B. Die Formel ist O + (E-S)*r, wobei O der Projektionsursprung (typisch Ende B) ist. Die Aussage ist korrekt."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Die bloße Übernahme von Marken aus einem Video ohne dokumentierte Kursanker, Zeitstempel und Formel ist keine eigene nachgewiesene Fibonacci-Berechnung. Dies verstößt gegen die Anforderung, dass Punkte exakte UTC-ms und OHLC-Preise enthalten und Berechnungen nachrechenbar sein müssen."
+        },
+        {
+          "id": "wick",
+          "correct": true,
+          "reason": "Im klassischen Spot-Impuls darf ein Wick (Docht) der Welle 4 in den Bereich der Welle 1 eindringen, solange das etikettierte Schlusskurs-Ende der Welle 4 oberhalb des Endes von Welle 1 liegt. Dies ist eine zulässige Ausnahme zur Überlappungsregel."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2141,
+        "completion_tokens": 1712,
+        "total_tokens": 3853,
+        "cost": 0.010701,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.010701,
+          "upstream_inference_prompt_cost": 0.002141,
+          "upstream_inference_completions_cost": 0.00856
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "bear_current_wave",
+      "model": "anthropic/claude-haiku-4.5",
+      "provider": "openrouter",
+      "status": "failed",
+      "score": 11,
+      "total": 15,
+      "failed": [
+        "impulse_valid",
+        "shortest_three",
+        "fib_math",
+        "wick"
+      ],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": false,
+          "reason": "0..5 = 100,120,110,150,125,160: Welle 2 (110) überschreitet nicht den Start von Welle 1 (100), aber Welle 4 (125) überschreitet das Ende von Welle 1 (120). Im klassischen Impuls darf Welle 4 nicht in Welle 1 überlappen. Regel verletzt."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "0..5 = 100,120,110,150,115,160: Welle 4 endet bei 115, was unterhalb des Endes von Welle 1 (120) liegt. Dies ist eine Überlappung von Welle 4 in Welle 1. Im klassischen bullischen Impuls ist dies nicht erlaubt. Regel verletzt."
+        },
+        {
+          "id": "shortest_three",
+          "correct": true,
+          "reason": "0..5 = 100,140,130,160,150,195: Welle 1 = 40, Welle 3 = 30, Welle 5 = 45. Welle 3 (30) ist die kürzeste der drei Impulswellen. Die Aussage behauptet, dass Welle 3 NICHT die kürzeste ist – das ist falsch. Welle 3 ist tatsächlich die kürzeste."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "0..5 = 200,180,190,150,175,140: Welle 2 (190) überschreitet nicht den Start (200). Welle 3 (150) geht unter Ende 1 (180). Welle 4 (175) überschreitet nicht Ende 3 (150) und überlappt nicht Welle 1 (180). Welle 5 (140) geht unter Ende 3. Alle Endpunktregeln eines klassischen bärischen Impulses sind erfüllt."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Start (Punkt 0) von Welle 1 können die harten Regeln nicht vollständig geprüft werden: Welle 2 darf den Beginn von Welle 1 nicht überschreiten – dies ist ohne Punkt 0 nicht verifizierbar. Punkt 0 ist essentiell."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Überlappung von Welle 4 mit Welle 1 ist notwendig, aber nicht hinreichend für eine Diagonale. Position im Elterncount (Terminal oder Leading), Geometrie (konvergierende oder divergierende Linien) und Unterteilung (3-3-3-3-3 oder 5-3-5-3-5) erfordern eigene Evidenz. Überlappung allein beweist keine Diagonale."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Ein Expanded Flat hat die Struktur 3-3-5 und erlaubt, dass B den Ausgangspunkt von A überschreitet. Dies ist ein definierendes Merkmal des Expanded Flat und ist regelkonform. Eine überschießende B ist bei Expanded Flats möglich und nicht automatisch verboten."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Ein Zigzag hat intern die Struktur 5-3-5 (Welle A fünfteilig, B dreiteilig, C fünfteilig). Ein Flat hat 3-3-5. Dies sind die korrekten Elliott-Definitionen."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte, keine Pflichtziele. Es gibt keine unverletzliche Elliott-Regel, die besagt, dass jede korrektive Welle 50% und dann 61,8% erreichen muss. Korrektionen können bei 23,6%, 38,2% oder anderen Levels enden."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein aktueller, separat belegter 30M-Aufwärtsbounce kann innerhalb eines laufenden Tagesabwärtstrends auftreten, solange er eine eigene aktuelle 30M-Struktur hat. Ein höherer Schlusskurs auf 30M bestätigt nicht automatisch einen kleineren Count oder beendet den übergeordneten Tagesabwärtstrend."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Ein LONG-Count mit Invalidierung bei 79050 ist nach einem 30M-Schluss unter 76000 terminal invalidiert. Ein gebrochenes Szenario bleibt invalidiert; der Stop wird nicht verschoben. Ein späterer Kursanstieg reaktiviert nicht einen bereits invalidiertem Count."
+        },
+        {
+          "id": "fib_math",
+          "correct": false,
+          "reason": "Retracement-Formel: E - (E-S)*r = 200 - (200-100)*0,382 = 200 - 38,2 = 161,8. Die Aussage behauptet 161,8, was mathematisch korrekt ist. Aber die Aussage sagt, das 0,382-Retracement liegt bei 161,8 – das ist richtig. Prüfung: 161,8 ist korrekt berechnet."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt drei Anker: Start von A, Ende von A und Ende von B. Mit diesen drei Preispunkten kann die Projektion C = B + (A_Ende - A_Start) berechnet werden. Die Aussage ist korrekt."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Die bloße Übernahme von Marken aus einem Video ohne dokumentierte Kursanker, Zeitstempel und nachvollziehbare Formel ist keine eigene Fibonacci-Berechnung. Dies verstößt gegen die Anforderung, dass Punkte exakte Kerzenbeginn in UTC-ms und exakte OHLC-Preise enthalten müssen. Nur nachrechenbare Level sind Fibonacci-Level."
+        },
+        {
+          "id": "wick",
+          "correct": true,
+          "reason": "Im klassischen Spot-Impuls darf ein Wick (Docht) der Welle 4 in den Bereich der Welle 1 eindringen, solange das etikettierte Ende (Close oder Extremum) der Welle 4 oberhalb des Endes von Welle 1 liegt. Zwischenliegende Wicks sind erlaubt; die Regel bezieht sich auf die Endpunkte, nicht auf Wicks."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2142,
+        "completion_tokens": 1731,
+        "total_tokens": 3873,
+        "cost": 0.010797,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.010797,
+          "upstream_inference_prompt_cost": 0.002142,
+          "upstream_inference_completions_cost": 0.008655
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "bear_macro",
+      "model": "anthropic/claude-haiku-4.5",
+      "provider": "openrouter",
+      "status": "failed",
+      "score": 11,
+      "total": 15,
+      "failed": [
+        "impulse_valid",
+        "shortest_three",
+        "fib_math",
+        "wick"
+      ],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": false,
+          "reason": "Welle 2 (110) überschreitet nicht den Beginn von Welle 1 (120), aber Welle 4 (125) überschreitet das Ende von Welle 1 (110). Im klassischen Impuls darf Welle 4 nicht in Welle 1 überlappen. Die Endpunktregeln sind verletzt."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Welle 4 endet bei 115, Welle 1 endet bei 110. Welle 4 überschreitet das Ende von Welle 1 (115 > 110), was eine Überlappung darstellt. Im klassischen bullischen Impuls ist dies verboten. Die Aussage ist falsch."
+        },
+        {
+          "id": "shortest_three",
+          "correct": true,
+          "reason": "Welle 1: 120-110=10, Welle 3: 160-130=30, Welle 5: 195-150=45. Welle 3 (30) ist nicht die kürzeste; Welle 1 ist die kürzeste. Die Aussage ist korrekt."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Bärischer Impuls 0..5 = 200,180,190,150,175,140. Welle 2 (190) überschreitet nicht den Start von Welle 1 (200). Welle 4 (175) überschreitet nicht das Ende von Welle 1 (190). Welle 3 (150) ist unter Welle 1 (180) und Welle 5 (140). Alle Endpunktregeln sind erfüllt."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Der Start (Welle 0) ist essentiell, um Welle-2-Regeln (darf Beginn von Welle 1 nicht überschreiten) und Welle-4-Regeln (Überlappung mit Welle 1) zu prüfen. Ohne Origin können nicht alle harten Regeln abschließend validiert werden."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Überlappung von Welle 4 mit Welle 1 ist ein Indiz, aber kein Beweis für eine Diagonale. Position im Elterncount, Geometrie und Unterteilung (3-3-3-3-3 oder 5-3-5-3-5) erfordern eigene Evidenz. Überlappung allein reicht nicht aus."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Ein Expanded Flat hat die Struktur 3-3-5 mit einer B, die über den Ausgangspunkt der A hinausgeht. Dies ist regelkonform und unterscheidet sich von einem Zigzag (5-3-5). Die Aussage ist korrekt."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Ein Zigzag hat intern 5-3-5 (Welle A fünfteilig, B dreiteilig, C fünfteilig). Ein Flat hat 3-3-5. Dies sind die korrekten Elliott-Definitionen."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte, keine Pflichtziele. Es gibt keine Elliott-Regel, die vorschreibt, dass jede Korrektur 50% und dann 61,8% erreichen muss. Korrektionen können bei 23,6% oder anderen Levels enden."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein 30M-Bounce kann innerhalb eines Tagesabwärtstrends auftreten, wenn er eine eigene aktuelle 30M-Struktur hat. Dies widerspricht nicht dem übergeordneten Tages-Abwärtstrend. Die Aussage ist regelkonform."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Ein LONG-Count mit Invalidierung bei 79050 ist nach einem 30M-Schluss unter 76000 terminal invalidiert. Der Stop wird nicht verschoben. Ein späterer Kursanstieg reaktiviert nicht einen gebrochenen Count; ein neuer Count müsste etabliert werden."
+        },
+        {
+          "id": "fib_math",
+          "correct": false,
+          "reason": "Retracement-Formel: E-(E-S)*r = 200-(200-100)*0,382 = 200-38,2 = 161,8. Die Rechnung ist korrekt, aber die Aussage sagt 'liegt bei 161,8', was mathematisch stimmt. Jedoch: Das ist das 0,382-Retracement von oben (161,8 ist 38,2% des Swings vom Hoch zurück). Die Aussage ist tatsächlich korrekt."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt drei Anker: Start A, Ende A und Ende B. Mit diesen drei Punkten kann die Projektion O+(E-S)*r berechnet werden. Die Aussage ist korrekt."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Die bloße Übernahme von Marken aus einer externen Quelle ohne dokumentierte Kursanker, Formel und Nachrechnung ist keine eigene Fibonacci-Berechnung. Dies verstößt gegen die Anforderung, dass nur nachrechenbare Level Fibonacci-Level sind."
+        },
+        {
+          "id": "wick",
+          "correct": true,
+          "reason": "Im klassischen Spot-Impuls darf ein Wick (Docht) der Welle 4 in den Bereich der Welle 1 eindringen, solange das etikettierte Schlusskurs-Ende der Welle 4 oberhalb des Endes von Welle 1 bleibt. Wicks sind zwischenliegende Preisausschläge und keine Verletzung der Endpunkt-Regel."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2132,
+        "completion_tokens": 1553,
+        "total_tokens": 3685,
+        "cost": 0.009897,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.009897,
+          "upstream_inference_prompt_cost": 0.002132,
+          "upstream_inference_completions_cost": 0.007765
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "bull_leader",
+      "model": "google/gemini-3.1-pro-preview",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Welle 2 unterschreitet nicht den Start, Welle 3 uebertrifft Welle 1, Welle 4 ueberlappt nicht mit Welle 1 und Welle 3 ist nicht die kuerzeste."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Welle 4 endet bei 115 und ueberlappt somit das Ende von Welle 1 bei 120, was im klassischen Impuls verboten ist."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Welle 3 hat eine Laenge von 30, Welle 1 von 40 und Welle 5 von 45. Welle 3 ist hier die kuerzeste, was verboten ist."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Alle Regeln fuer einen baerischen Impuls sind erfuellt, keine Ueberlappung und Welle 3 ist nicht die kuerzeste."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Startpunkt von Welle 1 (Welle 0) kann nicht geprueft werden, ob Welle 2 den Start von Welle 1 unterschreitet."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Ueberlappung allein belegt keine Diagonale; Position, Geometrie und Unterteilung benoetigen eigene Evidenz."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Bei einem Expanded Flat ist eine ueberschiessende Welle B, die den Start von A uebertrifft, moeglich und regelkonform."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Ein Zigzag unterteilt sich in 5-3-5 und ein Flat in 3-3-5."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhaeltnisse sind lediglich Richtwerte und keine unverletzlichen Pflichtziele."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein 30M-Aufwaertsbounce darf innerhalb eines Tagesabwaertstrends auftreten, sofern er eine eigene Struktur aufweist."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Ein gebrochenes Szenario ist terminal invalidiert und wird nicht reaktiviert."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Das Retracement berechnet sich als 200 - (200-100)*0.382 = 161.8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benoetigt zwingend drei Anker: Start A, Ende A und Ende B."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Externe Quellen sind keine eigenen Berechnungen; Fibonacci-Level muessen mit Ankern nachrechenbar sein."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Auch zwischenliegende Wicks duerfen im klassischen Impuls nicht ueberlappen."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1516,
+        "completion_tokens": 1934,
+        "total_tokens": 3450,
+        "cost": 0.02624,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.02624,
+          "upstream_inference_prompt_cost": 0.003032,
+          "upstream_inference_completions_cost": 0.023208
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1272,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "bear_leader",
+      "model": "anthropic/claude-sonnet-4.6",
+      "provider": "openrouter",
+      "status": "unavailable",
+      "error": "[schema_validation] model=anthropic/claude-sonnet-4.6; attempts=1; Ausgabevertrag nach 1 Versuchen nicht erfüllt: [schema_validation] model=anthropic/claude-sonnet-4.6; attempts=1; $.answers: maximum item count is 15"
+    },
+    {
+      "role": "critic_gemini_quick",
+      "model": "google/gemini-3-flash-preview",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Welle 2 (110) > 0 (100), Welle 3 (150) > 1 (120), Welle 4 (125) > 1 (120), Welle 3 ist nicht die kürzeste (40 vs 20/35)."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Welle 4 (115) unterschreitet das Ende von Welle 1 (120), was im klassischen Impuls verboten ist."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Welle 1=40, Welle 3=30, Welle 5=45. Welle 3 ist die kürzeste der drei Antriebswellen, was regelwidrig ist."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Welle 2 (190) < 0 (200), Welle 3 (150) < 1 (180), Welle 4 (175) < 1 (180), Welle 3 ist nicht die kürzeste (30 vs 20/35)."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne Startpunkt 0 kann die Länge von Welle 1 nicht bestimmt werden, um die 'Welle 3 nicht die kürzeste'-Regel zu prüfen."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Überlappung ist notwendig, aber nicht hinreichend; Position im Gesamtcount und Geometrie (Keilform) sind zwingende Kriterien."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Ein Expanded Flat erlaubt per Definition, dass Welle B über den Start von A hinausläuft."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Dies entspricht der Standard-Definition der internen Struktur für Zigzags und Flats."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Level sind Richtwerte und statistische Wahrscheinlichkeiten, keine harten Regeln."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Fraktale Natur erlaubt untergeordnete Gegenbewegungen, ohne den übergeordneten Trend zu brechen."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Ein Schlusskurs unter der Invalidierung beendet das Szenario terminal; ein späterer Wiederanstieg heilt den Bruch nicht."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Berechnung: 200 - (200 - 100) * 0.382 = 200 - 38.2 = 161.8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine Projektion (A-B-C) benötigt drei Ankerpunkte: Start A, Ende A und den Ursprung der Projektion (Ende B)."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Das Kopieren von Werten ohne Herleitung und Anker erfüllt nicht die Anforderungen an eine nachrechenbare Evidenz."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Gemäß Regelwerk dürfen auch Dochte (Wicks) im klassischen Impuls nicht in den Preisbereich der Welle 1 eindringen."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1680,
+        "completion_tokens": 717,
+        "total_tokens": 2397,
+        "cost": 0.002991,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.002991,
+          "upstream_inference_prompt_cost": 0.00084,
+          "upstream_inference_completions_cost": 0.002151
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "critic_claude_quick",
+      "model": "anthropic/claude-haiku-4.5",
+      "provider": "openrouter",
+      "status": "unavailable",
+      "error": "[schema_validation] model=anthropic/claude-haiku-4.5; attempts=1; Ausgabevertrag nach 1 Versuchen nicht erfüllt: [schema_validation] model=anthropic/claude-haiku-4.5; attempts=1; $.answers: maximum item count is 15"
+    },
+    {
+      "role": "critic_gemini_deep",
+      "model": "google/gemini-3.1-pro-preview",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Welle 2 unterschreitet nicht den Start, Welle 3 uebertrifft Welle 1, Welle 4 ueberlappt nicht mit Welle 1 und Welle 3 ist mit 40 Einheiten nicht die kuerzeste."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Welle 4 endet bei 115 und ueberlappt somit in das Territorium von Welle 1, was bei einem klassischen Impuls verboten ist."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Welle 1 ist 40, Welle 3 ist 30 und Welle 5 ist 45 Einheiten lang. Welle 3 ist somit die kuerzeste, was in einem Impuls verboten ist."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Alle Regeln fuer einen baerischen Impuls sind erfuellt, keine Ueberlappung, Welle 3 ist nicht die kuerzeste."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Startpunkt von Welle 1 (Welle 0) kann nicht geprueft werden, ob Welle 2 den Start von Welle 1 ueberschreitet."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Ueberlappung belegt keine Diagonale, Position im Elterncount, Geometrie und Unterteilung brauchen eigene Evidenz."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Bei einem Expanded Flat ist eine ueberschiessende Welle B, die den Start von A ueberschreitet, moeglich und regelkonform."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Ein Zigzag unterteilt sich in 5-3-5, waehrend ein Flat eine 3-3-5 Struktur aufweist."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhaeltnisse sind Richtwerte und keine unverletzlichen Pflichtziele oder harten Elliott-Regeln."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein 30M-Aufwaertstrend kann als untergeordnete Korrektur innerhalb eines uebergeordneten Tagesabwaertstrends auftreten."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Ein gebrochenes Szenario ist terminal invalidiert, der Stop darf nicht verschoben oder ignoriert werden."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Das 0.382 Retracement berechnet sich als 200 - (200 - 100) * 0.382 = 161.8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine Projektion benoetigt zwingend drei Ankerpunkte, naemlich Start und Ende der Referenzwelle sowie den Ursprung der Projektion."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Externe Quellen sind keine eigenen Berechnungen, Fibonacci-Level muessen mit Ankern und Formeln nachrechenbar sein."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Auch zwischenliegende Wicks muessen geprueft werden, eine Ueberlappung durch einen Wick verletzt die Impulsregel ebenfalls."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1526,
+        "completion_tokens": 1843,
+        "total_tokens": 3369,
+        "cost": 0.025168,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.025168,
+          "upstream_inference_prompt_cost": 0.003052,
+          "upstream_inference_completions_cost": 0.022116
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1118,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "critic_claude_deep",
+      "model": "anthropic/claude-sonnet-4.6",
+      "provider": "openrouter",
+      "status": "failed",
+      "score": 13,
+      "total": 15,
+      "failed": [
+        "shortest_three",
+        "fib_math"
+      ],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Welle 1: 100→120 (+20), Welle 2: 120→110 (-10, retracement 50%, nicht unter 100 ✓), Welle 3: 110→150 (+40, über Ende Welle 1 bei 120 ✓), Welle 4: 150→125 (-25, Ende 125 > Welle-1-Ende 120, keine Überlappung ✓), Welle 5: 125→160 (+35). Welle 3 (40) ist nicht die kürzeste: W1=20, W3=40, W5=35 → kürzeste ist W1 ✓. Alle Regeln erfüllt."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Welle 4 endet bei 115, Welle 1 endet bei 120. Da 115 < 120, überlappt Welle 4 in den Bereich von Welle 1. Das verletzt die klassische Impuls-Überlappungsregel. Kein regelkonformer klassischer Impuls."
+        },
+        {
+          "id": "shortest_three",
+          "correct": true,
+          "reason": "W1=100→140=40, W3=130→160=30, W5=150→195=45. Welle 3 (30) ist die kürzeste der drei Impulswellen. Die Aussage behauptet, Welle 3 sei NICHT die kürzeste – das ist falsch. Warte: Die Aussage lautet 'Welle 3 ist hier nicht die kürzeste'. W3=30 ist tatsächlich die kürzeste. Also ist die Aussage falsch."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Bärischer Impuls abwärts: W1: 200→180 (-20), W2: 180→190 (+10, retracement 50%, nicht über 200 ✓), W3: 190→150 (-40, unter Ende W1 bei 180 ✓), W4: 150→175 (+25, Ende 175 < W1-Ende 180, keine Überlappung ✓), W5: 175→140 (-35). W1=20, W3=40, W5=35 → W3 nicht kürzeste ✓. Alle Regeln erfüllt."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Startpunkt (Welle 0 / Start von Welle 1) kann man das Retracement von Welle 2 relativ zu Welle 1 nicht prüfen (Welle 2 darf Beginn von Welle 1 nicht überschreiten). Damit sind nicht alle harten Regeln abschließend prüfbar."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Laut Regelwerk beweist eine Überlappung allein keine gültige Diagonale. Position im Elterncount, Geometrie (konvergierende/divergierende Trendlinien) und Unterteilung (3-3-3-3-3) brauchen eigene Evidenz."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Beim Expanded Flat überschreitet B den Ausgangspunkt von A. Dies ist ein definiertes Muster und nicht automatisch verboten. Die Aussage ist korrekt."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Zigzag: 5-3-5, Flat: 3-3-5. Entspricht der klassischen Elliott-Definition."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte, keine unverletzlichen Regeln. Es gibt keine Pflicht, dass eine korrektive Welle exakt 50% oder 61,8% erreichen muss."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein 30M-Timeframe kann eine eigene Aufwärtsstruktur entwickeln, die innerhalb eines übergeordneten Tagesabwärtstrends liegt, ohne diesen zu beenden. Mehrere Zeitrahmen können gleichzeitig unterschiedliche Richtungen zeigen."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Ein Schluss bei 76000 unter der Invalidierungsmarke 79050 hat das Szenario terminal invalidiert. Ein späterer Kursanstieg reaktiviert ein invalidiertes Szenario nicht; der Stop darf nicht verschoben werden."
+        },
+        {
+          "id": "fib_math",
+          "correct": false,
+          "reason": "Retracement-Formel: E-(E-S)*r = 200-(200-100)*0.382 = 200-38.2 = 161.8. Das Ergebnis 161,8 ist rechnerisch korrekt. Die Aussage ist richtig. Korrektur: correct=true."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt drei Anker: Start A, Ende A (= Start B) und Ende B (= Start C) als Projektionsursprung. Ohne Ende B als dritten Anker ist keine C-Projektion berechenbar."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Die bloße Übernahme von Marken aus einem externen Video ohne eigene Kursanker und Formel ist keine eigene nachgewiesene Fibonacci-Berechnung. Externe Quellen sind zeitgebundene Vergleiche, keine eigenen Berechnungen."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Im klassischen Impuls gilt die Überlappungsregel auch für Wicks. Ein Wick der Welle 4, der in den Bereich der Welle 1 eindringt, verletzt die Regel – nicht nur das etikettierte Schlusspunkt-Ende."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 2126,
+        "completion_tokens": 1475,
+        "total_tokens": 3601,
+        "cost": 0.028503,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.028503,
+          "upstream_inference_prompt_cost": 0.006378,
+          "upstream_inference_completions_cost": 0.022125
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "bear_fibonacci",
+      "model": "openai/gpt-5.6-luna",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Die Sequenz erfüllt die harten Regeln: Welle 2 bleibt über 100, Welle 3 überschreitet 120 und ist nicht die kürzeste, Welle 4 bleibt mit 125 außerhalb der Welle-1-Spanne, und Welle 5 überschreitet 150."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Das Ende der Welle 4 bei 115 liegt in der Preisspanne der Welle 1 von 100 bis 120 und verletzt damit die klassische Nichtüberlappungsregel."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Die Längen der Wellen 1, 3 und 5 betragen 40, 30 und 35; damit ist Welle 3 die kürzeste."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Im bärischen Count überschreitet Welle 2 den Start bei 200 nicht, Welle 3 fällt unter 180, Welle 4 überlappt die Welle-1-Spanne nicht, und Welle 5 fällt unter 150."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Start von Welle 1 beziehungsweise den Ursprung der Welle 0 lassen sich insbesondere Retracement von Welle 2 und weitere harte Regeln nicht abschließend prüfen."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Überlappung allein beweist keine Diagonale; zusätzlich sind Elternposition, Geometrie und passende Unterteilung erforderlich."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Eine B-Welle darf bei einem Expanded Flat den Ausgangspunkt der A-Welle überschreiten; ABC ist nicht automatisch ein Zigzag."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Die interne Standardstruktur ist beim Zigzag 5-3-5 und beim Flat 3-3-5."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse wie 0,5 oder 0,618 sind Richtwerte und keine unverletzlichen Elliott-Regeln."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein eigenständig belegter 30M-Aufwärtsbounce kann innerhalb eines übergeordneten Tagesabwärtstrends stattfinden, ohne diesen zu beenden."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Der abgeschlossene 30M-Schluss bei 76000 liegt unter der festen Invalidierung bei 79050; das Long-Szenario ist damit terminal invalidiert und lebt bei späterem Anstieg nicht wieder auf."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Das Retracement lautet 200-(200-100)*0,382 = 161,8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt die Start- und Endpunkte von A sowie einen zusätzlichen Projektionursprung am Ende von B."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Ohne gültige OHLC-Anker und nachrechenbare Formel sind die übernommenen Marken keine eigene nachgewiesene Fibonacci-Berechnung."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Auch ein Wick der Welle 4 darf im klassischen Impuls nicht in die Preisspanne der Welle 1 überlappen; maßgeblich sind auch zwischenliegende Wicks."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1533,
+        "completion_tokens": 1196,
+        "total_tokens": 2729,
+        "cost": 0.0018183,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1530,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0018183,
+          "upstream_inference_prompt_cost": 0.0003831,
+          "upstream_inference_completions_cost": 0.0014352
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 474,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "elliott_hierarchy",
+      "model": "openai/gpt-5.6-luna",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Die Wellenlängen sind 20, 40 und 35; Welle 3 ist nicht die kürzeste. Welle 2 bleibt über 100, Welle 3 übertrifft Ende 1 und Welle 4 überlappt Welle 1 nicht."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Das Ende von Welle 4 bei 115 liegt im Preisbereich von Welle 1 bis 120 und verletzt damit die klassische Impulsregel; ein gültiger Impuls ist so nicht belegt."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Die Längen von Welle 1, 3 und 5 betragen 40, 30 und 45. Welle 3 ist damit die kürzeste und verletzt die Regel."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Im bärischen Impuls bleibt Welle 2 unter dem Start, Welle 3 unterschreitet Ende 1, Welle 4 überlappt Welle 1 nicht, und Welle 3 ist mit 40 nicht die kürzeste der Impulswellen."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Start beziehungsweise Welle 0 lassen sich die harten Regeln, insbesondere die Begrenzung von Welle 2 und die vollständige Geometrie, nicht abschließend prüfen."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Überlappung allein beweist keine Diagonale. Position im Elterncount, Geometrie und die erforderliche Unterteilung benötigen jeweils eigene Evidenz."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Eine B-Welle darf bei einem Expanded Flat den Ausgangspunkt der A überschreiten; das ist nicht bei jeder ABC-Korrektur verboten."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Die interne Standardstruktur eines Zigzags ist 5-3-5, die eines Flats 3-3-5."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und keine unverletzlichen Elliott-Regeln; eine Mindestfolge von 50 Prozent und 61,8 Prozent ist nicht vorgeschrieben."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein aktuell separat belegter 30M-Aufwärtscount kann innerhalb eines übergeordneten Tagesabwärtstrends laufen, ohne diesen zu beenden."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Der abgeschlossene 30M-Schluss bei 76000 unterschreitet die feste Invalidierung bei 79050 und invalidiert den Long-Count terminal; ein späterer Anstieg reaktiviert ihn nicht."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Das Retracement berechnet sich als 200-(200-100)*0,382 = 161,8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt die beiden Anker der A-Länge sowie den zusätzlichen Projektionsursprung am Ende von B."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Übernommene Marken ohne exakte Kursanker und nachvollziehbare Formel sind keine eigene nachgewiesene Fibonacci-Berechnung."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Auch zwischenliegende Wicks müssen geprüft werden. Überlappt ein Wick von Welle 4 den Bereich von Welle 1, ist der klassische Impuls verletzt; ein höheres Wellenende genügt nicht."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1535,
+        "completion_tokens": 1245,
+        "total_tokens": 2780,
+        "cost": 0.0018776,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1532,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0018776,
+          "upstream_inference_prompt_cost": 0.0003836,
+          "upstream_inference_completions_cost": 0.001494
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 492,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "bull_fibonacci",
+      "model": "openai/gpt-5.6-luna",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Die bullischen Regeln sind erfüllt: Welle 2 bleibt über 100, Welle 3 überschreitet 120, Welle 4 überlappt Welle 1 nicht, und Welle 3 ist nicht die kürzeste von 1, 3 und 5."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Bei einem bullischen klassischen Impuls überlappt das Ende von Welle 4 bei 115 den Bereich von Welle 1 bis 120; damit ist der Count regelwidrig."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Die Längen der Wellen 1, 3 und 5 betragen 40, 30 und 45. Damit ist Welle 3 die kürzeste."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Welle 2 überschreitet den Ursprung 200 nicht, Welle 3 fällt unter 180, Welle 4 überlappt Welle 1 nicht, und Welle 3 ist nicht die kürzeste der drei Impulswellen."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Start von Welle 1 beziehungsweise Welle 0 kann insbesondere die harte Welle-2-Regel nicht geprüft werden."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Überlappung allein beweist keine Diagonale. Position im Elterncount, Geometrie und Unterteilung benötigen jeweils eigene Evidenz."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Eine B-Welle darf bei einem Expanded Flat den Ausgangspunkt von A überschreiten; das ist nicht für jede ABC-Korrektur verboten."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Die Standardunterteilungen lauten beim Zigzag 5-3-5 und beim Flat 3-3-5."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und keine unverletzlichen Mindestanforderungen für jede korrektive Welle."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein separat belegter 30M-Aufwärtsbounce kann innerhalb eines fortbestehenden Tagesabwärtstrends auftreten, ohne diesen zu beenden."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Der abgeschlossene 30M-Schluss bei 76000 unter der Invalidierung 79050 terminalisiert das Long-Szenario; ein späterer Anstieg reaktiviert es nicht."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Das Aufwärts-Retracement ist 200-(200-100)*0,382 = 161,8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt drei Anker: Start und Ende von A sowie den Endpunkt von B als zusätzlichen Projektionsursprung."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Ohne gültige Kursanker, Methode und nachrechenbare Formel sind übernommene Marken keine eigene Fibonacci-Berechnung."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Auch zwischenliegende Wicks müssen geprüft werden. Ein Wick von Welle 4 in den Bereich von Welle 1 verletzt die klassische Nichtüberlappungsregel."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1532,
+        "completion_tokens": 1142,
+        "total_tokens": 2674,
+        "cost": 0.00175325,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1529,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00175325,
+          "upstream_inference_prompt_cost": 0.00038285,
+          "upstream_inference_completions_cost": 0.0013704
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 440,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "directional_integrity",
+      "model": "openai/gpt-5.6-luna",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Die bullischen Sequenzen erfüllen Welle-2-Regel, Welle-3-Ausbruch, fehlende Welle-4-Überlappung und Welle 3 ist nicht die kürzeste von 1, 3 und 5."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Ein Ende der Welle 4 bei 115 liegt im Preisbereich der Welle 1 bis 120; das verletzt die klassische Impulsregel."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Welle 3 misst 30, Welle 1 misst 40 und Welle 5 misst 35; damit ist Welle 3 die kürzeste."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Im bärischen Impuls überschreitet Welle 3 das Ende von Welle 1, Welle 2 überschreitet den Ursprung nicht, Welle 4 überlappt Welle 1 nicht und Welle 3 ist nicht die kürzeste."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Ursprung von Welle 1 lassen sich insbesondere die Welle-2-Grenze und weitere harte Relationen nicht abschließend prüfen."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Überlappung allein beweist keine Diagonale; Position im Elterncount, Geometrie und interne Unterteilung benötigen eigene Evidenz."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Eine überschießende B ist bei einem Expanded Flat möglich und daher nicht bei jeder ABC-Korrektur verboten."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Die interne Standardunterteilung ist beim Zigzag 5-3-5 und beim Flat 3-3-5."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und keine unverletzlichen Mindestanforderungen jeder korrektiven Welle."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein separat belegter 30M-Aufwärtscount kann innerhalb eines weiterhin laufenden Tagesabwärtstrends bestehen, ohne ihn zu beenden."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Der abgeschlossene 30M-Schluss bei 76000 unterschreitet die feste Invalidierung 79050; das Szenario ist terminal invalidiert und wird durch späteres Steigen nicht reaktiviert."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Das Retracement ist 200-(200-100)*0,382 = 161,8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt Start und Ende von A sowie den zusätzlichen Preisanker am Ende von B als Projektionsursprung."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Übernommene Marken ohne eigene Kursanker und Formel sind keine nachrechenbare Fibonacci-Berechnung."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Auch zwischenliegende Wicks müssen geprüft werden; eine Welle-4-Überlappung mit Welle 1 verletzt den klassischen Impuls unabhängig vom etikettierten Ende."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1543,
+        "completion_tokens": 1192,
+        "total_tokens": 2735,
+        "cost": 0.001816,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1540,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.001816,
+          "upstream_inference_prompt_cost": 0.0003856,
+          "upstream_inference_completions_cost": 0.0014304
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 515,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "anchors_and_fibonacci",
+      "model": "openai/gpt-5.6-luna",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Die Chronologie stimmt; Welle 2 bleibt über 100, Welle 3 überschreitet 120, Welle 4 überlappt Welle 1 nicht, und Welle 3 ist nicht die kürzeste von 1, 3 und 5."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Ein Ende der Welle 4 bei 115 liegt im Preisbereich der Welle 1 von 100 bis 120 und verletzt damit die klassische Impulsregel."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Die Längen betragen für Welle 1, 3 und 5 jeweils 40, 30 und 45; damit ist Welle 3 die kürzeste."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Im bärischen Impuls bleibt Welle 2 unter 200, Welle 3 unterschreitet 180, Welle 4 überlappt den Bereich von Welle 1 nicht, und Welle 3 ist nicht die kürzeste."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Start von Welle 1 können unter anderem die Regel für Welle 2 und die vollständige Impulsgeometrie nicht abschließend geprüft werden."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Überlappung allein beweist keine Diagonale; zusätzlich sind Elternposition, Geometrie und passende Unterteilung erforderlich."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Eine überschießende B über den A-Ausgangspunkt ist bei einem Expanded Flat möglich und nicht generell für jede ABC-Korrektur verboten."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Die charakteristische Unterteilung lautet beim Zigzag 5-3-5 und beim Flat 3-3-5."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und keine unverletzlichen Pflichtziele jeder korrektiven Welle."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Eine separat belegte aktuelle 30M-Aufwärtsstruktur kann innerhalb eines übergeordneten Tagesabwärtstrends bestehen, ohne ihn zu beenden."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Der 30M-Schluss bei 76000 liegt unter der Invalidierung bei 79050; das Szenario ist damit terminal invalidiert und wird durch späteres Steigen nicht reaktiviert."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Das Retracement berechnet sich als 200-(200-100)*0,382 = 161,8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt die A-Länge aus Start und Ende A sowie den zusätzlichen Anker am Ende B als Projektionstranslation."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Ohne überprüfbare Kursanker und Formel sind übernommene Marken keine eigene nachgewiesene Fibonacci-Berechnung."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Auch ein zwischenliegender Wick der Welle 4 in den Bereich der Welle 1 verletzt den klassischen Impuls; das etikettierte Ende darüber genügt nicht."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1529,
+        "completion_tokens": 1119,
+        "total_tokens": 2648,
+        "cost": 0.0017249,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1526,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0017249,
+          "upstream_inference_prompt_cost": 0.0003821,
+          "upstream_inference_completions_cost": 0.0013428
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 420,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "macro_and_method_audit",
+      "model": "openai/gpt-5.6-luna",
+      "provider": "openrouter",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Die Endpunkte erfüllen die harten Regeln: Welle 2 bleibt über 100, Welle 3 überschreitet 120, Welle 4 endet über 120, und Welle 3 ist nicht die kürzeste von 1, 3 und 5."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Ein Ende der Welle 4 bei 115 liegt im Bereich der Welle 1 bis 120 und verletzt damit die klassische Impulsregel ohne eigenständigen Diagonalnachweis."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Die Längen der Impulswellen sind 40, 30 und 45; damit ist Welle 3 die kürzeste, nicht eine längere Welle."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Für den bärischen Impuls bleibt Welle 2 unter 200, Welle 3 unterschreitet 180, Welle 4 überlappt Welle 1 nicht, und Welle 3 ist nicht die kürzeste."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Startpunkt von Welle 1 beziehungsweise Welle 0 lassen sich die harten Regeln, insbesondere für Welle 2 und die Impulsgeometrie, nicht abschließend prüfen."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Überlappung allein beweist keine Diagonale; dafür braucht es zusätzlich passende Position, Geometrie und Unterteilung."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Eine überschießende B, die den Ausgangspunkt von A übersteigt, ist bei einem Expanded Flat möglich und nicht generell bei ABC-Korrekturen verboten."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Die interne Standardunterteilung ist beim Zigzag 5-3-5 und beim Flat 3-3-5."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und keine unverletzlichen Pflichtziele für jede korrektive Welle."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein eigenständig belegter 30M-Aufwärtsbounce kann innerhalb eines laufenden Tagesabwärtstrends bestehen, ohne diesen höheren Trend zu beenden."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Der abgeschlossene 30M-Schluss bei 76000 unter 79050 verletzt die feste Invalidierung; ein späterer Anstieg reaktiviert das Szenario nicht."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Das 0,382-Retracement berechnet sich als 200-(200-100)*0,382=161,8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt drei Preisanker: Start und Ende von A sowie den Endpunkt von B als zusätzlichen Anker."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Ohne eigene Kursanker und die nachvollziehbare Formel ist die Übernahme externer Marken keine eigene nachgewiesene Fibonacci-Berechnung."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Im klassischen Impuls darf auch ein Zwischenwick der Welle 4 nicht in den Bereich der Welle 1 überlappen; ein höheres etikettiertes Ende genügt nicht."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1532,
+        "completion_tokens": 1556,
+        "total_tokens": 3088,
+        "cost": 0.00225005,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1529,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00225005,
+          "upstream_inference_prompt_cost": 0.00038285,
+          "upstream_inference_completions_cost": 0.0018672
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 839,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "rules_leader",
+      "model": "openai/gpt-5.6-luna-pro",
+      "provider": "openrouter",
+      "status": "failed",
+      "score": 14,
+      "total": 15,
+      "failed": [
+        "shortest_three"
+      ],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Die Wellenlängen sind 1=20, 3=40 und 5=35; Welle 3 übertrifft Ende 1, Welle 2 verletzt den Start nicht, und Welle 4 überlappt Welle 1 am Endpunkt nicht."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Das Ende von Welle 4 bei 115 liegt im Preisbereich von Welle 1 zwischen 100 und 120; damit ist der klassische Impuls verletzt."
+        },
+        {
+          "id": "shortest_three",
+          "correct": true,
+          "reason": "Die Längen betragen Welle 1=40, Welle 3=30 und Welle 5=35. Welle 3 ist somit nicht die kürzeste."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Im bärischen Count überschreitet Welle 2 den Ursprung nicht, Welle 3 unterschreitet Ende 1, Welle 4 überlappt Welle 1 nicht, und Welle 3 ist nicht die kürzeste."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne den Start von Welle 1 lassen sich insbesondere die Regeln für Welle 2 und die Überlappung von Welle 4 mit Welle 1 nicht abschließend prüfen."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Überlappung allein beweist keine Diagonale. Position im Elterncount, Geometrie und interne Unterteilung benötigen jeweils eigene Evidenz."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Eine B-Welle darf bei einem Expanded Flat den Ausgangspunkt der A-Welle überschreiten; ABC ist nicht automatisch ein Zigzag."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Die verbindlichen internen Strukturen lauten für Zigzag 5-3-5 und für Flat 3-3-5."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und keine unverletzlichen Mindestanforderungen für jede korrektive Welle."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Ein eigenständig belegter 30M-Aufwärtsbounce kann innerhalb eines fortbestehenden Tagesabwärtstrends auftreten, ohne diesen höhergradig zu beenden."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Der Schluss bei 76000 liegt unter der festen Invalidierung bei 79050 und invalidiert den Count terminal; ein späterer Anstieg reaktiviert ihn nicht."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Nach der Retracement-Formel ergibt sich 200-(200-100)*0,382=161,8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion benötigt die beiden Anker des A-Swings sowie einen zusätzlichen Projektionsanker am Ende von B."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Ohne eigene Kursanker und eine nachrechenbare Formel sind übernommene Marken keine eigene nachgewiesene Fibonacci-Berechnung."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Auch zwischenliegende Wicks müssen geprüft werden; ein Wick von Welle 4 in den Bereich von Welle 1 verletzt den klassischen Impuls."
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 10847,
+        "completion_tokens": 3871,
+        "total_tokens": 14718,
+        "cost": 0.00634805,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 3010,
+          "cache_write_tokens": 1505,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00634805,
+          "upstream_inference_prompt_cost": 0.00170285,
+          "upstream_inference_completions_cost": 0.0046452
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1737,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "role": "supervisor",
+      "model": "gpt-5.6-sol",
+      "provider": "codex",
+      "status": "passed",
+      "score": 15,
+      "total": 15,
+      "failed": [],
+      "answers": [
+        {
+          "id": "impulse_valid",
+          "correct": true,
+          "reason": "Welle 2 bleibt über 100, Welle 3 überschreitet 120, Welle 4 bleibt über dem Welle-1-Ende 120, und die Impulslängen 20/40/35 machen Welle 3 nicht zur kürzesten."
+        },
+        {
+          "id": "overlap",
+          "correct": false,
+          "reason": "Das Welle-4-Ende 115 liegt im Preisbereich der Welle 1 von 100 bis 120; damit ist die Nichtüberlappungsregel des klassischen Impulses verletzt."
+        },
+        {
+          "id": "shortest_three",
+          "correct": false,
+          "reason": "Die Impulswellen haben Längen 40, 30 und 45. Welle 3 ist mit 30 tatsächlich die kürzeste."
+        },
+        {
+          "id": "bear_valid",
+          "correct": true,
+          "reason": "Welle 2 überschreitet 200 nicht, Welle 3 fällt unter 180, Welle 4 bleibt mit 175 unter dem Welle-1-Ende 180, und die Längen 20/40/35 verletzen die Kürzeste-Regel nicht."
+        },
+        {
+          "id": "missing_origin",
+          "correct": false,
+          "reason": "Ohne Welle 0 beziehungsweise den Start der Welle 1 lassen sich insbesondere die Welle-2-Invalidierung und die Länge der Welle 1 nicht abschließend prüfen."
+        },
+        {
+          "id": "diagonal_proof",
+          "correct": false,
+          "reason": "Eine Welle-1/4-Überlappung widerlegt gegebenenfalls den klassischen Impuls, beweist aber keine Diagonale; Elternposition, Geometrie und Unterteilung benötigen eigene Evidenz."
+        },
+        {
+          "id": "expanded_flat",
+          "correct": true,
+          "reason": "Bei einem Expanded Flat darf Welle B über den Ausgangspunkt von A hinauslaufen; dies ist daher nicht für jede ABC-Korrektur verboten."
+        },
+        {
+          "id": "zigzag",
+          "correct": true,
+          "reason": "Die definierenden Unterteilungen sind beim Zigzag 5-3-5 und beim Flat 3-3-5."
+        },
+        {
+          "id": "ratios_not_law",
+          "correct": false,
+          "reason": "Fibonacci-Verhältnisse sind Richtwerte und keine unverletzlichen Mindestziele; weder 50 Prozent noch 61,8 Prozent sind für jede Korrektur zwingend."
+        },
+        {
+          "id": "timeframes",
+          "correct": true,
+          "reason": "Eine separat und aktuell belegte 30M-Aufwärtsstruktur kann als untergeordneter Bounce innerhalb eines Tagesabwärtstrends bestehen, ohne den Tagestrend zu beenden."
+        },
+        {
+          "id": "stale_long",
+          "correct": false,
+          "reason": "Der abgeschlossene 30M-Schluss bei 76000 unterschreitet die feste Invalidierung 79050. Das Szenario ist damit terminal invalidiert und wird durch einen späteren Anstieg nicht reaktiviert."
+        },
+        {
+          "id": "fib_math",
+          "correct": true,
+          "reason": "Nach der Retracement-Formel ergibt sich 200-(200-100)*0,382 = 161,8."
+        },
+        {
+          "id": "projection",
+          "correct": true,
+          "reason": "Eine C-Projektion verwendet O+(E-S)*r und benötigt deshalb Start und Ende von A sowie das Ende von B als Projektionsursprung O."
+        },
+        {
+          "id": "source_copy",
+          "correct": false,
+          "reason": "Ohne angegebene Kursanker, fib_method, Ratio und nachrechenbare Formel sind übernommene Videomarken keine eigene nachgewiesene Fibonacci-Berechnung."
+        },
+        {
+          "id": "wick",
+          "correct": false,
+          "reason": "Auch zwischenliegende Wicks zählen. Dringt ein Welle-4-Wick in den Preisbereich der Welle 1 ein, ist die Nichtüberlappungsregel des klassischen Spot-Impulses verletzt."
+        }
+      ],
+      "usage": {}
+    }
+  ],
+  "inventoryCount": 20,
+  "completedAt": "2026-10-30T07:12:40.245960+00:00"
+}

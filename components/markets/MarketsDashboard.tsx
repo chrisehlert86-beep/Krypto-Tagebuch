@@ -147,8 +147,8 @@ export default function MarketsDashboard({ mobile = false }: { mobile?: boolean 
             {selectedPlan ? (
               <Metric
                 label={selectedPlan.levels.some((level) => level.role.includes('entry')) ? 'Fibonacci-Einstiegslevel' : 'Fibonacci-Ziele'}
-                value={selectedPlan.levels.map((level) => `Fib ${level.ratio}: ${price(level.price)}`).join(' · ')}
-                detail={[...new Set(selectedPlan.levels.map((level) => levelRoleLabel(level.role)))].join(' / ')}
+                value={selectedPlan.levels.length ? selectedPlan.levels.map((level) => `Fib ${level.ratio}: ${price(level.price)}`).join(' · ') : 'Nicht bestätigt'}
+                detail={selectedPlan.note ?? [...new Set(selectedPlan.levels.map((level) => levelRoleLabel(level.role)))].join(' / ')}
                 accent="text-amber-300"
               />
             ) : (
@@ -161,7 +161,7 @@ export default function MarketsDashboard({ mobile = false }: { mobile?: boolean 
             )}
             <Metric
               label="Invalidierung"
-              value={`${(selectedPlan?.invalidation.relation ?? selected.invalidation.relation) === 'below' ? 'Unter' : 'Über'} ${price(selectedPlan?.invalidation.price ?? selected.invalidation.price)}`}
+              value={selectedPlan?.direction === 'wait' ? 'Kein aktives Szenario' : `${(selectedPlan?.invalidation.relation ?? selected.invalidation.relation) === 'below' ? 'Unter' : 'Über'} ${price(selectedPlan?.invalidation.price ?? selected.invalidation.price)}`}
               detail={selectedPlan?.invalidation.confirmation}
               accent="text-rose-300"
             />
