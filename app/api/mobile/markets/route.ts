@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { getCurrentMarketAnalyses } from '@/lib/market-analysis'
 
-const CANDLE_LIMITS = { m30: 240, daily: 180, weekly: 120, monthly: 72 } as const
+const CANDLE_LIMITS = { m15: 240, daily: 180, weekly: 120, monthly: 72 } as const
 
 export async function GET() {
   try {
@@ -10,7 +10,7 @@ export async function GET() {
     const compactMarkets = markets.map((market) => ({
       ...market,
       candles: {
-        m30: (market.candles.m30 ?? []).slice(-CANDLE_LIMITS.m30),
+        m15: (market.candles.m15 ?? []).slice(-CANDLE_LIMITS.m15),
         daily: market.candles.daily.slice(-CANDLE_LIMITS.daily),
         weekly: market.candles.weekly.slice(-CANDLE_LIMITS.weekly),
         monthly: market.candles.monthly.slice(-CANDLE_LIMITS.monthly),

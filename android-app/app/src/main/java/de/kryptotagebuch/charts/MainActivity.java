@@ -57,8 +57,8 @@ public final class MainActivity extends Activity {
     private static final int GREEN = Color.rgb(52, 211, 153);
     private static final int RED = Color.rgb(251, 113, 133);
     private static final int AMBER = Color.rgb(251, 191, 36);
-    private static final String[] TIMEFRAMES = {"m30", "daily", "weekly", "monthly"};
-    private static final String[] TIMEFRAME_LABELS = {"30M", "1D", "1W", "1M"};
+    private static final String[] TIMEFRAMES = {"m15", "daily", "weekly", "monthly"};
+    private static final String[] TIMEFRAME_LABELS = {"15 Min", "1 Tag", "Woche", "Monat"};
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -576,8 +576,8 @@ public final class MainActivity extends Activity {
 
     private int preferredStartIndex(JSONObject market) {
         JSONObject candles = market.optJSONObject("candles");
-        JSONArray m30 = candles == null ? null : candles.optJSONArray("m30");
-        return m30 != null && m30.length() > 1 ? 0 : 1;
+        JSONArray m15 = candles == null ? null : candles.optJSONArray("m15");
+        return m15 != null && m15.length() > 1 ? 0 : 1;
     }
 
     private int timeframeIndex(String timeframe) {

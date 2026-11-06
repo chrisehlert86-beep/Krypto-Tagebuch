@@ -97,7 +97,7 @@ public final class MarketMessagingService extends FirebaseMessagingService {
         }
     }
     private static String timeframeLabel(String value) {
-        if ("m30".equalsIgnoreCase(value)) return "30M";
+        if ("m15".equalsIgnoreCase(value)) return "15 Min";
         if ("daily".equalsIgnoreCase(value)) return "1D";
         if ("weekly".equalsIgnoreCase(value)) return "1W";
         if ("monthly".equalsIgnoreCase(value)) return "1M";

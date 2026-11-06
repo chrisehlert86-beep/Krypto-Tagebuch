@@ -5,7 +5,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 export const INITIAL_MARKET_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'] as const
 
 export type MarketDirection = 'long' | 'short' | 'wait'
-export type MarketTimeframe = 'm30' | 'daily' | 'weekly' | 'monthly'
+export type MarketTimeframe = 'm15' | 'daily' | 'weekly' | 'monthly'
 
 export type MarketCandle = {
   time: number

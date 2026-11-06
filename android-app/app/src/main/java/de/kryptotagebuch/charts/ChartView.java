@@ -97,7 +97,7 @@ public final class ChartView extends View {
             paint.setColor(BLUE);canvas.drawText(label,lx,ly,paint);paint.setFakeBoldText(false);prevX=x;prevY=py;previous=true;
         }
         canvas.restoreToCount(clip);paint.setTextSize(dp(10));paint.setColor(Color.rgb(148,163,184));
-        SimpleDateFormat date=new SimpleDateFormat("m30".equals(frame)?"dd.MM HH:mm":"dd.MM.yy",Locale.GERMANY);
+        SimpleDateFormat date=new SimpleDateFormat("m15".equals(frame)?"dd.MM HH:mm":"dd.MM.yy",Locale.GERMANY);
         canvas.drawText(date.format(new Date(first)),left,bottom+dp(20),paint);String endLabel=date.format(new Date(last));
         canvas.drawText(endLabel,right-paint.measureText(endLabel),bottom+dp(20),paint);
     }

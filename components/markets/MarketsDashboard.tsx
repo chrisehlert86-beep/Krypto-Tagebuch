@@ -6,10 +6,10 @@ import type { MarketAnalysis, MarketSignalPlan, MarketTimeframe } from '@/lib/ma
 import MarketChart from '@/components/markets/MarketChart'
 
 const TIMEFRAMES: Array<{ value: MarketTimeframe; label: string }> = [
-  { value: 'm30', label: '30M' },
-  { value: 'daily', label: '1D' },
-  { value: 'weekly', label: '1W' },
-  { value: 'monthly', label: '1M' },
+  { value: 'm15', label: '15 Min' },
+  { value: 'daily', label: '1 Tag' },
+  { value: 'weekly', label: 'Woche' },
+  { value: 'monthly', label: 'Monat' },
 ]
 
 function price(value: number | null) {

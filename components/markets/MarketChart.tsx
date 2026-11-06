@@ -22,7 +22,7 @@ function formatPrice(value: number) {
 }
 
 function visibleCandles(candles: MarketCandle[], timeframe: MarketTimeframe) {
-  const limit = timeframe === 'm30' ? 160 : timeframe === 'daily' ? 120 : timeframe === 'weekly' ? 104 : 72
+  const limit = timeframe === 'm15' ? 160 : timeframe === 'daily' ? 120 : timeframe === 'weekly' ? 104 : 72
   return candles.slice(-limit)
 }
 
