@@ -27,7 +27,7 @@ jobs:
       - name: Build debug APK
         working-directory: android-app
         run: gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug :app:lintDebug
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Krypto-Charts-Android
           path: android-app/app/build/outputs/apk/debug/app-debug.apk
@@ -74,7 +74,7 @@ jobs:
             adb shell settings put secure navigation_mode 0
             gradle --no-daemon :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true
             adb pull /sdcard/Android/data/de.kryptotagebuch.charts/files/qa ../android-qa
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Android-UI-QA
