@@ -32,6 +32,7 @@ public class ScreenTest {
                 .putString("last_payload",new JSONObject().put("markets",new JSONArray().put(market)).toString()).commit();
         MainActivity activity=(MainActivity)inst.startActivitySync(new Intent(inst.getTargetContext(),MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         inst.waitForIdleSync();
+        android.os.SystemClock.sleep(700); // Allow SurfaceFlinger to present the first Activity frame.
         final View root=activity.findViewById(R.id.app_root);
         inst.runOnMainSync(()-> {
             android.graphics.Insets bars=root.getRootWindowInsets().getInsets(android.view.WindowInsets.Type.systemBars());
@@ -47,6 +48,7 @@ public class ScreenTest {
             } catch(Exception error) {throw new AssertionError(error);}
         });
         inst.waitForIdleSync();
+        android.os.SystemClock.sleep(700);
         save(inst.getUiAutomation().takeScreenshot(),new File(dir,"detail-no-analysis.png"));
         final Bitmap[] chartImage=new Bitmap[1];
         inst.runOnMainSync(()-> {

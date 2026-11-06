@@ -411,9 +411,9 @@ public final class MainActivity extends Activity {
         info.setPadding(dp(14), 0, 0, 0);
         info.addView(text(symbol, 21, TEXT, true));
         info.addView(text(formatPrice(market.optDouble("currentPrice")) + " USDT", 15, MUTED, false));
-        card.addView(info, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         String direction = market.optString("direction", "wait");
-        card.addView(pill("wait".equals(direction) ? "ANALYSE FEHLT" : directionLabel(direction), directionColor(direction), PANEL_2));
+        info.addView(text("wait".equals(direction) ? "Wellenanalyse fehlt" : directionLabel(direction), 12, directionColor(direction), true));
+        card.addView(info, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         card.addView(text("  ›", 30, MUTED, false));
         card.setOnClickListener(view -> {
             selectedMarket = market;
