@@ -4,7 +4,9 @@ import android.app.Instrumentation;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.test.InstrumentationTestCase;
+import androidx.test.platform.app.InstrumentationRegistry;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import android.view.View;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,9 +14,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /** Device tests exercise real Android 15 insets and Canvas rendering. */
-public class ScreenTest extends InstrumentationTestCase {
-    public void testSystemBarsAndCharts() throws Exception {
-        Instrumentation inst=getInstrumentation();
+public class ScreenTest {
+    @Test public void testSystemBarsAndCharts() throws Exception {
+        Instrumentation inst=InstrumentationRegistry.getInstrumentation();
         inst.getUiAutomation().executeShellCommand("pm grant de.kryptotagebuch.charts android.permission.POST_NOTIFICATIONS").close();
         JSONArray rows=new JSONArray();
         for(int i=0;i<100;i++) {
