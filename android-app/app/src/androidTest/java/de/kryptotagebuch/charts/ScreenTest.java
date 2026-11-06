@@ -40,6 +40,14 @@ public class ScreenTest {
         });
         File dir=new File(inst.getTargetContext().getExternalFilesDir(null),"qa");dir.mkdirs();
         save(inst.getUiAutomation().takeScreenshot(),new File(dir,"homescreen.png"));
+        inst.runOnMainSync(()-> {
+            try {
+                java.lang.reflect.Method show=MainActivity.class.getDeclaredMethod("showDetail",JSONObject.class,int.class);
+                show.setAccessible(true);show.invoke(activity,market,1);
+            } catch(Exception error) {throw new AssertionError(error);}
+        });
+        inst.waitForIdleSync();
+        save(inst.getUiAutomation().takeScreenshot(),new File(dir,"detail-no-analysis.png"));
         final Bitmap[] chartImage=new Bitmap[1];
         inst.runOnMainSync(()-> {
             ChartView chart=new ChartView(activity);chart.setMarketData(market,"daily",plan);
