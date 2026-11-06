@@ -29,7 +29,10 @@ public class ScreenTest {
         JSONObject market=new JSONObject().put("symbol","SOLUSDT").put("currentPrice",93)
                 .put("candles",new JSONObject().put("daily",rows)).put("signalPlans",new JSONArray().put(plan));
         inst.getTargetContext().getSharedPreferences("market_cache",0).edit()
-                .putString("last_payload",new JSONObject().put("markets",new JSONArray().put(market)).toString()).commit();
+                .putString("last_payload",new JSONObject().put("markets",new JSONArray()
+                        .put(new JSONObject(market.toString()).put("symbol","BTCUSDT").put("currentPrice",76088))
+                        .put(new JSONObject(market.toString()).put("symbol","ETHUSDT").put("currentPrice",2238))
+                        .put(market)).toString()).commit();
         MainActivity activity=(MainActivity)inst.startActivitySync(new Intent(inst.getTargetContext(),MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         inst.waitForIdleSync();
         android.os.SystemClock.sleep(700); // Allow SurfaceFlinger to present the first Activity frame.

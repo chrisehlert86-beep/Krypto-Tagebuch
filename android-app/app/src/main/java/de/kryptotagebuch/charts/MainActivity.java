@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.os.Build;
 import android.view.WindowInsets;
@@ -403,9 +404,23 @@ public final class MainActivity extends Activity {
         card.setPadding(dp(18), dp(18), dp(16), dp(18));
         card.setBackground(rounded(PANEL, BORDER, 22));
         String symbol = market.optString("symbol").replace("USDT", "");
-        TextView coin = text(coinGlyph(symbol), 25, TEXT, true);
-        coin.setGravity(Gravity.CENTER);
-        coin.setBackground(rounded(coinColor(symbol), coinColor(symbol), 26));
+        View coin;
+        if ("ETH".equals(symbol) || "SOL".equals(symbol)) {
+            ImageView logo = new ImageView(this);
+            logo.setImageResource("ETH".equals(symbol) ? R.drawable.coin_eth : R.drawable.coin_sol);
+            logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            int padding = dp("ETH".equals(symbol) ? 10 : 11);
+            logo.setPadding(padding, padding, padding, padding);
+            int background = "ETH".equals(symbol) ? Color.WHITE : Color.BLACK;
+            logo.setBackground(rounded(background, BORDER, 26));
+            coin = logo;
+        } else {
+            TextView glyph = text("BTC".equals(symbol) ? "₿" : symbol, 25, TEXT, true);
+            glyph.setGravity(Gravity.CENTER);
+            glyph.setBackground(rounded(Color.rgb(245, 158, 11), Color.rgb(245, 158, 11), 26));
+            coin = glyph;
+        }
+        coin.setContentDescription(symbol + " Logo");
         card.addView(coin, new LinearLayout.LayoutParams(dp(52), dp(52)));
         LinearLayout info = vertical();
         info.setPadding(dp(14), 0, 0, 0);
@@ -614,8 +629,6 @@ public final class MainActivity extends Activity {
 
     private static String directionLabel(String direction) { return "long".equals(direction) ? "AUFWÄRTS" : "short".equals(direction) ? "ABWÄRTS" : "UNGEKLÄRT"; }
     private static int directionColor(String direction) { return "long".equals(direction) ? GREEN : "short".equals(direction) ? RED : AMBER; }
-    private static int coinColor(String symbol) { return "BTC".equals(symbol) ? Color.rgb(245, 158, 11) : "ETH".equals(symbol) ? Color.rgb(99, 102, 241) : Color.rgb(139, 92, 246); }
-    private static String coinGlyph(String symbol) { return "BTC".equals(symbol) ? "₿" : "ETH".equals(symbol) ? "Ξ" : "S"; }
     static String formatPrice(double value) {
         if (!Double.isFinite(value)) return "—";
         NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
