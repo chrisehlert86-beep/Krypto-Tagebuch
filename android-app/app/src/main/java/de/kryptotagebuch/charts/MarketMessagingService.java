@@ -62,6 +62,8 @@ public final class MarketMessagingService extends FirebaseMessagingService {
         if (!quiet) {
             builder.setOngoing(true).setFullScreenIntent(pending, true).setPriority(Notification.PRIORITY_MAX);
         }
+        if (android.os.Build.VERSION.SDK_INT >= 33 && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) return;
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(id, builder.build());
     }
 
@@ -85,7 +87,7 @@ public final class MarketMessagingService extends FirebaseMessagingService {
         manager.createNotificationChannel(quiet);
     }
 
-    private static String clean(String value, String fallback) { return value == null || value.isBlank() ? fallback : value; }
+    private static String clean(String value, String fallback) { return value == null || value.trim().isEmpty() ? fallback : value; }
     private static boolean isStale(Map<String, String> data) {
         try {
             long sentAt = Long.parseLong(clean(data.get("sentAt"), "0"));

@@ -34,7 +34,7 @@ jobs:
           if-no-files-found: error
   publish-release:
     if: startsWith(github.ref, 'refs/tags/android-v')
-    needs: build-apk
+    needs: [build-apk, device-qa]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -45,6 +45,7 @@ jobs:
       - name: Publish APK release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           mv app-debug.apk Krypto-Charts.apk
           gh release create "$GITHUB_REF_NAME" Krypto-Charts.apk --title "Krypto Charts $GITHUB_REF_NAME" --generate-notes
