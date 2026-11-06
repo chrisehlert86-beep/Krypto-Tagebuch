@@ -21,6 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.os.Build;
+import android.view.WindowInsets;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -70,6 +73,17 @@ public final class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         root = findViewById(R.id.app_root);
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            if (Build.VERSION.SDK_INT >= 30) {
+                android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+                view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            } else {
+                view.setPadding(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
+                        insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
+            }
+            return insets;
+        });
+        root.requestApplyInsets();
         MarketMessagingService.createChannels(this);
         FirebaseMessaging.getInstance().subscribeToTopic("market-alerts");
         if (android.os.Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -92,7 +106,7 @@ public final class MainActivity extends Activity {
                 connection.setConnectTimeout(12_000);
                 connection.setReadTimeout(20_000);
                 connection.setRequestProperty("Accept", "application/json");
-                connection.setRequestProperty("User-Agent", "KryptoChartsAndroid/2.0");
+                connection.setRequestProperty("User-Agent", "KryptoChartsAndroid/3.1");
                 int status = connection.getResponseCode();
                 if (status != 200) throw new IllegalStateException("HTTP " + status);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
@@ -111,9 +125,13 @@ public final class MainActivity extends Activity {
                         else showHome();
                     }
                     else showDetail(selectedMarket, timeframeIndex);
+                    Toast.makeText(this, "Marktdaten aktualisiert", Toast.LENGTH_SHORT).show();
                 });
             } catch (Exception ignored) {
-                mainHandler.post(() -> { if (markets.isEmpty()) showError(); });
+                mainHandler.post(() -> {
+                    if (markets.isEmpty()) showError();
+                    else Toast.makeText(this, "Aktualisierung fehlgeschlagen – gespeicherte Daten angezeigt", Toast.LENGTH_LONG).show();
+                });
             }
         });
     }
@@ -178,7 +196,8 @@ public final class MainActivity extends Activity {
         heading.addView(titleBox, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         TextView refresh = pill("↻", BLUE, PANEL_2);
         refresh.setGravity(Gravity.CENTER);
-        refresh.setOnClickListener(view -> refreshMarkets());
+        refresh.setContentDescription("Marktdaten aktualisieren");
+        refresh.setOnClickListener(view -> { refresh.setText("…"); refreshMarkets(); });
         heading.addView(refresh, new LinearLayout.LayoutParams(dp(48), dp(48)));
         page.addView(heading);
 
@@ -394,7 +413,7 @@ public final class MainActivity extends Activity {
         info.addView(text(formatPrice(market.optDouble("currentPrice")) + " USDT", 15, MUTED, false));
         card.addView(info, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         String direction = market.optString("direction", "wait");
-        card.addView(pill(directionLabel(direction), directionColor(direction), PANEL_2));
+        card.addView(pill("wait".equals(direction) ? "ANALYSE FEHLT" : directionLabel(direction), directionColor(direction), PANEL_2));
         card.addView(text("  ›", 30, MUTED, false));
         card.setOnClickListener(view -> {
             selectedMarket = market;
@@ -445,6 +464,17 @@ public final class MainActivity extends Activity {
         chartParams.leftMargin = dp(10);
         chartParams.rightMargin = dp(10);
         page.addView(chart, chartParams);
+        LinearLayout zoomBar = horizontal();
+        zoomBar.setPadding(dp(14), 0, dp(14), dp(6));
+        String[] zoomLabels = {"−", "Ausschnitt", "+"};
+        for (int zi = 0; zi < zoomLabels.length; zi++) {
+            final int action = zi;
+            Button zoom = timeButton(zoomLabels[zi]);
+            zoom.setContentDescription(zi == 0 ? "Herauszoomen" : zi == 2 ? "Hineinzoomen" : "Aktuellen Ausschnitt zurücksetzen");
+            zoom.setOnClickListener(v -> { if (action == 0) chart.zoom(.75f); else if (action == 2) chart.zoom(1.4f); else chart.resetZoom(); });
+            zoomBar.addView(zoom, new LinearLayout.LayoutParams(0, dp(42), 1));
+        }
+        page.addView(zoomBar);
         GestureDetector detector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override public boolean onDown(MotionEvent event) { return true; }
             @Override public boolean onFling(MotionEvent first, MotionEvent second, float velocityX, float velocityY) {
@@ -454,8 +484,8 @@ public final class MainActivity extends Activity {
                 return true;
             }
         });
-        chart.setOnTouchListener((view, event) -> detector.onTouchEvent(event));
-        TextView swipeHint = text("←  Wischen für unter- oder übergeordneten Chart  →", 12, MUTED, false);
+        TextView swipeHint = text("Chart: ziehen / mit zwei Fingern zoomen\nZeitebene: hier nach links oder rechts wischen", 12, MUTED, false);
+        swipeHint.setOnTouchListener((view, event) -> detector.onTouchEvent(event));
         swipeHint.setGravity(Gravity.CENTER);
         swipeHint.setPadding(0, dp(6), 0, dp(10));
         page.addView(swipeHint);
@@ -483,11 +513,11 @@ public final class MainActivity extends Activity {
             levels = plan.optJSONArray("levels");
             invalidation = plan.optJSONObject("invalidation");
         } else {
-            JSONObject active = market.optJSONObject("activeCase");
+            JSONObject active = "daily".equals(TIMEFRAMES[timeframeIndex]) ? market.optJSONObject("activeCase") : null;
             wave = active == null ? "Welle unklar" : active.optString("waveLabel", "Welle unklar");
-            direction = market.optString("direction", "wait");
+            direction = active == null ? "wait" : market.optString("direction", "wait");
             levels = active == null ? null : active.optJSONArray("fibonacciLevels");
-            invalidation = market.optJSONObject("invalidation");
+            invalidation = active == null ? null : market.optJSONObject("invalidation");
         }
         LinearLayout line = horizontal();
         line.setGravity(Gravity.CENTER_VERTICAL);
@@ -513,13 +543,19 @@ public final class MainActivity extends Activity {
                 card.addView(row);
             }
         }
-        if (invalidation != null) {
+        if (invalidation != null && ChartData.positive(invalidation.optDouble("price"))) {
             String relation = invalidation.optString("relation").equals("below") ? "Unter " : "Über ";
             TextView invalid = text("Invalidierung: " + relation + formatPrice(invalidation.optDouble("price")) + " USDT", 14, RED, true);
             invalid.setPadding(0, dp(18), 0, 0);
             card.addView(invalid);
         }
-        String note = plan == null ? market.optString("currentWaveSummary") : plan.optString("note");
+        String note = plan == null ? "Für diese Zeitebene liegt keine Wellenanalyse vor." : plan.optString("note");
+        if ("wait".equals(direction)) {
+            waveView.setText("Keine geprüfte Wellenzählung verfügbar");
+            note = "Der Analysedienst liefert für diese Zeitebene derzeit keine belegte Richtung und keine gezählten Wellen. Deshalb sind kein Kursziel und keine Invalidierung angegeben.";
+            if (plan != null && "pending".equals(plan.optString("status")))
+                note = "Das Szenario ist noch nicht bestätigt. " + plan.optString("note");
+        }
         if (!note.isEmpty()) {
             TextView noteView = text(note, 14, MUTED, false);
             noteView.setPadding(0, dp(13), 0, 0);
@@ -576,7 +612,7 @@ public final class MainActivity extends Activity {
     private FrameLayout.LayoutParams fullFrame() { return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT); }
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
 
-    private static String directionLabel(String direction) { return "long".equals(direction) ? "LONG" : "short".equals(direction) ? "SHORT" : "WARTEN"; }
+    private static String directionLabel(String direction) { return "long".equals(direction) ? "AUFWÄRTS" : "short".equals(direction) ? "ABWÄRTS" : "UNGEKLÄRT"; }
     private static int directionColor(String direction) { return "long".equals(direction) ? GREEN : "short".equals(direction) ? RED : AMBER; }
     private static int coinColor(String symbol) { return "BTC".equals(symbol) ? Color.rgb(245, 158, 11) : "ETH".equals(symbol) ? Color.rgb(99, 102, 241) : Color.rgb(139, 92, 246); }
     private static String coinGlyph(String symbol) { return "BTC".equals(symbol) ? "₿" : "ETH".equals(symbol) ? "Ξ" : "S"; }

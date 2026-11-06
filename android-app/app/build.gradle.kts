@@ -11,8 +11,9 @@ android {
         applicationId = "de.kryptotagebuch.charts"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "3.0.0"
+        versionCode = 4
+        versionName = "3.1.0"
+        testInstrumentationRunner = "android.test.InstrumentationTestRunner"
     }
 
     buildTypes {
@@ -34,4 +35,6 @@ android {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
     implementation("com.google.firebase:firebase-messaging")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20240303")
 }
