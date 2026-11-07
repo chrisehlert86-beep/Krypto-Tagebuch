@@ -70,6 +70,13 @@ public class ScreenTest {
             android.widget.EditText amount = (android.widget.EditText) findDescription(activity.findViewById(R.id.app_root), "Alarmkurs in USDT");
             amount.setText("80000,25");
             assertEquals(80000.25, LocalAlarmRules.parsePrice(amount.getText().toString()), 0.00001);
+            try {
+                java.lang.reflect.Method refresh = MainActivity.class.getDeclaredMethod("renderUpdatedMarkets");
+                refresh.setAccessible(true); refresh.invoke(activity);
+            } catch (Exception error) { throw new AssertionError(error); }
+            assertSame("Refreshing analysis must preserve the editable form", amount,
+                    findDescription(activity.findViewById(R.id.app_root), "Alarmkurs in USDT"));
+            assertEquals("80000,25", amount.getText().toString());
         });
         inst.waitForIdleSync(); android.os.SystemClock.sleep(700);
         File dir = new File(inst.getTargetContext().getExternalFilesDir(null), "qa"); dir.mkdirs();

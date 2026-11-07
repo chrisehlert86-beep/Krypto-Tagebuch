@@ -123,9 +123,9 @@ public final class MainActivity extends Activity {
         }
         String cached = getSharedPreferences(CACHE_NAME, MODE_PRIVATE).getString(CACHE_KEY, "");
         String requestedScreen = getIntent().getStringExtra("screen");
-        if (!cached.isEmpty() && parseMarkets(cached)) {
-            if ("alarms".equals(requestedScreen)) showAlarms(); else showHome();
-        }
+        boolean hasCached = !cached.isEmpty() && parseMarkets(cached);
+        if ("alarms".equals(requestedScreen)) showAlarms();
+        else if (hasCached) showHome();
         else showLoading();
         refreshMarkets();
     }
@@ -150,22 +150,23 @@ public final class MainActivity extends Activity {
                 String json = body.toString();
                 if (!parseMarkets(json)) throw new IllegalStateException("Leere Marktdaten");
                 getSharedPreferences(CACHE_NAME, MODE_PRIVATE).edit().putString(CACHE_KEY, json).apply();
-                mainHandler.post(() -> {
-                    if (selectedMarket == null) {
-                        if ("signals".equals(activeScreen)) showSignals();
-                        else if ("alarms".equals(activeScreen)) showAlarms();
-                        else showHome();
-                    }
-                    else showDetail(selectedMarket, timeframeIndex);
-                    Toast.makeText(this, "Marktdaten aktualisiert", Toast.LENGTH_SHORT).show();
-                });
+                mainHandler.post(this::renderUpdatedMarkets);
             } catch (Exception ignored) {
                 mainHandler.post(() -> {
+                    if ("alarms".equals(activeScreen)) return;
                     if (markets.isEmpty()) showError();
                     else Toast.makeText(this, "Aktualisierung fehlgeschlagen – gespeicherte Daten angezeigt", Toast.LENGTH_LONG).show();
                 });
             }
         });
+    }
+
+    private void renderUpdatedMarkets() {
+        if ("alarms".equals(activeScreen)) { updateLiveLabels(root); renderPersonalAlerts(); return; }
+        if (selectedMarket != null) showDetail(selectedMarket, timeframeIndex);
+        else if ("signals".equals(activeScreen)) showSignals();
+        else showHome();
+        Toast.makeText(this, "Marktdaten aktualisiert", Toast.LENGTH_SHORT).show();
     }
 
     @Override protected void onNewIntent(Intent intent) {
@@ -194,8 +195,10 @@ public final class MainActivity extends Activity {
 
     private void showLoading() {
         root.removeAllViews();
+        FrameLayout content = new FrameLayout(this);
         ProgressBar progress = new ProgressBar(this);
-        root.addView(progress, new FrameLayout.LayoutParams(dp(52), dp(52), Gravity.CENTER));
+        content.addView(progress, new FrameLayout.LayoutParams(dp(52), dp(52), Gravity.CENTER));
+        root.addView(withNavigation(content, "markets"), fullFrame());
     }
 
     private void showError() {
@@ -212,7 +215,7 @@ public final class MainActivity extends Activity {
         LinearLayout.LayoutParams retryParams = wrap();
         retryParams.topMargin = dp(18);
         box.addView(retry, retryParams);
-        root.addView(box, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        root.addView(withNavigation(box, "markets"), fullFrame());
     }
 
     private void showHome() {
@@ -705,7 +708,7 @@ public final class MainActivity extends Activity {
         box.setPadding(dp(16), dp(18), dp(16), dp(18));
         box.setBackground(rounded(PANEL, BORDER, 18));
         box.addView(text("Eigenen Preisalarm anlegen", 19, TEXT, true));
-        box.addView(text("Auf diesem Gerät gespeichert und mit Live-Kursen verglichen. Die laufende Überwachung erscheint als Android-Benachrichtigung.", 13, MUTED, false));
+        box.addView(text("Auf diesem Gerät gespeichert. Die App prüft die Marke mit Live-Kursen.", 13, MUTED, false));
         Spinner coin = alarmSpinner(new String[]{"BTC / USDT", "ETH / USDT", "SOL / USDT"});
         coin.setSelection("ETHUSDT".equals(alarmSymbol) ? 1 : "SOLUSDT".equals(alarmSymbol) ? 2 : 0);
         coin.setContentDescription("Coin für Preisalarm");
@@ -721,12 +724,13 @@ public final class MainActivity extends Activity {
             }
             @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
-        Spinner crossing = alarmSpinner(new String[]{"Kurs erreicht oder übersteigt", "Kurs erreicht oder unterschreitet"});
+        Spinner crossing = alarmSpinner(new String[]{"Auslösen ab Kurs", "Auslösen bis Kurs"});
         crossing.setContentDescription("Alarmrichtung");
         box.addView(crossing, new LinearLayout.LayoutParams(-1, dp(52)));
+        box.addView(text("Alarmkurs in USDT", 13, MUTED, false));
         EditText amount = new EditText(this);
         amount.setTextColor(TEXT); amount.setHintTextColor(MUTED);
-        amount.setHint("Alarmkurs in USDT, z. B. 80000,00");
+        amount.setHint("z. B. 80000,00");
         amount.setContentDescription("Alarmkurs in USDT");
         amount.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         amount.setSingleLine(true);
