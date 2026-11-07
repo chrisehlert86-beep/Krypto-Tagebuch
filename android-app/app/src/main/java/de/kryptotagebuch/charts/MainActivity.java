@@ -381,7 +381,7 @@ public final class MainActivity extends Activity {
         String symbol = item.optString("symbol", "Markt").replace("USDT", "");
         String tf = item.optString("timeframe").toUpperCase(Locale.GERMANY);
         String direction = item.optString("direction").toUpperCase(Locale.GERMANY);
-        card.addView(text(symbol + " · " + tf + " · " + direction, 17, TEXT, true));
+        card.addView(text(item.optString("title", symbol + " · " + tf + " · " + direction), 17, TEXT, true));
         String body = item.optString("body", item.optString("waveLabel", "Laufende Welle") + " · Fib " + item.optString("ratio") + " bei " + item.optString("price") + " USDT");
         TextView message = text(body, 14, AMBER, false);
         message.setPadding(0, dp(5), 0, dp(4));

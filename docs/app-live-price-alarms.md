@@ -79,7 +79,11 @@ oder Supabase übertragen. Binance erhält nur das öffentliche Stream-Abonnemen
 
 ## Validierung und Bereitstellung
 
-Node- und Android-Unit-Tests prüfen lokalen über/unter-Vergleich einschließlich
+13 Node-Tests und die Android-Unit-Tests sind bestanden. Der Web-Produktionsbuild,
+TypeScript, ESLint, APK-Build und Android-Lint sind erfolgreich. Die vollständige
+Android-15-Geräteprüfung ist ebenfalls erfolgreich durchgelaufen.
+
+Die Tests prüfen lokalen über/unter-Vergleich einschließlich
 Gleichheit, einmalige Auslösung, Speicherung/Wiederherstellung, Kursrückkehr,
 deaktivierte Alarme, falsche Coins und alte/falsche Zeitstempel.
 Die Android-Geräteprüfung kontrolliert zusätzlich private Speicherung,
