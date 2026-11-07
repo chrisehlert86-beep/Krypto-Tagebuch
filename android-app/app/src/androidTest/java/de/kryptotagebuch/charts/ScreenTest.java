@@ -17,6 +17,7 @@ import org.json.JSONObject;
 public class ScreenTest {
     @Test public void testPersonalPriceAlarmForm() throws Exception {
         Instrumentation inst = InstrumentationRegistry.getInstrumentation();
+        inst.getUiAutomation().executeShellCommand("pm grant de.kryptotagebuch.charts android.permission.POST_NOTIFICATIONS").close();
         MainActivity activity = (MainActivity) inst.startActivitySync(new Intent(inst.getTargetContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         inst.runOnMainSync(() -> {
             try {

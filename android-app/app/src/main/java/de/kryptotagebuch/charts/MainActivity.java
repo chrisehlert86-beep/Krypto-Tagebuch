@@ -809,7 +809,7 @@ public final class MainActivity extends Activity {
             LinearLayout row = horizontal(); row.setGravity(Gravity.CENTER_VERTICAL);
             String status = "triggered".equals(item.optString("status")) ? "Ausgelöst" : "Aktiv";
             row.addView(text(item.optString("symbol").replace("USDT", "") + " · " + ("above".equals(item.optString("crossing")) ? "Ab " : "Bis ")
-                    + formatPrice(item.optDouble("price")) + " USDT\n" + status, 14, TEXT, false), new LinearLayout.LayoutParams(0, -2, 1));
+                    + formatAlarmPrice(item.optDouble("price")) + " USDT\n" + status, 14, TEXT, false), new LinearLayout.LayoutParams(0, -2, 1));
             if ("active".equals(item.optString("status"))) {
                 Button cancel = timeButton("Deaktivieren");
                 cancel.setOnClickListener(view -> {
@@ -830,6 +830,12 @@ public final class MainActivity extends Activity {
 
     @Override protected void onStart() { super.onStart(); foreground = true; mainHandler.post(liveRefresh); }
     @Override protected void onStop() { foreground = false; mainHandler.removeCallbacks(liveRefresh); super.onStop(); }
+
+    private String formatAlarmPrice(double value) {
+        NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
+        format.setMinimumFractionDigits(2); format.setMaximumFractionDigits(8);
+        return format.format(value);
+    }
 
     @Override public void onBackPressed() {
         if (selectedMarket != null || !"markets".equals(activeScreen)) showHome(); else super.onBackPressed();
