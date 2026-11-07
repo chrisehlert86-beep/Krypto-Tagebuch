@@ -15,6 +15,36 @@ import org.json.JSONObject;
 
 /** Device tests exercise real Android 15 insets and Canvas rendering. */
 public class ScreenTest {
+    @Test public void testPersonalPriceAlarmForm() throws Exception {
+        Instrumentation inst = InstrumentationRegistry.getInstrumentation();
+        MainActivity activity = (MainActivity) inst.startActivitySync(new Intent(inst.getTargetContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        inst.runOnMainSync(() -> {
+            try {
+                java.lang.reflect.Method show = MainActivity.class.getDeclaredMethod("showAlarms");
+                show.setAccessible(true); show.invoke(activity);
+            } catch (Exception error) { throw new AssertionError(error); }
+            assertNotNull(findDescription(activity.findViewById(R.id.app_root), "Alarmkurs in USDT"));
+            assertNotNull(findDescription(activity.findViewById(R.id.app_root), "Alarmrichtung"));
+            assertNotNull(findDescription(activity.findViewById(R.id.app_root), "Coin für Preisalarm"));
+            android.widget.EditText amount = (android.widget.EditText) findDescription(activity.findViewById(R.id.app_root), "Alarmkurs in USDT");
+            amount.setText("80000,25");
+            assertEquals(80000.25, PriceAlertClient.parsePrice(amount.getText().toString()), 0.00001);
+        });
+        inst.waitForIdleSync(); android.os.SystemClock.sleep(700);
+        File dir = new File(inst.getTargetContext().getExternalFilesDir(null), "qa"); dir.mkdirs();
+        save(inst.getUiAutomation().takeScreenshot(), new File(dir, "personal-price-alarm.png"));
+        inst.runOnMainSync(activity::finish);
+    }
+
+    private View findDescription(View root, String description) {
+        if (description.contentEquals(root.getContentDescription() == null ? "" : root.getContentDescription())) return root;
+        if (root instanceof android.view.ViewGroup) {
+            android.view.ViewGroup group = (android.view.ViewGroup) root;
+            for (int i = 0; i < group.getChildCount(); i++) { View found = findDescription(group.getChildAt(i), description); if (found != null) return found; }
+        }
+        return null;
+    }
+
     @Test public void testSystemBarsAndCharts() throws Exception {
         Instrumentation inst=InstrumentationRegistry.getInstrumentation();
         inst.getUiAutomation().executeShellCommand("pm grant de.kryptotagebuch.charts android.permission.POST_NOTIFICATIONS").close();

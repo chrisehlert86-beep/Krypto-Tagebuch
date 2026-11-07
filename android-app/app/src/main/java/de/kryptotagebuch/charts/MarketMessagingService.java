@@ -28,9 +28,18 @@ public final class MarketMessagingService extends FirebaseMessagingService {
     @Override public void onMessageReceived(RemoteMessage message) {
         Map<String, String> data = message.getData();
         if (data.isEmpty()) return;
+        if (SignalStore.hasEvent(this, data.get("eventId"))) return;
         boolean quiet = NotificationPreferences.isQuietNow(this) || isStale(data);
         SignalStore.add(this, data, quiet);
         showNotification(data, quiet);
+    }
+
+    @Override public void onNewToken(String token) {
+        PriceAlertClient.savePushToken(this, token);
+        new Thread(() -> {
+            try { PriceAlertClient.request(this, "price-alerts", "PATCH", new org.json.JSONObject().put("pushToken", token)); }
+            catch (Exception ignored) {}
+        }, "refresh-alarm-destination").start();
     }
 
     private void showNotification(Map<String, String> data, boolean quiet) {
@@ -42,6 +51,8 @@ public final class MarketMessagingService extends FirebaseMessagingService {
         String direction = clean(data.get("direction"), "").toUpperCase();
         String title = symbol.replace("USDT", "") + (timeframe.isEmpty() ? "" : " · " + timeframe) + " · " + direction;
         String body = wave + (ratio.isEmpty() ? "" : " · Fib " + ratio) + (price.isEmpty() ? "" : " bei " + price + " USDT");
+        title = clean(data.get("title"), title);
+        body = clean(data.get("body"), body);
 
         Intent open = quiet ? new Intent(this, MainActivity.class).putExtra("screen", "alarms")
                 : new Intent(this, AlarmActivity.class).putExtra("title", title).putExtra("body", body);

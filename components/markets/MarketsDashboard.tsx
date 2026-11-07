@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import type { MarketAnalysis, MarketSignalPlan, MarketTimeframe } from '@/lib/market-analysis'
 import MarketChart from '@/components/markets/MarketChart'
+import LivePriceAlarms, { QuoteLabel, useLiveQuotes } from '@/components/markets/LivePriceAlarms'
 
 const TIMEFRAMES: Array<{ value: MarketTimeframe; label: string }> = [
   { value: 'm15', label: '15 Min' },
@@ -47,6 +48,7 @@ export default function MarketsDashboard({ mobile = false }: { mobile?: boolean 
   const [timeframe, setTimeframe] = useState<MarketTimeframe>('daily')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const { quotes, available } = useLiveQuotes()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -104,7 +106,7 @@ export default function MarketsDashboard({ mobile = false }: { mobile?: boolean 
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">{market.displaySymbol}</p>
-                  <p className="mt-2 text-2xl font-black text-white">{price(market.currentPrice)} <span className="text-sm text-slate-400">USDT</span></p>
+                  <p className="mt-2 text-2xl font-black text-white"><QuoteLabel quote={quotes.find((quote) => quote.symbol === market.symbol)} fallback={market.currentPrice} available={available} /></p>
                 </div>
                 <span className={`rounded-full px-3 py-1 text-xs font-black ring-1 ${directionClass(market.direction)}`}>
                   {directionLabel(market.direction)}
@@ -115,6 +117,8 @@ export default function MarketsDashboard({ mobile = false }: { mobile?: boolean 
           )
         })}
       </div>
+
+      <LivePriceAlarms key={selected.symbol} symbol={selected.symbol} quote={quotes.find((quote) => quote.symbol === selected.symbol)} />
 
       <section className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl">
         <div className={mobile ? 'border-b border-slate-700 p-4' : 'border-b border-slate-700 p-5 sm:p-7'}>

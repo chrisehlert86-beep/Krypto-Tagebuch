@@ -14,6 +14,16 @@ final class SignalStore {
 
     private SignalStore() {}
 
+    static boolean hasEvent(Context context, String identity) {
+        if (identity == null || identity.isEmpty()) return false;
+        JSONArray values = items(context);
+        for (int i = 0; i < values.length(); i++) {
+            JSONObject item = values.optJSONObject(i);
+            if (item != null && identity.equals(item.optString("eventId"))) return true;
+        }
+        return false;
+    }
+
     static synchronized void add(Context context, Map<String, String> data, boolean quiet) {
         try {
             JSONArray oldItems = items(context);

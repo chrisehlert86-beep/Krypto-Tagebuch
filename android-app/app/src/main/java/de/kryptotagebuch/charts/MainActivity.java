@@ -23,6 +23,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
+import android.text.InputType;
 import android.os.Build;
 import android.view.WindowInsets;
 
@@ -63,6 +68,48 @@ public final class MainActivity extends Activity {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final ExecutorService liveExecutor = Executors.newSingleThreadExecutor();
+    private JSONObject liveQuotes = new JSONObject();
+    private JSONArray personalAlerts = new JSONArray();
+    private LinearLayout personalAlertsBox;
+    private boolean foreground;
+    private boolean liveLoading;
+    private long lastAlertsFetch;
+    private boolean liveAvailable;
+    private String alarmSymbol = "BTCUSDT";
+    private final Runnable liveRefresh = new Runnable() {
+        @Override public void run() {
+            if (!foreground || liveLoading) return;
+            liveLoading = true;
+            liveExecutor.execute(() -> {
+                JSONObject quotes = null;
+                JSONArray alerts = null;
+                try { quotes = PriceAlertClient.request(MainActivity.this, "live-prices", "GET", null); } catch (Exception ignored) {}
+                if (System.currentTimeMillis() - lastAlertsFetch >= 5000) {
+                    try { alerts = PriceAlertClient.request(MainActivity.this, "price-alerts", "GET", null).optJSONArray("alerts"); } catch (Exception ignored) {}
+                    lastAlertsFetch = System.currentTimeMillis();
+                }
+                final JSONObject result = quotes;
+                final JSONArray alarmResult = alerts;
+                mainHandler.post(() -> {
+                    liveLoading = false;
+                    liveAvailable = result != null;
+                    if (result != null) {
+                        JSONObject next = new JSONObject();
+                        JSONArray values = result.optJSONArray("quotes");
+                        if (values != null) for (int i = 0; i < values.length(); i++) {
+                            JSONObject value = values.optJSONObject(i);
+                            if (value != null) try { next.put(value.optString("symbol"), value); } catch (Exception ignored) {}
+                        }
+                        liveQuotes = next;
+                    }
+                    updateLiveLabels(root);
+                    if (alarmResult != null) { personalAlerts = alarmResult; renderPersonalAlerts(); }
+                    if (foreground) mainHandler.postDelayed(this, 2000);
+                });
+            });
+        }
+    };
     private final List<JSONObject> markets = new ArrayList<>();
     private FrameLayout root;
     private JSONObject selectedMarket;
@@ -87,6 +134,14 @@ public final class MainActivity extends Activity {
         root.requestApplyInsets();
         MarketMessagingService.createChannels(this);
         FirebaseMessaging.getInstance().subscribeToTopic("market-alerts");
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token -> {
+            if (isDestroyed()) return;
+            PriceAlertClient.savePushToken(this, token);
+            liveExecutor.execute(() -> {
+                try { PriceAlertClient.request(this, "price-alerts", "PATCH", new JSONObject().put("pushToken", token)); }
+                catch (Exception ignored) {}
+            });
+        });
         if (android.os.Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
         }
@@ -293,6 +348,8 @@ public final class MainActivity extends Activity {
         page.addView(text("Alarme", 30, TEXT, true));
         page.addView(text("Außerhalb der Ruhezeit hörbar – Nicht stören wird respektiert.", 14, MUTED, false));
 
+        page.addView(createPersonalAlarmForm(), matchWrap());
+
         LinearLayout settings = vertical();
         settings.setPadding(dp(17), dp(15), dp(17), dp(16));
         settings.setBackground(rounded(PANEL, BORDER, 18));
@@ -349,7 +406,7 @@ public final class MainActivity extends Activity {
         String tf = item.optString("timeframe").toUpperCase(Locale.GERMANY);
         String direction = item.optString("direction").toUpperCase(Locale.GERMANY);
         card.addView(text(symbol + " · " + tf + " · " + direction, 17, TEXT, true));
-        String body = item.optString("waveLabel", "Laufende Welle") + " · Fib " + item.optString("ratio") + " bei " + item.optString("price") + " USDT";
+        String body = item.optString("body", item.optString("waveLabel", "Laufende Welle") + " · Fib " + item.optString("ratio") + " bei " + item.optString("price") + " USDT");
         TextView message = text(body, 14, AMBER, false);
         message.setPadding(0, dp(5), 0, dp(4));
         card.addView(message);
@@ -425,7 +482,7 @@ public final class MainActivity extends Activity {
         LinearLayout info = vertical();
         info.setPadding(dp(14), 0, 0, 0);
         info.addView(text(symbol, 21, TEXT, true));
-        info.addView(text(formatPrice(market.optDouble("currentPrice")) + " USDT", 15, MUTED, false));
+        info.addView(livePriceLabel(market, 15));
         String direction = market.optString("direction", "wait");
         info.addView(text("wait".equals(direction) ? "Wellenanalyse fehlt" : directionLabel(direction), 12, directionColor(direction), true));
         card.addView(info, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
@@ -453,7 +510,7 @@ public final class MainActivity extends Activity {
         LinearLayout title = vertical();
         String coin = market.optString("symbol").replace("USDT", "");
         title.addView(text(coin + " / USDT", 22, TEXT, true));
-        title.addView(text(formatPrice(market.optDouble("currentPrice")) + " USDT", 14, MUTED, false));
+        title.addView(livePriceLabel(market, 14));
         top.addView(title, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         page.addView(top);
 
@@ -504,6 +561,9 @@ public final class MainActivity extends Activity {
         swipeHint.setGravity(Gravity.CENTER);
         swipeHint.setPadding(0, dp(6), 0, dp(10));
         page.addView(swipeHint);
+        Button priceAlarm = timeButton("Preisalarm für " + coin + " anlegen");
+        priceAlarm.setOnClickListener(view -> { alarmSymbol = market.optString("symbol", "BTCUSDT"); showAlarms(); });
+        page.addView(priceAlarm, matchWrap());
         page.addView(createDescription(market, plan));
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
@@ -636,8 +696,143 @@ public final class MainActivity extends Activity {
         return format.format(value);
     }
 
+    private TextView livePriceLabel(JSONObject market, int size) {
+        TextView label = text("Analyse: " + formatPrice(market.optDouble("currentPrice")) + " USDT", size, MUTED, false);
+        label.setTag("live:" + market.optString("symbol"));
+        updateLiveLabels(label);
+        return label;
+    }
+
+    private void updateLiveLabels(View view) {
+        Object tag = view.getTag();
+        if (view instanceof TextView && tag instanceof String && ((String) tag).startsWith("live:")) {
+            JSONObject quote = liveQuotes.optJSONObject(((String) tag).substring(5));
+            if (quote != null) {
+                TextView label = (TextView) view;
+                long tradedAt = 0;
+                try { tradedAt = java.time.Instant.parse(quote.optString("tradedAt")).toEpochMilli(); } catch (Exception ignored) {}
+                long age = System.currentTimeMillis() - tradedAt;
+                boolean fresh = liveAvailable && age >= -2000 && age <= 15000;
+                NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
+                format.setMinimumFractionDigits(2); format.setMaximumFractionDigits(2);
+                label.setText(format.format(quote.optDouble("price")) + " USDT · " + (fresh ? "Live" : "Letzter Kurs") + "\n"
+                        + new SimpleDateFormat("HH:mm:ss", Locale.GERMANY).format(new Date(tradedAt))
+                        + (liveAvailable ? "" : " · Verbindung unterbrochen"));
+                label.setTextColor(fresh ? GREEN : AMBER);
+            }
+        }
+        if (view instanceof ViewGroup) for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) updateLiveLabels(((ViewGroup) view).getChildAt(i));
+    }
+
+    private View createPersonalAlarmForm() {
+        LinearLayout box = vertical();
+        box.setPadding(dp(16), dp(18), dp(16), dp(18));
+        box.setBackground(rounded(PANEL, BORDER, 18));
+        box.addView(text("Eigenen Preisalarm anlegen", 19, TEXT, true));
+        box.addView(text("Einmalig beim Live-Kurs. Funktioniert auch ohne KI-Szenario und bei geschlossener App.", 13, MUTED, false));
+        Spinner coin = alarmSpinner(new String[]{"BTC / USDT", "ETH / USDT", "SOL / USDT"});
+        coin.setSelection("ETHUSDT".equals(alarmSymbol) ? 1 : "SOLUSDT".equals(alarmSymbol) ? 2 : 0);
+        coin.setContentDescription("Coin für Preisalarm");
+        box.addView(coin, new LinearLayout.LayoutParams(-1, dp(52)));
+        TextView live = text("Live-Kurs wird geladen…", 15, GREEN, true);
+        live.setTag("live:" + alarmSymbol);
+        updateLiveLabels(live);
+        box.addView(live, matchWrap());
+        coin.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                alarmSymbol = new String[]{"BTCUSDT", "ETHUSDT", "SOLUSDT"}[position];
+                live.setTag("live:" + alarmSymbol); live.setText("Live-Kurs wird geladen…"); updateLiveLabels(live);
+            }
+            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+        Spinner crossing = alarmSpinner(new String[]{"Kurs erreicht oder übersteigt", "Kurs erreicht oder unterschreitet"});
+        crossing.setContentDescription("Alarmrichtung");
+        box.addView(crossing, new LinearLayout.LayoutParams(-1, dp(52)));
+        EditText amount = new EditText(this);
+        amount.setTextColor(TEXT); amount.setHintTextColor(MUTED);
+        amount.setHint("Alarmkurs in USDT, z. B. 80000,00");
+        amount.setContentDescription("Alarmkurs in USDT");
+        amount.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        amount.setSingleLine(true);
+        box.addView(amount, new LinearLayout.LayoutParams(-1, dp(56)));
+        Button save = timeButton("Alarm speichern");
+        save.setOnClickListener(view -> {
+            double value = PriceAlertClient.parsePrice(amount.getText().toString());
+            if (!Double.isFinite(value)) { amount.setError("Positiven Kurs ohne Tausendertrennzeichen eingeben"); return; }
+            String token = PriceAlertClient.pushToken(this);
+            if (token.isEmpty()) { Toast.makeText(this, "Push-Verbindung wird vorbereitet. Bitte gleich erneut versuchen.", Toast.LENGTH_LONG).show(); return; }
+            if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
+                return;
+            }
+            final String symbol = new String[]{"BTCUSDT", "ETHUSDT", "SOLUSDT"}[coin.getSelectedItemPosition()];
+            final String relation = crossing.getSelectedItemPosition() == 0 ? "above" : "below";
+            save.setEnabled(false);
+            liveExecutor.execute(() -> {
+                try {
+                    JSONObject body = new JSONObject().put("symbol", symbol).put("crossing", relation).put("price", value).put("pushToken", token);
+                    PriceAlertClient.request(this, "price-alerts", "POST", body);
+                    JSONArray items = PriceAlertClient.request(this, "price-alerts", "GET", null).getJSONArray("alerts");
+                    mainHandler.post(() -> { personalAlerts = items; amount.setText(""); save.setEnabled(true); renderPersonalAlerts(); Toast.makeText(this, "Preisalarm gespeichert", Toast.LENGTH_SHORT).show(); });
+                } catch (Exception error) {
+                    mainHandler.post(() -> { save.setEnabled(true); Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show(); });
+                }
+            });
+        });
+        box.addView(save, new LinearLayout.LayoutParams(-1, dp(50)));
+        box.addView(text("Ist die Bedingung schon erfüllt, kann der nächste Live-Kurs sofort auslösen.", 12, AMBER, false));
+        personalAlertsBox = vertical();
+        box.addView(personalAlertsBox, matchWrap());
+        renderPersonalAlerts();
+        return box;
+    }
+
+    private Spinner alarmSpinner(String[] values) {
+        Spinner spinner = new Spinner(this);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values) {
+            @Override public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getView(position, convertView, parent); view.setTextColor(TEXT); view.setTextSize(15); return view;
+            }
+            @Override public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getDropDownView(position, convertView, parent); view.setTextColor(TEXT); view.setBackgroundColor(PANEL_2); view.setPadding(dp(12), dp(14), dp(12), dp(14)); return view;
+            }
+        };
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); spinner.setAdapter(adapter); return spinner;
+    }
+
+    private void renderPersonalAlerts() {
+        if (personalAlertsBox == null || !"alarms".equals(activeScreen)) return;
+        personalAlertsBox.removeAllViews();
+        for (int i = 0; i < personalAlerts.length(); i++) {
+            JSONObject item = personalAlerts.optJSONObject(i);
+            if (item == null || "cancelled".equals(item.optString("status"))) continue;
+            LinearLayout row = horizontal(); row.setGravity(Gravity.CENTER_VERTICAL);
+            String status = "triggered".equals(item.optString("status")) ? "Ausgelöst" : "Aktiv";
+            row.addView(text(item.optString("symbol").replace("USDT", "") + " · " + ("above".equals(item.optString("crossing")) ? "Ab " : "Bis ")
+                    + formatPrice(item.optDouble("price")) + " USDT\n" + status, 14, TEXT, false), new LinearLayout.LayoutParams(0, -2, 1));
+            if ("active".equals(item.optString("status"))) {
+                Button cancel = timeButton("Deaktivieren");
+                cancel.setOnClickListener(view -> {
+                    cancel.setEnabled(false);
+                    liveExecutor.execute(() -> {
+                        try {
+                            PriceAlertClient.request(this, "price-alerts", "DELETE", new JSONObject().put("id", item.optString("id")));
+                            JSONArray next = PriceAlertClient.request(this, "price-alerts", "GET", null).getJSONArray("alerts");
+                            mainHandler.post(() -> { personalAlerts = next; renderPersonalAlerts(); });
+                        } catch (Exception error) { mainHandler.post(() -> { cancel.setEnabled(true); Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show(); }); }
+                    });
+                });
+                row.addView(cancel);
+            }
+            personalAlertsBox.addView(row, matchWrap());
+        }
+    }
+
+    @Override protected void onStart() { super.onStart(); foreground = true; mainHandler.post(liveRefresh); }
+    @Override protected void onStop() { foreground = false; mainHandler.removeCallbacks(liveRefresh); super.onStop(); }
+
     @Override public void onBackPressed() {
         if (selectedMarket != null || !"markets".equals(activeScreen)) showHome(); else super.onBackPressed();
     }
-    @Override protected void onDestroy() { executor.shutdownNow(); super.onDestroy(); }
+    @Override protected void onDestroy() { mainHandler.removeCallbacks(liveRefresh); executor.shutdownNow(); liveExecutor.shutdownNow(); super.onDestroy(); }
 }
