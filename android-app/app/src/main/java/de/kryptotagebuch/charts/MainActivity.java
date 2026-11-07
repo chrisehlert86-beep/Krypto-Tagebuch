@@ -768,14 +768,19 @@ public final class MainActivity extends Activity {
             final String symbol = new String[]{"BTCUSDT", "ETHUSDT", "SOLUSDT"}[coin.getSelectedItemPosition()];
             final String relation = crossing.getSelectedItemPosition() == 0 ? "above" : "below";
             save.setEnabled(false);
+            save.setText("Speichert…");
             liveExecutor.execute(() -> {
                 try {
                     JSONObject body = new JSONObject().put("symbol", symbol).put("crossing", relation).put("price", value).put("pushToken", token);
-                    PriceAlertClient.request(this, "price-alerts", "POST", body);
-                    JSONArray items = PriceAlertClient.request(this, "price-alerts", "GET", null).getJSONArray("alerts");
-                    mainHandler.post(() -> { personalAlerts = items; amount.setText(""); save.setEnabled(true); renderPersonalAlerts(); Toast.makeText(this, "Preisalarm gespeichert", Toast.LENGTH_SHORT).show(); });
+                    JSONObject created = PriceAlertClient.request(this, "price-alerts", "POST", body).getJSONObject("alert");
+                    mainHandler.post(() -> {
+                        JSONArray next = new JSONArray().put(created);
+                        for (int i = 0; i < personalAlerts.length(); i++) next.put(personalAlerts.opt(i));
+                        personalAlerts = next; amount.setText(""); save.setEnabled(true); save.setText("Alarm speichern");
+                        renderPersonalAlerts(); Toast.makeText(this, "Preisalarm gespeichert", Toast.LENGTH_SHORT).show();
+                    });
                 } catch (Exception error) {
-                    mainHandler.post(() -> { save.setEnabled(true); Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show(); });
+                    mainHandler.post(() -> { save.setEnabled(true); save.setText("Alarm speichern"); Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show(); });
                 }
             });
         });
@@ -817,8 +822,10 @@ public final class MainActivity extends Activity {
                     liveExecutor.execute(() -> {
                         try {
                             PriceAlertClient.request(this, "price-alerts", "DELETE", new JSONObject().put("id", item.optString("id")));
-                            JSONArray next = PriceAlertClient.request(this, "price-alerts", "GET", null).getJSONArray("alerts");
-                            mainHandler.post(() -> { personalAlerts = next; renderPersonalAlerts(); });
+                            mainHandler.post(() -> {
+                                try { item.put("status", "cancelled"); } catch (Exception ignored) {}
+                                renderPersonalAlerts();
+                            });
                         } catch (Exception error) { mainHandler.post(() -> { cancel.setEnabled(true); Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show(); }); }
                     });
                 });
