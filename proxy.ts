@@ -11,7 +11,7 @@ function createCsp(nonce: string) {
     `style-src 'self' 'nonce-${nonce}'${isDevelopment ? " 'unsafe-inline'" : ''}`,
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
-    "connect-src 'self'",
+    "connect-src 'self' wss://data-stream.binance.vision",
     "frame-src https://oauth.telegram.org https://telegram.org",
     "object-src 'none'",
     "base-uri 'self'",

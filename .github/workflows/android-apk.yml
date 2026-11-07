@@ -8,6 +8,10 @@ on:
       - "android-app/**"
       - ".github/workflows/android-apk.yml"
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "android-app/**"
+      - ".github/workflows/android-apk.yml"
 
 permissions:
   contents: read
