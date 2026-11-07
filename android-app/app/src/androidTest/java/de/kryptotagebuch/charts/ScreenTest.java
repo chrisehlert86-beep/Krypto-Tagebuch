@@ -25,6 +25,7 @@ public class ScreenTest {
         MainActivity activity = (MainActivity) inst.startActivitySync(new Intent(context, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         inst.waitForIdleSync();
         inst.runOnMainSync(activity::finish);
+        inst.waitForIdleSync();
         android.os.SystemClock.sleep(2500);
         java.lang.reflect.Field field = LocalAlarmService.class.getDeclaredField("instance"); field.setAccessible(true);
         Object monitor = field.get(null);
@@ -82,6 +83,7 @@ public class ScreenTest {
         File dir = new File(inst.getTargetContext().getExternalFilesDir(null), "qa"); dir.mkdirs();
         save(inst.getUiAutomation().takeScreenshot(), new File(dir, "personal-price-alarm.png"));
         inst.runOnMainSync(activity::finish);
+        inst.waitForIdleSync();
     }
 
     private View findDescription(View root, String description) {

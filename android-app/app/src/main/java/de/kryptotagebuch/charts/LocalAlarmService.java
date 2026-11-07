@@ -16,7 +16,7 @@ public final class LocalAlarmService extends Service {
     private static final String CHANNEL = "local_price_monitor_v1";
     private static final int NOTIFICATION = 41001;
     private static final Map<String, JSONObject> QUOTES = new HashMap<>();
-    private static volatile boolean uiVisible;
+    private static final Set<Context> VISIBLE = ConcurrentHashMap.newKeySet();
     private static volatile String status = "Überwachung ist nicht verbunden";
     private static volatile LocalAlarmService instance;
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -31,11 +31,12 @@ public final class LocalAlarmService extends Service {
     private String lastNotification = "";
 
     static void openUi(Context context) {
-        uiVisible = true;
+        VISIBLE.add(context);
         context.startForegroundService(new Intent(context, LocalAlarmService.class));
     }
-    static void closeUi() {
-        uiVisible = false;
+    static void ensureRunning(Context context) { if (instance == null) openUi(context); }
+    static void closeUi(Context context) {
+        VISIBLE.remove(context);
         LocalAlarmService value = instance;
         if (value != null) value.handler.post(value::checkIdle);
     }
@@ -146,7 +147,7 @@ public final class LocalAlarmService extends Service {
         return new Notification.Builder(this, CHANNEL).setSmallIcon(R.drawable.notification_icon).setContentTitle("Lokale Preisalarme")
                 .setContentText(text).setContentIntent(open).setOngoing(true).setOnlyAlertOnce(true).build();
     }
-    private void checkIdle() { if (!uiVisible && !LocalPriceAlarms.needsMonitoring(this)) stopSelf(); }
+    private void checkIdle() { if (VISIBLE.isEmpty() && !LocalPriceAlarms.needsMonitoring(this)) stopSelf(); }
     @Override public void onDestroy() {
         destroyed = true; handler.removeCallbacksAndMessages(null); instance = null; status = "Überwachung ist nicht verbunden";
         WebSocket value = socket; socket = null; if (value != null) value.cancel();

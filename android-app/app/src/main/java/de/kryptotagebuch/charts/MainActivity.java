@@ -77,6 +77,7 @@ public final class MainActivity extends Activity {
     private final Runnable liveRefresh = new Runnable() {
         @Override public void run() {
             if (!foreground) return;
+            LocalAlarmService.ensureRunning(MainActivity.this);
             JSONObject result = LocalAlarmService.snapshot();
             liveAvailable = result.optBoolean("connected");
             JSONObject next = new JSONObject();
@@ -153,6 +154,7 @@ public final class MainActivity extends Activity {
                 mainHandler.post(this::renderUpdatedMarkets);
             } catch (Exception ignored) {
                 mainHandler.post(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     if ("alarms".equals(activeScreen)) return;
                     if (markets.isEmpty()) showError();
                     else Toast.makeText(this, "Aktualisierung fehlgeschlagen – gespeicherte Daten angezeigt", Toast.LENGTH_LONG).show();
@@ -162,6 +164,7 @@ public final class MainActivity extends Activity {
     }
 
     private void renderUpdatedMarkets() {
+        if (isFinishing() || isDestroyed()) return;
         if ("alarms".equals(activeScreen)) { updateLiveLabels(root); renderPersonalAlerts(); return; }
         if (selectedMarket != null) showDetail(selectedMarket, timeframeIndex);
         else if ("signals".equals(activeScreen)) showSignals();
@@ -797,7 +800,7 @@ public final class MainActivity extends Activity {
     }
 
     @Override protected void onStart() { super.onStart(); foreground = true; LocalAlarmService.openUi(this); mainHandler.post(liveRefresh); }
-    @Override protected void onStop() { foreground = false; mainHandler.removeCallbacks(liveRefresh); LocalAlarmService.closeUi(); super.onStop(); }
+    @Override protected void onStop() { foreground = false; mainHandler.removeCallbacks(liveRefresh); LocalAlarmService.closeUi(this); super.onStop(); }
 
     private String formatAlarmPrice(double value) {
         NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
