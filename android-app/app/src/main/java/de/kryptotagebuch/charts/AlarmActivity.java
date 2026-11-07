@@ -58,7 +58,8 @@ public final class AlarmActivity extends Activity {
 
     private void stopAndClose() {
         if (ringtone != null && ringtone.isPlaying()) ringtone.stop();
-        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
+        int notificationId = getIntent().getIntExtra("notificationId", -1);
+        if (notificationId >= 0) ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(notificationId);
         finish();
     }
 

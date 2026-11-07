@@ -15,6 +15,46 @@ import org.json.JSONObject;
 
 /** Device tests exercise real Android 15 insets and Canvas rendering. */
 public class ScreenTest {
+    @Test public void testLocalAlarmPersistsAndMonitorsWithClosedActivity() throws Exception {
+        Instrumentation inst = InstrumentationRegistry.getInstrumentation();
+        android.content.Context context = inst.getTargetContext();
+        inst.getUiAutomation().executeShellCommand("pm grant de.kryptotagebuch.charts android.permission.POST_NOTIFICATIONS").close();
+        context.getSharedPreferences("local_price_alarms_v1", 0).edit().clear().commit();
+        LocalPriceAlarms.add(context, "BTCUSDT", "below", 0.00000001);
+        String identity = LocalPriceAlarms.items(context).getJSONObject(0).getString("id");
+        MainActivity activity = (MainActivity) inst.startActivitySync(new Intent(context, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        inst.waitForIdleSync();
+        inst.runOnMainSync(activity::finish);
+        android.os.SystemClock.sleep(2500);
+        java.lang.reflect.Field field = LocalAlarmService.class.getDeclaredField("instance"); field.setAccessible(true);
+        Object monitor = field.get(null);
+        assertNotNull("Local foreground service continues after Activity closes", monitor);
+        assertEquals(identity, LocalPriceAlarms.items(context).getJSONObject(0).getString("id"));
+        assertEquals("active", LocalPriceAlarms.items(context).getJSONObject(0).getString("status"));
+        // A synthetic fresh trade tests only the emulator's local comparison.
+        // It is never sent to an exchange, server or external notification target.
+        android.content.SharedPreferences quiet = NotificationPreferences.store(context);
+        int oldStart = NotificationPreferences.quietStart(context), oldEnd = NotificationPreferences.quietEnd(context);
+        quiet.edit().putInt(NotificationPreferences.QUIET_START, 0).putInt(NotificationPreferences.QUIET_END, 1440).commit();
+        try {
+            long tradedAt = System.currentTimeMillis() + 100;
+            LocalPriceAlarms.evaluate(context, "BTCUSDT", 0.00000001, tradedAt, tradedAt);
+            assertEquals("triggered", LocalPriceAlarms.items(context).getJSONObject(0).getString("status"));
+            java.lang.reflect.Method deliver = LocalAlarmService.class.getDeclaredMethod("deliverPending"); deliver.setAccessible(true);
+            deliver.invoke(monitor);
+            assertTrue(LocalPriceAlarms.items(context).getJSONObject(0).getBoolean("notified"));
+            assertTrue(SignalStore.hasEvent(context, "local:" + identity));
+            long matching = java.util.Arrays.stream(context.getSystemService(android.app.NotificationManager.class).getActiveNotifications())
+                    .filter(n -> n.getId() == (("local:" + identity).hashCode() & 0x7fffffff)).count();
+            assertEquals("Local Android notification exists", 1L, matching);
+        } finally {
+            quiet.edit().putInt(NotificationPreferences.QUIET_START, oldStart).putInt(NotificationPreferences.QUIET_END, oldEnd).commit();
+            context.getSystemService(android.app.NotificationManager.class).cancel(("local:" + identity).hashCode() & 0x7fffffff);
+            context.getSharedPreferences("local_price_alarms_v1", 0).edit().clear().commit();
+            context.stopService(new Intent(context, LocalAlarmService.class));
+        }
+    }
+
     @Test public void testPersonalPriceAlarmForm() throws Exception {
         Instrumentation inst = InstrumentationRegistry.getInstrumentation();
         inst.getUiAutomation().executeShellCommand("pm grant de.kryptotagebuch.charts android.permission.POST_NOTIFICATIONS").close();
@@ -29,7 +69,7 @@ public class ScreenTest {
             assertNotNull(findDescription(activity.findViewById(R.id.app_root), "Coin für Preisalarm"));
             android.widget.EditText amount = (android.widget.EditText) findDescription(activity.findViewById(R.id.app_root), "Alarmkurs in USDT");
             amount.setText("80000,25");
-            assertEquals(80000.25, PriceAlertClient.parsePrice(amount.getText().toString()), 0.00001);
+            assertEquals(80000.25, LocalAlarmRules.parsePrice(amount.getText().toString()), 0.00001);
         });
         inst.waitForIdleSync(); android.os.SystemClock.sleep(700);
         File dir = new File(inst.getTargetContext().getExternalFilesDir(null), "qa"); dir.mkdirs();
